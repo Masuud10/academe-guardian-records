@@ -67,32 +67,27 @@ const AppRouter: React.FC = () => {
       <Route path="/debug/maintenance-test" element={<MaintenanceModeTest />} />
 
       {/* ====================================================== */}
-      {/* PROTECTED ROUTES - Only logged-in users can access.   */}
-      {/* These are all nested inside the ProtectedRoute element. */}
+      {/* PROTECTED ROUTES - School users only                  */}
+      {/* For principals, teachers, students, parents, etc.     */}
       {/* ====================================================== */}
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<AppContent />} />
-        <Route path="/finance" element={<AppContent />} />
-        
-        <Route path="/profile" element={<AppContent />} />
-        <Route path="/settings" element={<AppContent />} />
-        <Route path="/reports" element={<AppContent />} />
-        <Route path="/attendance" element={<AppContent />} />
-        <Route path="/grades" element={<AppContent />} />
+        <Route path="/classes" element={<AppContent />} />
         <Route path="/students" element={<AppContent />} />
         <Route path="/teachers" element={<AppContent />} />
-        <Route path="/classes" element={<AppContent />} />
+        <Route path="/grades" element={<AppContent />} />
+        <Route path="/attendance" element={<AppContent />} />
         <Route path="/timetable" element={<AppContent />} />
-        <Route path="/certificates" element={<AppContent />} />
+        <Route path="/assignments" element={<AppContent />} />
         <Route path="/communications" element={<AppContent />} />
+        <Route path="/reports" element={<AppContent />} />
+        <Route path="/certificates" element={<AppContent />} />
+        <Route path="/finance" element={<AppContent />} />
         <Route path="/analytics" element={<AppContent />} />
-        <Route path="/billing" element={<AppContent />} />
-        <Route path="/maintenance" element={<AppContent />} />
+        <Route path="/settings" element={<AppContent />} />
+        <Route path="/profile" element={<AppContent />} />
         <Route path="/support" element={<AppContent />} />
         <Route path="/messages" element={<AppContent />} />
-        <Route path="/audit" element={<AppContent />} />
-        <Route path="/debug" element={<AppContent />} />
-        <Route path="/transport" element={<AppContent />} />
       </Route>
 
       {/* ====================================================== */}

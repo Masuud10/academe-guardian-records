@@ -1,63 +1,68 @@
-Edufam – Comprehensive School Management System
-Overview
-Edufam is a modern, full-stack, multi-tenant School Management Platform designed to simplify, automate, and enhance school operations in Kenya and beyond. The platform serves various user roles including Edufam Admins, Principals, Teachers, Parents, Finance Officers, offering tailored dashboards and workflows for each role.
+# EduFam School App
 
-Key Features
-🎓 School Management
-School registration & profile management
+## Overview
+EduFam School App is a comprehensive school management application designed for individual schools. It serves principals, teachers, students, parents, and school administrators with tailored dashboards and workflows for day-to-day school operations.
 
-Academic calendar setup
+## Target Users
+- **Principals**: School administration and management
+- **Teachers**: Grade entry, attendance, and classroom management  
+- **Students**: Access to grades, assignments, and school information
+- **Parents**: Monitor student progress and school communications
+- **Finance Officers**: School fee management and financial reporting
+- **School Directors**: Overall school oversight and strategic management
 
-Class & subject management
+## Key Features
 
-Teacher, student and parent onboarding
+### 🎓 School Management (School-Level)
+- Class and subject management within the school
+- Student enrollment and academic records
+- Teacher assignment and scheduling
+- Academic calendar management
 
-📝 Grading Module (CBC & IGCSE)
-Grade entry, editing & approval workflows
+### 📝 Academic Management (CBC & IGCSE)
+- Grade entry, editing, and progress tracking
+- Student report cards and academic progress
+- Assignment and homework management
+- Examination scheduling and results
 
-Term & yearly report cards
+### 📅 Timetable & Scheduling
+- Class scheduling and time table management
+- Teacher and classroom assignment
+- Academic calendar integration
+- Resource allocation
 
-Automated performance analytics
+### 💰 School Finance
+- Student fee management and tracking
+- Payment processing and receipts
+- Financial reporting for school administration
+- Parent fee balance visibility
 
-📅 Timetable Generator (AI-Powered)
-Automated class scheduling
+### 📊 School Analytics
+- Student performance analytics
+- Attendance tracking and reporting  
+- Class and school-wide insights
+- Academic progress monitoring
 
-Clash detection & conflict resolution
+### 📢 School Communications
+- School announcements and notifications
+- Teacher-parent communication channels
+- Student notifications and updates
+- School calendar and event management
 
-Teacher & room assignment
+### 🎓 Reports & Certificates
+- Student academic reports and transcripts
+- Attendance reports and summaries
+- Academic certificates and achievements
+- Parent-teacher conference scheduling
 
-💰 Finance Management
-Fee assignment to classes & students
+### ⚙️ School Settings
+- School profile and information management
+- User role management within the school
+- Academic term and year configuration
+- School-specific system settings
 
-MPESA integration via Safaricom Daraja API
-
-MPESA transactions & reconciliation
-
-Financial overview, reports & analytics
-
-Fee balance visibility for parents
-
-📊 Advanced Analytics
-Real-time grade, attendance & finance summaries
-
-Customizable data visualizations (charts, graphs)
-
-Individual school & multi-school analytics for Edufam Admins
-
-🎟️ Support Tickets
-Role-based support system
-
-All users can raise tickets; Edufam Admins can view all
-
-🎓 Certificate & Report Generation
-Auto-generated academic & completion certificates
-
-Dynamic PDF report generation for schools & Edufam
-
-⚙️ System Setting
-Maintenance mode toggle
-
-User account deactivation & management
+## Important Note
+This application is specifically designed for **individual school operations**. For system-wide administration, school registration, and multi-school management, use the separate **EduFam Admin App**.
 
 🏗️ Tech Stack
 Frontend: React.js + TypeScript + Tailwind CSS
@@ -68,9 +73,16 @@ Authentication: Supabase Auth
 
 Payments: MPESA Daraja API
 
-Database Structure (Supabase)
+## Getting Started
+```bash
+npm install
+npm run dev
+```
 
-Contact:
+## Related Applications  
+- **EduFam Admin App**: Separate application for EduFam system administrators to manage multiple schools
+
+## Contact
 Edufam Team
 Email: info@edufam.org
 Website: https://edufam.org
