@@ -13,9 +13,6 @@ import MaintenanceNotification from "@/components/common/MaintenanceNotification
 import AdminCommunicationsBanner from "@/components/common/AdminCommunicationsBanner";
 
 // Lazy load all dashboard components for better performance
-const EduFamAdminDashboard = React.lazy(
-  () => import("@/components/dashboard/EduFamAdminDashboard")
-);
 const PrincipalDashboard = React.lazy(
   () => import("@/components/dashboard/PrincipalDashboard")
 );
@@ -104,7 +101,7 @@ const ReportsModule = React.lazy(
 const SchoolsModule = React.lazy(
   () => import("@/components/modules/SchoolsModule")
 );
-import UsersModule from "@/components/modules/UsersModule";
+
 const BillingModule = React.lazy(
   () => import("@/components/modules/BillingModule")
 );
@@ -125,12 +122,6 @@ const ProjectHubModule = React.lazy(
 );
 const CompanyManagementModule = React.lazy(
   () => import("@/components/modules/CompanyManagementModule")
-);
-const EduFamSystemSettings = React.lazy(
-  () => import("@/components/modules/settings/EduFamSystemSettings")
-);
-const EduFamAnalyticsOverview = React.lazy(
-  () => import("@/components/analytics/EduFamAnalyticsOverview")
 );
 const SchoolAnalyticsList = React.lazy(
   () => import("@/components/analytics/SchoolAnalyticsList")
@@ -247,7 +238,12 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
       switch (user?.role) {
         case "edufam_admin":
         case "elimisha_admin":
-          return <EduFamAdminDashboard />;
+          return (
+            <div className="text-center p-8">
+              <h2 className="text-2xl font-bold text-red-600 mb-4">Access Restricted</h2>
+              <p className="text-gray-600">Admin features are not available in the school application.</p>
+            </div>
+          );
         case "school_director":
           return <SchoolDirectorDashboard />;
         case "principal":
@@ -345,9 +341,11 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
     // System Settings - Only for EduFam Admins
     if (activeSection === "settings") {
       if (user?.role === "edufam_admin") {
-        return renderLazyComponent(
-          EduFamSystemSettings,
-          "EduFamSystemSettings"
+        return (
+          <div className="text-center p-8">
+            <h2 className="text-2xl font-bold text-red-600 mb-4">Feature Unavailable</h2>
+            <p className="text-gray-600">System settings are not available in the school application.</p>
+          </div>
         );
       }
       return (
@@ -363,9 +361,11 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
     // System Reports for EduFam Admin
     if (activeSection === "system-reports") {
       if (user?.role === "edufam_admin") {
-        return renderLazyComponent(
-          EduFamAnalyticsOverview,
-          "SystemReportsModule"
+        return (
+          <div className="text-center p-8">
+            <h2 className="text-2xl font-bold text-red-600 mb-4">Feature Unavailable</h2>
+            <p className="text-gray-600">System reports are not available in the school application.</p>
+          </div>
         );
       }
       return (
@@ -381,9 +381,11 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
     // Analytics sections - Fix access for teachers, principals, and school directors
     if (activeSection === "analytics") {
       if (user?.role === "edufam_admin" || user?.role === "elimisha_admin") {
-        return renderLazyComponent(
-          EduFamAnalyticsOverview,
-          "EduFamAnalyticsOverview"
+        return (
+          <div className="text-center p-8">
+            <h2 className="text-2xl font-bold text-red-600 mb-4">Feature Unavailable</h2>
+            <p className="text-gray-600">Admin analytics are not available in the school application.</p>
+          </div>
         );
       }
       // Allow principals and school directors to access their school analytics
@@ -692,7 +694,12 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
       case "schools":
         return renderLazyComponent(SchoolsModule, "SchoolsModule");
       case "users":
-        return <UsersModule />;
+        return (
+          <div className="text-center p-8">
+            <h2 className="text-2xl font-bold text-red-600 mb-4">Feature Unavailable</h2>
+            <p className="text-gray-600">User management is not available in the school application.</p>
+          </div>
+        );
       case "billing":
         return renderLazyComponent(BillingModule, "BillingModule");
       case "system-health":

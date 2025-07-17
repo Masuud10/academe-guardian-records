@@ -4,7 +4,7 @@ import TeacherReportsModule from "@/components/reports/TeacherReportsModule";
 import PrincipalReportsModule from "@/components/reports/PrincipalReportsModule";
 import FinanceReportsModule from "@/components/reports/FinanceReportsModule";
 import ParentReportsModule from "@/components/reports/ParentReportsModule";
-import SystemReportsModule from "@/components/reports/SystemReportsModule";
+
 import RoleGuard from "@/components/common/RoleGuard";
 
 const ReportsModule = () => {
@@ -23,7 +23,10 @@ const ReportsModule = () => {
           </p>
         </div>
 
-        <SystemReportsModule />
+        <div className="text-center p-8">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Feature Unavailable</h2>
+          <p className="text-gray-600">System reports are not available in the school application.</p>
+        </div>
       </div>
     );
   }

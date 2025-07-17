@@ -323,7 +323,7 @@ export class DashboardTestUtils {
       try {
         // Test dynamic imports of critical components
         const components = [
-          () => import('@/components/dashboard/edufam-admin/EduFamAdminDashboard'),
+          // EduFamAdminDashboard removed for school app
           () => import('@/components/dashboard/admin/AdminDashboardOverview'),
           () => import('@/components/dashboard/admin/SystemOverviewCards'),
           () => import('@/components/common/ErrorBoundary'),

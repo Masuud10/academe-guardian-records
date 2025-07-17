@@ -5,7 +5,7 @@ import { useRoleValidation } from "@/hooks/useRoleValidation";
 import ErrorBoundary from "@/components/common/ErrorBoundary";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { ErrorMessage } from "@/components/common/ErrorMessage";
-import EduFamAdminDashboard from "./edufam-admin/EduFamAdminDashboard";
+
 import SchoolAdminDashboard from "./school-admin/SchoolAdminDashboard";
 import TeacherDashboard from "./TeacherDashboard";
 import ParentDashboard from "./parent/ParentDashboard";
@@ -56,7 +56,10 @@ const AdminDashboard = () => {
           case "edufam_admin":
             return (
               <ErrorBoundary>
-                <EduFamAdminDashboard onModalOpen={handleModalOpen} />
+                <div className="text-center p-8">
+                  <h2 className="text-2xl font-bold text-red-600 mb-4">Access Restricted</h2>
+                  <p className="text-gray-600">Admin features are not available in the school application.</p>
+                </div>
               </ErrorBoundary>
             );
 

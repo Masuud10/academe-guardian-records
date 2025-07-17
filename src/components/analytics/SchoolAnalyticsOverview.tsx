@@ -5,7 +5,7 @@ import { useSchoolAnalytics } from '@/hooks/useSchoolAnalytics';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2, AlertTriangle, Building2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import EduFamSystemAnalytics from './EduFamSystemAnalytics';
+
 import SchoolAnalyticsDetail from './SchoolAnalyticsDetail';
 
 const SchoolAnalyticsOverview = () => {
@@ -29,7 +29,14 @@ const SchoolAnalyticsOverview = () => {
   return (
     <div className="space-y-8">
       {/* System-wide Analytics Stats Icons */}
-      <EduFamSystemAnalytics />
+      <Card>
+        <CardHeader>
+          <CardTitle>System Analytics Unavailable</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">System analytics are not available in the school application.</p>
+        </CardContent>
+      </Card>
 
       {/* Individual School Analytics */}
       <div className="space-y-6">

@@ -73,7 +73,7 @@ const AppRouter: React.FC = () => {
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<AppContent />} />
         <Route path="/finance" element={<AppContent />} />
-        <Route path="/admin" element={<AppContent />} />
+        
         <Route path="/profile" element={<AppContent />} />
         <Route path="/settings" element={<AppContent />} />
         <Route path="/reports" element={<AppContent />} />

@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import DataPipelineMonitor from './DataPipelineMonitor';
 import RealtimeAnalytics from './RealtimeAnalytics';
-import EduFamAdminAnalytics from './EduFamAdminAnalytics';
+
 import { useAuth } from '@/contexts/AuthContext';
 import ReportDownloadPanel from "@/components/reports/ReportDownloadPanel";
 
@@ -82,19 +82,15 @@ const AdvancedAnalyticsDashboard: React.FC<AdvancedAnalyticsDashboardProps> = ({
         </TabsList>
 
         <TabsContent value="overview">
-          {user?.role === 'edufam_admin' ? (
-            <EduFamAdminAnalytics />
-          ) : (
-            <Card>
-              <CardContent className="p-6 text-center">
-                <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Access Restricted</h3>
-                <p className="text-muted-foreground">
-                  Advanced analytics are available for system administrators only.
-                </p>
-              </CardContent>
-            </Card>
-          )}
+          <Card>
+            <CardContent className="p-6 text-center">
+              <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Overview Analytics</h3>
+              <p className="text-muted-foreground">
+                School-specific analytics and performance metrics are displayed here.
+              </p>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="realtime">

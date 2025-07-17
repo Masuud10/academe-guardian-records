@@ -2,7 +2,7 @@ import React from "react";
 import { AuthUser } from "@/types/auth";
 import { useSchoolScopedData } from "@/hooks/useSchoolScopedData";
 import { useRoleValidation } from "@/hooks/useRoleValidation";
-import SystemAdminDashboard from "./SystemAdminDashboard";
+
 import SchoolAdminDashboard from "./SchoolAdminDashboard";
 import TeacherDashboard from "./TeacherDashboard";
 import ParentDashboard from "./ParentDashboard";
@@ -142,7 +142,10 @@ const DashboardRoleBasedContent: React.FC<DashboardRoleBasedContentProps> = ({
         <div>
           <MaintenanceNotification />
           <AdminCommunicationsBanner />
-          <SystemAdminDashboard user={user} onModalOpen={onModalOpen} />
+          <div className="text-center p-8">
+            <h2 className="text-2xl font-bold text-red-600 mb-4">Access Restricted</h2>
+            <p className="text-gray-600">Admin features are not available in the school application.</p>
+          </div>
         </div>
       );
 

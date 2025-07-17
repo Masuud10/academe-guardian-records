@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import EduFamAdminDashboard from "./dashboard/EduFamAdminDashboard";
+
 import PrincipalDashboard from "./dashboard/PrincipalDashboard";
 import TeacherDashboard from "./dashboard/TeacherDashboard";
 import ParentDashboard from "./dashboard/ParentDashboard";
@@ -98,12 +98,10 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  // Validate user role
+  // Validate user role (removed admin roles for school app)
   const validRoles = [
-    "edufam_admin",
-    "elimisha_admin",
     "principal",
-    "teacher",
+    "teacher", 
     "parent",
     "school_director",
     "finance_officer",
@@ -133,12 +131,14 @@ const Dashboard: React.FC = () => {
     switch (normalizedRole) {
       case "edufam_admin":
       case "elimisha_admin":
-        console.log("🎯 Dashboard: Routing to EduFam Admin Dashboard");
+        console.log("🎯 Dashboard: Access denied for admin roles - school app only");
         return (
-          <div>
-            <MaintenanceNotification />
-            <AdminCommunicationsBanner />
-            <EduFamAdminDashboard />
+          <div className="min-h-screen bg-background flex items-center justify-center">
+            <div className="text-center p-8">
+              <h2 className="text-2xl font-bold text-red-600 mb-4">Access Restricted</h2>
+              <p className="text-gray-600">Administrative features are not available in the school application.</p>
+              <p className="text-sm text-gray-500 mt-2">Please use the admin portal to access these features.</p>
+            </div>
           </div>
         );
 

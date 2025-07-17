@@ -7,7 +7,7 @@ import PrincipalAnalytics from "./PrincipalAnalytics";
 import TeacherAnalytics from "./TeacherAnalytics";
 import ParentAnalytics from "./ParentAnalytics";
 import FinanceOfficerAnalytics from "./FinanceOfficerAnalytics";
-import EduFamAdminAnalytics from "./EduFamAdminAnalytics";
+
 
 interface RoleAnalyticsRendererProps {
   role: string;
@@ -33,7 +33,14 @@ const RoleAnalyticsRenderer: React.FC<RoleAnalyticsRendererProps> = ({ role, fil
       case "finance_officer":
         return <FinanceOfficerAnalytics filters={filters} />;
       case "edufam_admin":
-        return <EduFamAdminAnalytics />;
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>Access Restricted</CardTitle>
+              <CardDescription>Admin analytics are not available in the school application.</CardDescription>
+            </CardHeader>
+          </Card>
+        );
       case "hr":
         // HR has separate analytics in their dedicated dashboard
         return (
