@@ -7,7 +7,7 @@ import { AuthService } from '@/services/authService';
 
 // Simple role validation function to avoid external dependencies
 const isValidRole = (role: string): boolean => {
-  const validRoles: UserRole[] = ['school_director', 'principal', 'teacher', 'parent', 'finance_officer', 'edufam_admin', 'elimisha_admin', 'hr'];
+  const validRoles: UserRole[] = ['school_director', 'principal', 'teacher', 'parent', 'finance_officer', 'hr'];
   return validRoles.includes(role as UserRole);
 };
 
@@ -158,17 +158,21 @@ export const useAuthState = () => {
         }
       }
 
-      // BLOCK ADMIN USERS FROM SCHOOL APPLICATION
+      // BLOCK ADMIN USERS FROM SCHOOL APPLICATION (check inactive status instead)
       if (['edufam_admin', 'elimisha_admin'].includes(resolvedRole)) {
-        console.log('🔐 AuthState: Admin user blocked from school application:', resolvedRole);
-        await supabase.auth.signOut();
-        if (isMountedRef.current) {
-          setUser(null);
-          setError('Admin accounts cannot access this application. Please use the admin portal.');
-          setIsLoading(false);
-          setIsInitialized(true);
+        console.log('🔐 AuthState: Admin user detected, checking status:', resolvedRole);
+        // Instead of blocking all admin users, check if they're marked as inactive
+        if (profile?.status === 'inactive') {
+          console.log('🔐 AuthState: Admin user is inactive, blocking from school application');
+          await supabase.auth.signOut();
+          if (isMountedRef.current) {
+            setUser(null);
+            setError('Admin accounts cannot access this application. Please use the admin portal.');
+            setIsLoading(false);
+            setIsInitialized(true);
+          }
+          return;
         }
-        return;
       }
 
       // Validate school assignment for school-based roles
