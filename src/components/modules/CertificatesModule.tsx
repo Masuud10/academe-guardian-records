@@ -32,7 +32,9 @@ const CertificatesModule = () => {
                 <button
                   onClick={() => setActiveTab("templates")}
                   className={`px-4 py-2 rounded-lg transition-colors ${
-                    activeTab === "templates" ? "bg-purple-600 text-white" : "bg-gray-200 text-gray-700"
+                    activeTab === "templates"
+                      ? "bg-purple-600 text-white"
+                      : "bg-gray-200 text-gray-700"
                   }`}
                 >
                   Templates
@@ -40,7 +42,9 @@ const CertificatesModule = () => {
                 <button
                   onClick={() => setActiveTab("certificates")}
                   className={`px-4 py-2 rounded-lg transition-colors ${
-                    activeTab === "certificates" ? "bg-purple-600 text-white" : "bg-gray-200 text-gray-700"
+                    activeTab === "certificates"
+                      ? "bg-purple-600 text-white"
+                      : "bg-gray-200 text-gray-700"
                   }`}
                 >
                   Certificates
@@ -55,7 +59,11 @@ const CertificatesModule = () => {
               </div>
             </div>
 
-            {activeTab === "templates" ? <CertificateTemplateManager /> : <CertificatesList />}
+            {activeTab === "templates" ? (
+              <CertificateTemplateManager />
+            ) : (
+              <CertificatesList />
+            )}
 
             <CertificateGenerator
               open={showGenerator}
@@ -65,7 +73,7 @@ const CertificatesModule = () => {
           </div>
         );
 
-      case "school_owner":
+      case "school_director":
         return (
           <div className="space-y-6">
             <div>

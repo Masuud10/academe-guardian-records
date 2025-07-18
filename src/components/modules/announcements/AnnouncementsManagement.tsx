@@ -1,15 +1,20 @@
-
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { Plus, Edit, Trash2, Send, Eye, Archive } from 'lucide-react';
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Plus, Edit, Trash2, Send, Eye, Archive } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -18,20 +23,20 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const AnnouncementsManagement = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingAnnouncement, setEditingAnnouncement] = useState<any>(null);
   const [formData, setFormData] = useState({
-    title: '',
-    content: '',
+    title: "",
+    content: "",
     target_audience: [] as string[],
-    priority: 'medium',
+    priority: "medium",
     is_global: true,
-    expiry_date: '',
+    expiry_date: "",
   });
 
   const { toast } = useToast();
@@ -39,13 +44,13 @@ const AnnouncementsManagement = () => {
 
   // Fetch announcements
   const { data: announcements, isLoading } = useQuery({
-    queryKey: ['announcements'],
+    queryKey: ["announcements"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('announcements')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
+        .from("announcements")
+        .select("*")
+        .order("created_at", { ascending: false });
+
       if (error) throw error;
       return data;
     },
@@ -54,14 +59,12 @@ const AnnouncementsManagement = () => {
   // Create announcement mutation
   const createAnnouncementMutation = useMutation({
     mutationFn: async (data: any) => {
-      const { error } = await supabase
-        .from('announcements')
-        .insert([data]);
-      
+      const { error } = await supabase.from("announcements").insert([data]);
+
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['announcements'] });
+      queryClient.invalidateQueries({ queryKey: ["announcements"] });
       setIsCreateDialogOpen(false);
       resetForm();
       toast({
@@ -82,14 +85,14 @@ const AnnouncementsManagement = () => {
   const updateAnnouncementMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: any }) => {
       const { error } = await supabase
-        .from('announcements')
+        .from("announcements")
         .update(data)
-        .eq('id', id);
-      
+        .eq("id", id);
+
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['announcements'] });
+      queryClient.invalidateQueries({ queryKey: ["announcements"] });
       setEditingAnnouncement(null);
       resetForm();
       toast({
@@ -110,14 +113,14 @@ const AnnouncementsManagement = () => {
   const deleteAnnouncementMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .from('announcements')
+        .from("announcements")
         .delete()
-        .eq('id', id);
-      
+        .eq("id", id);
+
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['announcements'] });
+      queryClient.invalidateQueries({ queryKey: ["announcements"] });
       toast({
         title: "Success",
         description: "Announcement deleted successfully",
@@ -134,12 +137,12 @@ const AnnouncementsManagement = () => {
 
   const resetForm = () => {
     setFormData({
-      title: '',
-      content: '',
+      title: "",
+      content: "",
       target_audience: [],
-      priority: 'medium',
+      priority: "medium",
       is_global: true,
-      expiry_date: '',
+      expiry_date: "",
     });
   };
 
@@ -155,7 +158,10 @@ const AnnouncementsManagement = () => {
 
     const data = {
       ...formData,
-      target_audience: formData.target_audience.length > 0 ? formData.target_audience : ['all'],
+      target_audience:
+        formData.target_audience.length > 0
+          ? formData.target_audience
+          : ["all"],
       expiry_date: formData.expiry_date || null,
     };
 
@@ -174,49 +180,53 @@ const AnnouncementsManagement = () => {
       target_audience: announcement.target_audience || [],
       priority: announcement.priority,
       is_global: announcement.is_global,
-      expiry_date: announcement.expiry_date || '',
+      expiry_date: announcement.expiry_date || "",
     });
     setIsCreateDialogOpen(true);
   };
 
   const handleAudienceChange = (role: string, checked: boolean) => {
     if (checked) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        target_audience: [...prev.target_audience, role]
+        target_audience: [...prev.target_audience, role],
       }));
     } else {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        target_audience: prev.target_audience.filter(r => r !== role)
+        target_audience: prev.target_audience.filter((r) => r !== role),
       }));
     }
   };
 
   const roleOptions = [
-    { value: 'all', label: 'All Users' },
-    { value: 'principal', label: 'Principals' },
-    { value: 'teacher', label: 'Teachers' },
-    { value: 'parent', label: 'Parents' },
-    { value: 'school_owner', label: 'School Directors' },
-    { value: 'finance_officer', label: 'Finance Officers' },
+    { value: "all", label: "All Users" },
+    { value: "principal", label: "Principals" },
+    { value: "teacher", label: "Teachers" },
+    { value: "parent", label: "Parents" },
+    { value: "school_director", label: "School Directors" },
+    { value: "finance_officer", label: "Finance Officers" },
   ];
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Communication Center</h2>
+          <h2 className="text-3xl font-bold tracking-tight">
+            Communication Center
+          </h2>
           <p className="text-muted-foreground">
             Create and manage system-wide announcements
           </p>
         </div>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => {
-              resetForm();
-              setEditingAnnouncement(null);
-            }}>
+            <Button
+              onClick={() => {
+                resetForm();
+                setEditingAnnouncement(null);
+              }}
+            >
               <Plus className="w-4 h-4 mr-2" />
               New Announcement
             </Button>
@@ -224,55 +234,77 @@ const AnnouncementsManagement = () => {
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>
-                {editingAnnouncement ? 'Edit Announcement' : 'Create New Announcement'}
+                {editingAnnouncement
+                  ? "Edit Announcement"
+                  : "Create New Announcement"}
               </DialogTitle>
               <DialogDescription>
-                Create announcements that will be visible to selected user groups.
+                Create announcements that will be visible to selected user
+                groups.
               </DialogDescription>
             </DialogHeader>
-            
+
             <div className="space-y-4">
               <div>
                 <Label htmlFor="title">Title</Label>
                 <Input
                   id="title"
                   value={formData.title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, title: e.target.value }))
+                  }
                   placeholder="Announcement title"
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="content">Content</Label>
                 <Textarea
                   id="content"
                   value={formData.content}
-                  onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      content: e.target.value,
+                    }))
+                  }
                   placeholder="Announcement content"
                   rows={4}
                 />
               </div>
-              
+
               <div>
                 <Label>Target Audience</Label>
                 <div className="grid grid-cols-2 gap-2 mt-2">
                   {roleOptions.map((role) => (
-                    <div key={role.value} className="flex items-center space-x-2">
+                    <div
+                      key={role.value}
+                      className="flex items-center space-x-2"
+                    >
                       <Checkbox
                         id={role.value}
                         checked={formData.target_audience.includes(role.value)}
-                        onCheckedChange={(checked) => handleAudienceChange(role.value, checked as boolean)}
+                        onCheckedChange={(checked) =>
+                          handleAudienceChange(role.value, checked as boolean)
+                        }
                       />
-                      <Label htmlFor={role.value} className="text-sm">{role.label}</Label>
+                      <Label htmlFor={role.value} className="text-sm">
+                        {role.label}
+                      </Label>
                     </div>
                   ))}
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="priority">Priority</Label>
-                  <Select value={formData.priority} onValueChange={(value) => setFormData(prev => ({ ...prev, priority: value }))}>
+                  <Select
+                    value={formData.priority}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, priority: value }))
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -284,28 +316,40 @@ const AnnouncementsManagement = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="expiry_date">Expiry Date (Optional)</Label>
                   <Input
                     id="expiry_date"
                     type="date"
                     value={formData.expiry_date}
-                    onChange={(e) => setFormData(prev => ({ ...prev, expiry_date: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        expiry_date: e.target.value,
+                      }))
+                    }
                   />
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="is_global"
                   checked={formData.is_global}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_global: checked as boolean }))}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      is_global: checked as boolean,
+                    }))
+                  }
                 />
-                <Label htmlFor="is_global">Global Announcement (visible to all schools)</Label>
+                <Label htmlFor="is_global">
+                  Global Announcement (visible to all schools)
+                </Label>
               </div>
             </div>
-            
+
             <DialogFooter>
               <Button
                 variant="outline"
@@ -319,15 +363,17 @@ const AnnouncementsManagement = () => {
               </Button>
               <Button
                 onClick={handleSubmit}
-                disabled={createAnnouncementMutation.isPending || updateAnnouncementMutation.isPending}
+                disabled={
+                  createAnnouncementMutation.isPending ||
+                  updateAnnouncementMutation.isPending
+                }
               >
-                {createAnnouncementMutation.isPending || updateAnnouncementMutation.isPending ? (
-                  'Saving...'
-                ) : editingAnnouncement ? (
-                  'Update Announcement'
-                ) : (
-                  'Create Announcement'
-                )}
+                {createAnnouncementMutation.isPending ||
+                updateAnnouncementMutation.isPending
+                  ? "Saving..."
+                  : editingAnnouncement
+                  ? "Update Announcement"
+                  : "Create Announcement"}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -339,7 +385,9 @@ const AnnouncementsManagement = () => {
         {isLoading ? (
           <Card>
             <CardContent className="p-6">
-              <p className="text-center text-muted-foreground">Loading announcements...</p>
+              <p className="text-center text-muted-foreground">
+                Loading announcements...
+              </p>
             </CardContent>
           </Card>
         ) : announcements && announcements.length > 0 ? (
@@ -350,11 +398,17 @@ const AnnouncementsManagement = () => {
                   <div>
                     <CardTitle className="flex items-center gap-2">
                       {announcement.title}
-                      <Badge variant={
-                        announcement.priority === 'critical' ? 'destructive' :
-                        announcement.priority === 'high' ? 'default' :
-                        announcement.priority === 'medium' ? 'secondary' : 'outline'
-                      }>
+                      <Badge
+                        variant={
+                          announcement.priority === "critical"
+                            ? "destructive"
+                            : announcement.priority === "high"
+                            ? "default"
+                            : announcement.priority === "medium"
+                            ? "secondary"
+                            : "outline"
+                        }
+                      >
                         {announcement.priority}
                       </Badge>
                       {announcement.is_global && (
@@ -362,9 +416,16 @@ const AnnouncementsManagement = () => {
                       )}
                     </CardTitle>
                     <p className="text-sm text-muted-foreground">
-                      Created: {new Date(announcement.created_at).toLocaleDateString()}
+                      Created:{" "}
+                      {new Date(announcement.created_at).toLocaleDateString()}
                       {announcement.expiry_date && (
-                        <> • Expires: {new Date(announcement.expiry_date).toLocaleDateString()}</>
+                        <>
+                          {" "}
+                          • Expires:{" "}
+                          {new Date(
+                            announcement.expiry_date
+                          ).toLocaleDateString()}
+                        </>
                       )}
                     </p>
                   </div>
@@ -380,7 +441,11 @@ const AnnouncementsManagement = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        if (confirm('Are you sure you want to delete this announcement?')) {
+                        if (
+                          confirm(
+                            "Are you sure you want to delete this announcement?"
+                          )
+                        ) {
                           deleteAnnouncementMutation.mutate(announcement.id);
                         }
                       }}
@@ -392,18 +457,26 @@ const AnnouncementsManagement = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-sm">{announcement.content}</p>
-                {announcement.target_audience && announcement.target_audience.length > 0 && (
-                  <div className="mt-2">
-                    <p className="text-xs text-muted-foreground">Target audience:</p>
-                    <div className="flex gap-1 mt-1">
-                      {announcement.target_audience.map((role: string) => (
-                        <Badge key={role} variant="outline" className="text-xs">
-                          {roleOptions.find(r => r.value === role)?.label || role}
-                        </Badge>
-                      ))}
+                {announcement.target_audience &&
+                  announcement.target_audience.length > 0 && (
+                    <div className="mt-2">
+                      <p className="text-xs text-muted-foreground">
+                        Target audience:
+                      </p>
+                      <div className="flex gap-1 mt-1">
+                        {announcement.target_audience.map((role: string) => (
+                          <Badge
+                            key={role}
+                            variant="outline"
+                            className="text-xs"
+                          >
+                            {roleOptions.find((r) => r.value === role)?.label ||
+                              role}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </CardContent>
             </Card>
           ))
@@ -411,7 +484,8 @@ const AnnouncementsManagement = () => {
           <Card>
             <CardContent className="p-6">
               <p className="text-center text-muted-foreground">
-                No announcements created yet. Click "New Announcement" to get started.
+                No announcements created yet. Click "New Announcement" to get
+                started.
               </p>
             </CardContent>
           </Card>

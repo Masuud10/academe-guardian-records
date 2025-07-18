@@ -56,7 +56,7 @@ const GradesModule: React.FC = () => {
   const isSummaryRole = useMemo(() => {
     return (
       user?.role &&
-      ["edufam_admin", "principal", "school_owner"].includes(user.role)
+      ["edufam_admin", "principal", "school_director"].includes(user.role)
     );
   }, [user?.role]);
 
@@ -293,7 +293,7 @@ const GradesModule: React.FC = () => {
 
   switch (user.role) {
     case "edufam_admin":
-    case "school_owner":
+    case "school_director":
       return (
         <div className="space-y-4">
           <div className="flex items-center gap-2 mb-4">

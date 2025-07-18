@@ -1,19 +1,41 @@
-
-import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
-import { CalendarIcon, Users, Send, AlertTriangle, Bell, Target } from 'lucide-react';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { format } from 'date-fns';
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import {
+  CalendarIcon,
+  Users,
+  Send,
+  AlertTriangle,
+  Bell,
+  Target,
+} from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
 
 interface BroadcastAnnouncementDialogProps {
   open: boolean;
@@ -22,108 +44,112 @@ interface BroadcastAnnouncementDialogProps {
   children: React.ReactNode;
 }
 
-const BroadcastAnnouncementDialog: React.FC<BroadcastAnnouncementDialogProps> = ({
-  open,
-  onOpenChange,
-  onSubmit,
-  children
-}) => {
+const BroadcastAnnouncementDialog: React.FC<
+  BroadcastAnnouncementDialogProps
+> = ({ open, onOpenChange, onSubmit, children }) => {
   const [formData, setFormData] = useState({
-    title: '',
-    content: '',
-    priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent',
+    title: "",
+    content: "",
+    priority: "medium" as "low" | "medium" | "high" | "urgent",
     target_audience: [] as string[],
-    delivery_channels: ['web'] as string[],
+    delivery_channels: ["web"] as string[],
     expiry_date: null as Date | null,
     tags: [] as string[],
-    region: '',
-    school_type: ''
+    region: "",
+    school_type: "",
   });
 
-  const [tagInput, setTagInput] = useState('');
+  const [tagInput, setTagInput] = useState("");
 
   const audienceOptions = [
-    { value: 'school_owners', label: 'School Directors', icon: Users },
-    { value: 'principals', label: 'Principals', icon: Users },
-    { value: 'teachers', label: 'Teachers', icon: Users },
-    { value: 'parents', label: 'Parents', icon: Users },
-    { value: 'finance_officers', label: 'Finance Officers', icon: Users }
+    { value: "school_directors", label: "School Directors", icon: Users },
+    { value: "principals", label: "Principals", icon: Users },
+    { value: "teachers", label: "Teachers", icon: Users },
+    { value: "parents", label: "Parents", icon: Users },
+    { value: "finance_officers", label: "Finance Officers", icon: Users },
   ];
 
   const channelOptions = [
-    { value: 'web', label: 'Web Dashboard' },
-    { value: 'email', label: 'Email' },
-    { value: 'sms', label: 'SMS' },
-    { value: 'push', label: 'Push Notification' }
+    { value: "web", label: "Web Dashboard" },
+    { value: "email", label: "Email" },
+    { value: "sms", label: "SMS" },
+    { value: "push", label: "Push Notification" },
   ];
 
   const handleAudienceChange = (audience: string, checked: boolean) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      target_audience: checked 
+      target_audience: checked
         ? [...prev.target_audience, audience]
-        : prev.target_audience.filter(a => a !== audience)
+        : prev.target_audience.filter((a) => a !== audience),
     }));
   };
 
   const handleChannelChange = (channel: string, checked: boolean) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      delivery_channels: checked 
+      delivery_channels: checked
         ? [...prev.delivery_channels, channel]
-        : prev.delivery_channels.filter(c => c !== channel)
+        : prev.delivery_channels.filter((c) => c !== channel),
     }));
   };
 
   const addTag = () => {
     if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        tags: [...prev.tags, tagInput.trim()]
+        tags: [...prev.tags, tagInput.trim()],
       }));
-      setTagInput('');
+      setTagInput("");
     }
   };
 
   const removeTag = (tag: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      tags: prev.tags.filter(t => t !== tag)
+      tags: prev.tags.filter((t) => t !== tag),
     }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.title || !formData.content || formData.target_audience.length === 0) {
+
+    if (
+      !formData.title ||
+      !formData.content ||
+      formData.target_audience.length === 0
+    ) {
       return;
     }
 
     onSubmit({
       ...formData,
       is_global: true,
-      delivery_channels: formData.delivery_channels.length > 0 ? formData.delivery_channels : ['web']
+      delivery_channels:
+        formData.delivery_channels.length > 0
+          ? formData.delivery_channels
+          : ["web"],
     });
 
     // Reset form
     setFormData({
-      title: '',
-      content: '',
-      priority: 'medium',
+      title: "",
+      content: "",
+      priority: "medium",
       target_audience: [],
-      delivery_channels: ['web'],
+      delivery_channels: ["web"],
       expiry_date: null,
       tags: [],
-      region: '',
-      school_type: ''
+      region: "",
+      school_type: "",
     });
   };
 
   const getPriorityIcon = () => {
     switch (formData.priority) {
-      case 'urgent':
+      case "urgent":
         return <AlertTriangle className="w-4 h-4 text-red-500" />;
-      case 'high':
+      case "high":
         return <Bell className="w-4 h-4 text-orange-500" />;
       default:
         return <Bell className="w-4 h-4 text-blue-500" />;
@@ -132,9 +158,7 @@ const BroadcastAnnouncementDialog: React.FC<BroadcastAnnouncementDialogProps> = 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -155,7 +179,9 @@ const BroadcastAnnouncementDialog: React.FC<BroadcastAnnouncementDialogProps> = 
                 <Input
                   id="title"
                   value={formData.title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, title: e.target.value }))
+                  }
                   placeholder="Enter announcement title"
                   required
                 />
@@ -166,7 +192,12 @@ const BroadcastAnnouncementDialog: React.FC<BroadcastAnnouncementDialogProps> = 
                 <Textarea
                   id="content"
                   value={formData.content}
-                  onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      content: e.target.value,
+                    }))
+                  }
                   placeholder="Enter announcement content"
                   rows={4}
                   required
@@ -176,7 +207,12 @@ const BroadcastAnnouncementDialog: React.FC<BroadcastAnnouncementDialogProps> = 
               <div className="flex gap-4">
                 <div className="flex-1">
                   <Label htmlFor="priority">Priority</Label>
-                  <Select value={formData.priority} onValueChange={(value: any) => setFormData(prev => ({ ...prev, priority: value }))}>
+                  <Select
+                    value={formData.priority}
+                    onValueChange={(value: any) =>
+                      setFormData((prev) => ({ ...prev, priority: value }))
+                    }
+                  >
                     <SelectTrigger>
                       <div className="flex items-center gap-2">
                         {getPriorityIcon()}
@@ -196,16 +232,26 @@ const BroadcastAnnouncementDialog: React.FC<BroadcastAnnouncementDialogProps> = 
                   <Label>Expiry Date</Label>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button variant="outline" className="w-full justify-start text-left font-normal">
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal"
+                      >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {formData.expiry_date ? format(formData.expiry_date, 'PPP') : 'No expiry'}
+                        {formData.expiry_date
+                          ? format(formData.expiry_date, "PPP")
+                          : "No expiry"}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
                       <Calendar
                         mode="single"
                         selected={formData.expiry_date || undefined}
-                        onSelect={(date) => setFormData(prev => ({ ...prev, expiry_date: date || null }))}
+                        onSelect={(date) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            expiry_date: date || null,
+                          }))
+                        }
                         disabled={(date) => date < new Date()}
                         initialFocus
                       />
@@ -226,14 +272,22 @@ const BroadcastAnnouncementDialog: React.FC<BroadcastAnnouncementDialogProps> = 
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {audienceOptions.map(option => (
-                  <div key={option.value} className="flex items-center space-x-2">
+                {audienceOptions.map((option) => (
+                  <div
+                    key={option.value}
+                    className="flex items-center space-x-2"
+                  >
                     <Checkbox
                       id={option.value}
                       checked={formData.target_audience.includes(option.value)}
-                      onCheckedChange={(checked) => handleAudienceChange(option.value, checked as boolean)}
+                      onCheckedChange={(checked) =>
+                        handleAudienceChange(option.value, checked as boolean)
+                      }
                     />
-                    <Label htmlFor={option.value} className="flex items-center gap-2 cursor-pointer">
+                    <Label
+                      htmlFor={option.value}
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
                       <option.icon className="w-4 h-4" />
                       {option.label}
                     </Label>
@@ -241,7 +295,9 @@ const BroadcastAnnouncementDialog: React.FC<BroadcastAnnouncementDialogProps> = 
                 ))}
               </div>
               {formData.target_audience.length === 0 && (
-                <p className="text-sm text-red-500 mt-2">Please select at least one target audience</p>
+                <p className="text-sm text-red-500 mt-2">
+                  Please select at least one target audience
+                </p>
               )}
             </CardContent>
           </Card>
@@ -253,12 +309,19 @@ const BroadcastAnnouncementDialog: React.FC<BroadcastAnnouncementDialogProps> = 
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {channelOptions.map(option => (
-                  <div key={option.value} className="flex items-center space-x-2">
+                {channelOptions.map((option) => (
+                  <div
+                    key={option.value}
+                    className="flex items-center space-x-2"
+                  >
                     <Checkbox
                       id={option.value}
-                      checked={formData.delivery_channels.includes(option.value)}
-                      onCheckedChange={(checked) => handleChannelChange(option.value, checked as boolean)}
+                      checked={formData.delivery_channels.includes(
+                        option.value
+                      )}
+                      onCheckedChange={(checked) =>
+                        handleChannelChange(option.value, checked as boolean)
+                      }
                     />
                     <Label htmlFor={option.value} className="cursor-pointer">
                       {option.label}
@@ -280,15 +343,22 @@ const BroadcastAnnouncementDialog: React.FC<BroadcastAnnouncementDialogProps> = 
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
                   placeholder="Add tag"
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                  onKeyPress={(e) =>
+                    e.key === "Enter" && (e.preventDefault(), addTag())
+                  }
                 />
                 <Button type="button" onClick={addTag} variant="outline">
                   Add
                 </Button>
               </div>
               <div className="flex flex-wrap gap-2">
-                {formData.tags.map(tag => (
-                  <Badge key={tag} variant="secondary" className="cursor-pointer" onClick={() => removeTag(tag)}>
+                {formData.tags.map((tag) => (
+                  <Badge
+                    key={tag}
+                    variant="secondary"
+                    className="cursor-pointer"
+                    onClick={() => removeTag(tag)}
+                  >
                     {tag} ×
                   </Badge>
                 ))}
@@ -300,12 +370,20 @@ const BroadcastAnnouncementDialog: React.FC<BroadcastAnnouncementDialogProps> = 
 
           {/* Submit Buttons */}
           <div className="flex justify-end gap-3">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Cancel
             </Button>
-            <Button 
-              type="submit" 
-              disabled={!formData.title || !formData.content || formData.target_audience.length === 0}
+            <Button
+              type="submit"
+              disabled={
+                !formData.title ||
+                !formData.content ||
+                formData.target_audience.length === 0
+              }
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
             >
               <Send className="w-4 h-4 mr-2" />

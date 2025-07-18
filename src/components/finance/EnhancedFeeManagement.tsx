@@ -174,7 +174,7 @@ const EnhancedFeeManagement = () => {
   // Check permissions
   const canManageFees =
     user?.role &&
-    ["principal", "finance_officer", "school_owner"].includes(user.role);
+    ["principal", "finance_officer", "school_director"].includes(user.role);
 
   if (!canManageFees) {
     return (
@@ -182,8 +182,8 @@ const EnhancedFeeManagement = () => {
         <Alert className="max-w-md mx-auto">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            Access denied. Only principals, finance officers, and school directors
-            can manage fees.
+            Access denied. Only principals, finance officers, and school
+            directors can manage fees.
           </AlertDescription>
         </Alert>
       </div>

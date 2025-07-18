@@ -127,7 +127,7 @@ const SchoolRegistrationDetails = () => {
     updateSchoolMutation.mutate(formData);
   };
 
-  const canEdit = ["principal", "school_owner", "edufam_admin"].includes(
+  const canEdit = ["principal", "school_director", "edufam_admin"].includes(
     user?.role || ""
   );
 

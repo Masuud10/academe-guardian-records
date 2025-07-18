@@ -11,7 +11,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Users,
   Search,
@@ -42,19 +48,21 @@ interface SystemUser {
   permissions: string[];
 }
 
-const HRUserManagementModule: React.FC<HRUserManagementModuleProps> = ({ user }) => {
+const HRUserManagementModule: React.FC<HRUserManagementModuleProps> = ({
+  user,
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const { toast } = useToast();
 
   const userRoles = [
-    'principal',
-    'teacher', 
-    'finance_officer',
-    'parent',
-    'school_owner',
-    'hr'
+    "principal",
+    "teacher",
+    "finance_officer",
+    "parent",
+    "school_director",
+    "hr",
   ];
 
   // Fetch system users with multi-tenant isolation
@@ -71,8 +79,9 @@ const HRUserManagementModule: React.FC<HRUserManagementModuleProps> = ({ user })
 
       // Get all profiles for the school
       const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select(`
+        .from("profiles")
+        .select(
+          `
           id,
           email,
           name,
@@ -80,28 +89,33 @@ const HRUserManagementModule: React.FC<HRUserManagementModuleProps> = ({ user })
           school_id,
           created_at,
           updated_at
-        `)
-        .eq('school_id', user.school_id)
-        .order('created_at', { ascending: false });
+        `
+        )
+        .eq("school_id", user.school_id)
+        .order("created_at", { ascending: false });
 
       if (profilesError) throw profilesError;
 
       // Get support staff data for additional user info
       const { data: supportStaff, error: staffError } = await supabase
-        .from('support_staff')
-        .select('id, employee_id, full_name, role_title, phone, email, is_active')
-        .eq('school_id', user.school_id);
+        .from("support_staff")
+        .select(
+          "id, employee_id, full_name, role_title, phone, email, is_active"
+        )
+        .eq("school_id", user.school_id);
 
       if (staffError) throw staffError;
 
       // Merge profile and support staff data
       return (profiles || []).map((profile: any) => {
-        const staffInfo = supportStaff?.find(staff => staff.email === profile.email);
-        
+        const staffInfo = supportStaff?.find(
+          (staff) => staff.email === profile.email
+        );
+
         return {
           id: profile.id,
           email: profile.email,
-          name: profile.name || staffInfo?.full_name || 'Unnamed User',
+          name: profile.name || staffInfo?.full_name || "Unnamed User",
           role: profile.role,
           school_id: profile.school_id,
           is_active: staffInfo?.is_active ?? true,
@@ -116,56 +130,67 @@ const HRUserManagementModule: React.FC<HRUserManagementModuleProps> = ({ user })
 
   const getRolePermissions = (role: string): string[] => {
     const rolePermissions = {
-      'principal': ['all'],
-      'teacher': ['read', 'write_own', 'grade'],
-      'finance_officer': ['read', 'financial_write'],
-      'parent': ['read_own_child'],
-      'school_owner': ['all'],
-      'hr': ['read', 'user_management', 'staff_management'],
+      principal: ["all"],
+      teacher: ["read", "write_own", "grade"],
+      finance_officer: ["read", "financial_write"],
+      parent: ["read_own_child"],
+      school_director: ["all"],
+      hr: ["read", "user_management", "staff_management"],
     };
-    return rolePermissions[role as keyof typeof rolePermissions] || ['read'];
+    return rolePermissions[role as keyof typeof rolePermissions] || ["read"];
   };
 
   // Calculate user summary
   const userSummary = React.useMemo(() => {
     if (!systemUsers) return null;
 
-    const summary = systemUsers.reduce((acc, user) => {
-      acc.totalUsers++;
-      if (user.is_active) acc.activeUsers++;
-      if (!acc.roleCount[user.role]) acc.roleCount[user.role] = 0;
-      acc.roleCount[user.role]++;
-      return acc;
-    }, {
-      totalUsers: 0,
-      activeUsers: 0,
-      inactiveUsers: 0,
-      roleCount: {} as Record<string, number>,
-    });
+    const summary = systemUsers.reduce(
+      (acc, user) => {
+        acc.totalUsers++;
+        if (user.is_active) acc.activeUsers++;
+        if (!acc.roleCount[user.role]) acc.roleCount[user.role] = 0;
+        acc.roleCount[user.role]++;
+        return acc;
+      },
+      {
+        totalUsers: 0,
+        activeUsers: 0,
+        inactiveUsers: 0,
+        roleCount: {} as Record<string, number>,
+      }
+    );
 
     summary.inactiveUsers = summary.totalUsers - summary.activeUsers;
     return summary;
   }, [systemUsers]);
 
   // Filter users
-  const filteredUsers = systemUsers?.filter((user) => {
-    const matchesSearch = user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesRole = roleFilter === "all" || user.role === roleFilter;
-    const matchesStatus = statusFilter === "all" || 
-                         (statusFilter === "active" && user.is_active) ||
-                         (statusFilter === "inactive" && !user.is_active);
+  const filteredUsers =
+    systemUsers?.filter((user) => {
+      const matchesSearch =
+        user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    return matchesSearch && matchesRole && matchesStatus;
-  }) || [];
+      const matchesRole = roleFilter === "all" || user.role === roleFilter;
+      const matchesStatus =
+        statusFilter === "all" ||
+        (statusFilter === "active" && user.is_active) ||
+        (statusFilter === "inactive" && !user.is_active);
 
-  const handleToggleUserStatus = async (userId: string, currentStatus: boolean) => {
+      return matchesSearch && matchesRole && matchesStatus;
+    }) || [];
+
+  const handleToggleUserStatus = async (
+    userId: string,
+    currentStatus: boolean
+  ) => {
     try {
       // In real implementation, this would update user status
       toast({
         title: "User Status Updated",
-        description: `User has been ${currentStatus ? 'deactivated' : 'activated'}.`,
+        description: `User has been ${
+          currentStatus ? "deactivated" : "activated"
+        }.`,
       });
       refetch();
     } catch (error) {
@@ -183,10 +208,12 @@ const HRUserManagementModule: React.FC<HRUserManagementModuleProps> = ({ user })
       teacher: "bg-blue-100 text-blue-800",
       finance_officer: "bg-green-100 text-green-800",
       parent: "bg-orange-100 text-orange-800",
-      school_owner: "bg-red-100 text-red-800",
+      school_director: "bg-red-100 text-red-800",
       hr: "bg-pink-100 text-pink-800",
     };
-    return roleColors[role as keyof typeof roleColors] || "bg-gray-100 text-gray-800";
+    return (
+      roleColors[role as keyof typeof roleColors] || "bg-gray-100 text-gray-800"
+    );
   };
 
   const getStatusBadge = (isActive: boolean) => {
@@ -233,19 +260,25 @@ const HRUserManagementModule: React.FC<HRUserManagementModuleProps> = ({ user })
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Total Users</p>
-                <p className="text-2xl font-bold">{userSummary?.totalUsers || 0}</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Total Users
+                </p>
+                <p className="text-2xl font-bold">
+                  {userSummary?.totalUsers || 0}
+                </p>
               </div>
               <Users className="h-8 w-8 text-muted-foreground" />
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Active Users</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Active Users
+                </p>
                 <p className="text-2xl font-bold text-green-600">
                   {userSummary?.activeUsers || 0}
                 </p>
@@ -254,12 +287,14 @@ const HRUserManagementModule: React.FC<HRUserManagementModuleProps> = ({ user })
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Inactive Users</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Inactive Users
+                </p>
                 <p className="text-2xl font-bold text-red-600">
                   {userSummary?.inactiveUsers || 0}
                 </p>
@@ -268,12 +303,14 @@ const HRUserManagementModule: React.FC<HRUserManagementModuleProps> = ({ user })
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Roles</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Roles
+                </p>
                 <p className="text-2xl font-bold">
                   {Object.keys(userSummary?.roleCount || {}).length}
                 </p>
@@ -308,7 +345,7 @@ const HRUserManagementModule: React.FC<HRUserManagementModuleProps> = ({ user })
                 <SelectItem value="all">All Roles</SelectItem>
                 {userRoles.map((role) => (
                   <SelectItem key={role} value={role}>
-                    {role.replace('_', ' ')}
+                    {role.replace("_", " ")}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -350,42 +387,41 @@ const HRUserManagementModule: React.FC<HRUserManagementModuleProps> = ({ user })
                       </span>
                     </div>
                     <div>
-                      <h4 className="font-medium">{user.name || 'Unnamed User'}</h4>
-                      <p className="text-sm text-muted-foreground">{user.email}</p>
+                      <h4 className="font-medium">
+                        {user.name || "Unnamed User"}
+                      </h4>
+                      <p className="text-sm text-muted-foreground">
+                        {user.email}
+                      </p>
                       <div className="flex items-center gap-2 mt-1">
                         <Badge className={getRoleBadge(user.role)}>
-                          {user.role.replace('_', ' ')}
+                          {user.role.replace("_", " ")}
                         </Badge>
                         <Badge className={getStatusBadge(user.is_active)}>
                           {user.is_active ? "Active" : "Inactive"}
                         </Badge>
                         <span className="text-xs text-muted-foreground">
-                          Joined: {new Date(user.created_at).toLocaleDateString()}
+                          Joined:{" "}
+                          {new Date(user.created_at).toLocaleDateString()}
                         </span>
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {}}
-                    >
+                    <Button variant="outline" size="sm" onClick={() => {}}>
                       <Eye className="h-4 w-4 mr-1" />
                       View
                     </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {}}
-                    >
+                    <Button variant="outline" size="sm" onClick={() => {}}>
                       <Edit className="h-4 w-4 mr-1" />
                       Edit
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleToggleUserStatus(user.id, user.is_active)}
+                      onClick={() =>
+                        handleToggleUserStatus(user.id, user.is_active)
+                      }
                     >
                       {user.is_active ? (
                         <Lock className="h-4 w-4 mr-1" />

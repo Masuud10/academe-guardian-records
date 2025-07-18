@@ -1,21 +1,26 @@
-
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Shield, Search, Download, Filter, Activity } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { auditLogService, AuditLogEntry } from '@/services/auditLogService';
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Shield, Search, Download, Filter, Activity } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { auditLogService, AuditLogEntry } from "@/services/auditLogService";
 
 const SystemAuditLogsView: React.FC = () => {
   const [logs, setLogs] = useState<AuditLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [actionFilter, setActionFilter] = useState('');
-  const [schoolFilter, setSchoolFilter] = useState('');
-  const [dateRange, setDateRange] = useState({ start: '', end: '' });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [actionFilter, setActionFilter] = useState("");
+  const [schoolFilter, setSchoolFilter] = useState("");
+  const [dateRange, setDateRange] = useState({ start: "", end: "" });
   const { toast } = useToast();
 
   useEffect(() => {
@@ -30,7 +35,7 @@ const SystemAuditLogsView: React.FC = () => {
         school_id: schoolFilter || undefined,
         startDate: dateRange.start || undefined,
         endDate: dateRange.end || undefined,
-        limit: 100
+        limit: 100,
       });
 
       if (error) {
@@ -39,57 +44,72 @@ const SystemAuditLogsView: React.FC = () => {
 
       setLogs(data);
     } catch (error: any) {
-      console.error('Failed to fetch system audit logs:', error);
+      console.error("Failed to fetch system audit logs:", error);
       toast({
         title: "Error",
         description: "Failed to load system audit logs",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredLogs = logs.filter(log =>
-    !searchTerm || 
-    log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    log.target_entity?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    log.performed_by_role.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredLogs = logs.filter(
+    (log) =>
+      !searchTerm ||
+      log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      log.target_entity?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      log.performed_by_role.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getActionBadgeColor = (action: string) => {
-    if (action.includes('System')) return 'bg-purple-100 text-purple-800';
-    if (action.includes('School')) return 'bg-blue-100 text-blue-800';
-    if (action.includes('User')) return 'bg-green-100 text-green-800';
-    if (action.includes('Delete') || action.includes('Deactivate')) return 'bg-red-100 text-red-800';
-    return 'bg-gray-100 text-gray-800';
+    if (action.includes("System")) return "bg-purple-100 text-purple-800";
+    if (action.includes("School")) return "bg-blue-100 text-blue-800";
+    if (action.includes("User")) return "bg-green-100 text-green-800";
+    if (action.includes("Delete") || action.includes("Deactivate"))
+      return "bg-red-100 text-red-800";
+    return "bg-gray-100 text-gray-800";
   };
 
   const getRoleBadgeColor = (role: string) => {
-    if (role === 'edufam_admin') return 'bg-red-100 text-red-800';
-    if (role === 'principal') return 'bg-blue-100 text-blue-800';
-    if (role === 'school_owner') return 'bg-green-100 text-green-800';
-    return 'bg-gray-100 text-gray-800';
+    if (role === "edufam_admin") return "bg-red-100 text-red-800";
+    if (role === "principal") return "bg-blue-100 text-blue-800";
+    if (role === "school_director") return "bg-green-100 text-green-800";
+    return "bg-gray-100 text-gray-800";
   };
 
   const exportLogs = () => {
     const csvContent = [
-      ['Timestamp', 'Action', 'User Role', 'School ID', 'Target Entity', 'Details'].join(','),
-      ...filteredLogs.map(log => [
-        new Date(log.timestamp).toLocaleString(),
-        log.action,
-        log.performed_by_role,
-        log.school_id || 'System',
-        log.target_entity || '',
-        JSON.stringify(log.metadata || {})
-      ].map(field => `"${field}"`).join(','))
-    ].join('\n');
+      [
+        "Timestamp",
+        "Action",
+        "User Role",
+        "School ID",
+        "Target Entity",
+        "Details",
+      ].join(","),
+      ...filteredLogs.map((log) =>
+        [
+          new Date(log.timestamp).toLocaleString(),
+          log.action,
+          log.performed_by_role,
+          log.school_id || "System",
+          log.target_entity || "",
+          JSON.stringify(log.metadata || {}),
+        ]
+          .map((field) => `"${field}"`)
+          .join(",")
+      ),
+    ].join("\n");
 
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const blob = new Blob([csvContent], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `system-audit-logs-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `system-audit-logs-${
+      new Date().toISOString().split("T")[0]
+    }.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
   };
@@ -115,7 +135,7 @@ const SystemAuditLogsView: React.FC = () => {
                 className="pl-10"
               />
             </div>
-            
+
             <Select value={actionFilter} onValueChange={setActionFilter}>
               <SelectTrigger>
                 <SelectValue placeholder="Filter by action" />
@@ -140,14 +160,18 @@ const SystemAuditLogsView: React.FC = () => {
               type="date"
               placeholder="Start date"
               value={dateRange.start}
-              onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+              onChange={(e) =>
+                setDateRange((prev) => ({ ...prev, start: e.target.value }))
+              }
             />
 
             <Input
               type="date"
               placeholder="End date"
               value={dateRange.end}
-              onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+              onChange={(e) =>
+                setDateRange((prev) => ({ ...prev, end: e.target.value }))
+              }
             />
           </div>
 
@@ -176,14 +200,19 @@ const SystemAuditLogsView: React.FC = () => {
             ) : (
               <div className="max-h-96 overflow-y-auto">
                 {filteredLogs.map((log) => (
-                  <div key={log.id} className="border-b last:border-b-0 p-4 hover:bg-gray-50">
+                  <div
+                    key={log.id}
+                    className="border-b last:border-b-0 p-4 hover:bg-gray-50"
+                  >
                     <div className="flex items-start justify-between">
                       <div className="flex-1 space-y-2">
                         <div className="flex items-center gap-2 flex-wrap">
                           <Badge className={getActionBadgeColor(log.action)}>
                             {log.action}
                           </Badge>
-                          <Badge className={getRoleBadgeColor(log.performed_by_role)}>
+                          <Badge
+                            className={getRoleBadgeColor(log.performed_by_role)}
+                          >
                             {log.performed_by_role}
                           </Badge>
                           {log.school_id && (
@@ -192,13 +221,13 @@ const SystemAuditLogsView: React.FC = () => {
                             </Badge>
                           )}
                         </div>
-                        
+
                         {log.target_entity && (
                           <p className="text-sm text-gray-700">
                             Target: {log.target_entity}
                           </p>
                         )}
-                        
+
                         {(log.old_value || log.new_value) && (
                           <div className="text-xs space-y-1">
                             {log.old_value && (
@@ -220,10 +249,14 @@ const SystemAuditLogsView: React.FC = () => {
                           </p>
                         )}
                       </div>
-                      
+
                       <div className="text-right text-xs text-gray-500">
-                        <div>{new Date(log.timestamp).toLocaleDateString()}</div>
-                        <div>{new Date(log.timestamp).toLocaleTimeString()}</div>
+                        <div>
+                          {new Date(log.timestamp).toLocaleDateString()}
+                        </div>
+                        <div>
+                          {new Date(log.timestamp).toLocaleTimeString()}
+                        </div>
                       </div>
                     </div>
                   </div>

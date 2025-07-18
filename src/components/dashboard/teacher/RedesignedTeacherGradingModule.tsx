@@ -134,7 +134,12 @@ const RedesignedTeacherGradingModule: React.FC = () => {
   } = useAcademicFilters(schoolId);
 
   // Grade reports hook
-  const { generateGradePDF, generateGradeExcel, printGradeReport, isGenerating } = useGradeReports();
+  const {
+    generateGradePDF,
+    generateGradeExcel,
+    printGradeReport,
+    isGenerating,
+  } = useGradeReports();
 
   // State management
   const [classes, setClasses] = useState<ClassOption[]>([]);
@@ -206,9 +211,9 @@ const RedesignedTeacherGradingModule: React.FC = () => {
 
       // CRITICAL: Validate that user is actually a teacher
       const { data: userProfile, error: profileError } = await supabase
-        .from('profiles')
-        .select('role, school_id')
-        .eq('id', user.id)
+        .from("profiles")
+        .select("role, school_id")
+        .eq("id", user.id)
         .single();
 
       if (profileError) {
@@ -216,14 +221,22 @@ const RedesignedTeacherGradingModule: React.FC = () => {
         throw new Error("Failed to validate user permissions");
       }
 
-      if (userProfile.role !== 'teacher' && userProfile.role !== 'principal' && 
-          userProfile.role !== 'school_owner' && userProfile.role !== 'edufam_admin' && 
-          userProfile.role !== 'elimisha_admin') {
-        throw new Error("Access denied: Insufficient permissions for grade management");
+      if (
+        userProfile.role !== "teacher" &&
+        userProfile.role !== "principal" &&
+        userProfile.role !== "school_director" &&
+        userProfile.role !== "edufam_admin" &&
+        userProfile.role !== "elimisha_admin"
+      ) {
+        throw new Error(
+          "Access denied: Insufficient permissions for grade management"
+        );
       }
 
-      if (userProfile.school_id !== schoolId && 
-          !['edufam_admin', 'elimisha_admin'].includes(userProfile.role)) {
+      if (
+        userProfile.school_id !== schoolId &&
+        !["edufam_admin", "elimisha_admin"].includes(userProfile.role)
+      ) {
         throw new Error("Access denied: School assignment mismatch");
       }
 
@@ -240,7 +253,7 @@ const RedesignedTeacherGradingModule: React.FC = () => {
             }) => ({
               id: item.classes.id,
               name: item.classes.name,
-              curriculum_type: item.classes.curriculum_type || 'standard',
+              curriculum_type: item.classes.curriculum_type || "standard",
             })
           )
           .filter(
@@ -263,7 +276,10 @@ const RedesignedTeacherGradingModule: React.FC = () => {
       console.error("Error loading teacher classes:", error);
       toast({
         title: "Error Loading Classes",
-        description: error instanceof Error ? error.message : "Failed to load your assigned classes. Please try again.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to load your assigned classes. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -275,14 +291,14 @@ const RedesignedTeacherGradingModule: React.FC = () => {
   useEffect(() => {
     if (currentAcademicYear && !selectedAcademicYear) {
       setSelectedAcademicYear(currentAcademicYear.id);
-      console.log('Set current academic year:', currentAcademicYear.year_name);
+      console.log("Set current academic year:", currentAcademicYear.year_name);
     }
   }, [currentAcademicYear, selectedAcademicYear]);
 
   useEffect(() => {
     if (currentAcademicTerm && !selectedTerm) {
       setSelectedTerm(currentAcademicTerm.term_name); // Use term_name for consistency
-      console.log('Set current academic term:', currentAcademicTerm.term_name);
+      console.log("Set current academic term:", currentAcademicTerm.term_name);
     }
   }, [currentAcademicTerm, selectedTerm]);
 
@@ -290,7 +306,7 @@ const RedesignedTeacherGradingModule: React.FC = () => {
   useEffect(() => {
     if (activeExamTypes.length > 0 && !selectedExamType) {
       setSelectedExamType(activeExamTypes[0].exam_type);
-      console.log('Set default exam type:', activeExamTypes[0].session_name);
+      console.log("Set default exam type:", activeExamTypes[0].session_name);
     }
   }, [activeExamTypes, selectedExamType]);
 
@@ -331,7 +347,10 @@ const RedesignedTeacherGradingModule: React.FC = () => {
       );
 
       if (invalidAssignments && invalidAssignments.length > 0) {
-        console.error("Invalid subject assignments detected:", invalidAssignments);
+        console.error(
+          "Invalid subject assignments detected:",
+          invalidAssignments
+        );
         throw new Error("Access denied: Invalid subject assignments detected");
       }
 
@@ -349,7 +368,8 @@ const RedesignedTeacherGradingModule: React.FC = () => {
       if (subjectsList.length === 0) {
         toast({
           title: "No Subjects Found",
-          description: "No subjects assigned for this class. Please contact your administrator.",
+          description:
+            "No subjects assigned for this class. Please contact your administrator.",
           variant: "destructive",
         });
       }
@@ -357,7 +377,10 @@ const RedesignedTeacherGradingModule: React.FC = () => {
       console.error("Error loading subjects:", error);
       toast({
         title: "Error Loading Subjects",
-        description: error instanceof Error ? error.message : "Failed to load subjects for this class.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to load subjects for this class.",
         variant: "destructive",
       });
     }
@@ -419,7 +442,14 @@ const RedesignedTeacherGradingModule: React.FC = () => {
         .eq("class_id", selectedClass)
         .eq("term", selectedTerm)
         .eq("exam_type", selectedExamType)
-        .eq("academic_year", (selectedAcademicYear || currentAcademicYear?.year_name || new Date().getFullYear().toString()).slice(0, 4));
+        .eq(
+          "academic_year",
+          (
+            selectedAcademicYear ||
+            currentAcademicYear?.year_name ||
+            new Date().getFullYear().toString()
+          ).slice(0, 4)
+        );
 
       if (error) {
         console.error("Error loading grades:", error);
@@ -539,7 +569,10 @@ const RedesignedTeacherGradingModule: React.FC = () => {
     }
 
     // Auto-set academic year if not selected
-    const academicYearToUse = selectedAcademicYear || currentAcademicYear?.year_name || new Date().getFullYear().toString();
+    const academicYearToUse =
+      selectedAcademicYear ||
+      currentAcademicYear?.year_name ||
+      new Date().getFullYear().toString();
     if (!academicYearToUse) {
       toast({
         title: "Missing Academic Year",
@@ -571,7 +604,12 @@ const RedesignedTeacherGradingModule: React.FC = () => {
             status: "draft",
             submitted_by: user?.id,
             curriculum_type: curriculumType,
-            max_score: gradeData.coursework_score && gradeData.exam_score ? 100 : (gradeData.score ? 100 : null),
+            max_score:
+              gradeData.coursework_score && gradeData.exam_score
+                ? 100
+                : gradeData.score
+                ? 100
+                : null,
             // IGCSE specific fields
             coursework_score: gradeData.coursework_score,
             exam_score: gradeData.exam_score,
@@ -582,7 +620,7 @@ const RedesignedTeacherGradingModule: React.FC = () => {
       const { error } = await supabase.from("grades").upsert(gradesToSave, {
         onConflict:
           "school_id,student_id,subject_id,class_id,term,exam_type,submitted_by",
-        ignoreDuplicates: false
+        ignoreDuplicates: false,
       });
 
       if (error) throw error;
@@ -644,7 +682,10 @@ const RedesignedTeacherGradingModule: React.FC = () => {
     }
 
     // Auto-set academic year if not selected
-    const academicYearToUse = selectedAcademicYear || currentAcademicYear?.year_name || new Date().getFullYear().toString();
+    const academicYearToUse =
+      selectedAcademicYear ||
+      currentAcademicYear?.year_name ||
+      new Date().getFullYear().toString();
     if (!academicYearToUse) {
       toast({
         title: "Missing Academic Year",
@@ -683,7 +724,8 @@ const RedesignedTeacherGradingModule: React.FC = () => {
               ([_, gradeData]) =>
                 gradeData.score !== null ||
                 gradeData.cbc_performance_level !== null ||
-                (gradeData.coursework_score !== null && gradeData.exam_score !== null)
+                (gradeData.coursework_score !== null &&
+                  gradeData.exam_score !== null)
             )
             .map(([subjectId, gradeData]) => ({
               school_id: schoolId,
@@ -702,7 +744,12 @@ const RedesignedTeacherGradingModule: React.FC = () => {
               submitted_by: user?.id,
               submitted_at: new Date().toISOString(),
               curriculum_type: curriculumType,
-              max_score: gradeData.coursework_score && gradeData.exam_score ? 100 : (gradeData.score ? 100 : null),
+              max_score:
+                gradeData.coursework_score && gradeData.exam_score
+                  ? 100
+                  : gradeData.score
+                  ? 100
+                  : null,
               // IGCSE specific fields
               coursework_score: gradeData.coursework_score,
               exam_score: gradeData.exam_score,
@@ -713,7 +760,7 @@ const RedesignedTeacherGradingModule: React.FC = () => {
       const { error } = await supabase.from("grades").upsert(gradesToSubmit, {
         onConflict:
           "school_id,student_id,subject_id,class_id,term,exam_type,submitted_by",
-        ignoreDuplicates: false
+        ignoreDuplicates: false,
       });
 
       if (error) throw error;
@@ -728,7 +775,7 @@ const RedesignedTeacherGradingModule: React.FC = () => {
 
       // Show grade sheet summary after submission
       setShowGradeSheet(true);
-      
+
       // Also set after successful save
       setLastSaved(new Date());
 
@@ -1456,12 +1503,18 @@ const RedesignedTeacherGradingModule: React.FC = () => {
       {showGradeSheet && students.length > 0 && subjects.length > 0 && (
         <div className="mt-6">
           <GradeSheetSummaryReport
-            className={classes.find(c => c.id === selectedClass)?.name || "Unknown Class"}
+            className={
+              classes.find((c) => c.id === selectedClass)?.name ||
+              "Unknown Class"
+            }
             curriculumType={curriculumType}
             term={selectedTerm}
             examType={selectedExamType}
-            academicYear={academicYears.find(y => y.id === selectedAcademicYear)?.year_name || ""}
-            gradeRecords={students.map(student => ({
+            academicYear={
+              academicYears.find((y) => y.id === selectedAcademicYear)
+                ?.year_name || ""
+            }
+            gradeRecords={students.map((student) => ({
               student_id: student.id,
               student_name: student.name,
               admission_number: student.admission_number,
@@ -1481,17 +1534,28 @@ const RedesignedTeacherGradingModule: React.FC = () => {
                 }
                 return acc;
               }, {} as any),
-              total_score: Object.values(grades[student.id] || {}).reduce((sum, grade) => sum + (grade.score || 0), 0),
+              total_score: Object.values(grades[student.id] || {}).reduce(
+                (sum, grade) => sum + (grade.score || 0),
+                0
+              ),
               total_possible: subjects.length * 100,
-              overall_percentage: Object.values(grades[student.id] || {}).reduce((sum, grade) => sum + (grade.percentage || 0), 0) / subjects.length,
+              overall_percentage:
+                Object.values(grades[student.id] || {}).reduce(
+                  (sum, grade) => sum + (grade.percentage || 0),
+                  0
+                ) / subjects.length,
               overall_grade: "A",
               overall_position: 1,
             }))}
             subjects={subjects}
             onExportPDF={() => {
-              const className = classes.find(c => c.id === selectedClass)?.name || "Unknown Class";
-              const academicYear = academicYears.find(y => y.id === selectedAcademicYear)?.year_name || "";
-              const gradeData = students.map(student => ({
+              const className =
+                classes.find((c) => c.id === selectedClass)?.name ||
+                "Unknown Class";
+              const academicYear =
+                academicYears.find((y) => y.id === selectedAcademicYear)
+                  ?.year_name || "";
+              const gradeData = students.map((student) => ({
                 student_id: student.id,
                 student_name: student.name,
                 admission_number: student.admission_number,
@@ -1511,18 +1575,37 @@ const RedesignedTeacherGradingModule: React.FC = () => {
                   }
                   return acc;
                 }, {} as any),
-                total_score: Object.values(grades[student.id] || {}).reduce((sum, grade) => sum + (grade.score || 0), 0),
+                total_score: Object.values(grades[student.id] || {}).reduce(
+                  (sum, grade) => sum + (grade.score || 0),
+                  0
+                ),
                 total_possible: subjects.length * 100,
-                overall_percentage: Object.values(grades[student.id] || {}).reduce((sum, grade) => sum + (grade.percentage || 0), 0) / subjects.length,
+                overall_percentage:
+                  Object.values(grades[student.id] || {}).reduce(
+                    (sum, grade) => sum + (grade.percentage || 0),
+                    0
+                  ) / subjects.length,
                 overall_grade: "A",
                 overall_position: 1,
               }));
-              generateGradePDF(className, curriculumType, selectedTerm, selectedExamType, academicYear, gradeData, subjects);
+              generateGradePDF(
+                className,
+                curriculumType,
+                selectedTerm,
+                selectedExamType,
+                academicYear,
+                gradeData,
+                subjects
+              );
             }}
             onExportExcel={() => {
-              const className = classes.find(c => c.id === selectedClass)?.name || "Unknown Class";
-              const academicYear = academicYears.find(y => y.id === selectedAcademicYear)?.year_name || "";
-              const gradeData = students.map(student => ({
+              const className =
+                classes.find((c) => c.id === selectedClass)?.name ||
+                "Unknown Class";
+              const academicYear =
+                academicYears.find((y) => y.id === selectedAcademicYear)
+                  ?.year_name || "";
+              const gradeData = students.map((student) => ({
                 student_id: student.id,
                 student_name: student.name,
                 admission_number: student.admission_number,
@@ -1542,18 +1625,37 @@ const RedesignedTeacherGradingModule: React.FC = () => {
                   }
                   return acc;
                 }, {} as any),
-                total_score: Object.values(grades[student.id] || {}).reduce((sum, grade) => sum + (grade.score || 0), 0),
+                total_score: Object.values(grades[student.id] || {}).reduce(
+                  (sum, grade) => sum + (grade.score || 0),
+                  0
+                ),
                 total_possible: subjects.length * 100,
-                overall_percentage: Object.values(grades[student.id] || {}).reduce((sum, grade) => sum + (grade.percentage || 0), 0) / subjects.length,
+                overall_percentage:
+                  Object.values(grades[student.id] || {}).reduce(
+                    (sum, grade) => sum + (grade.percentage || 0),
+                    0
+                  ) / subjects.length,
                 overall_grade: "A",
                 overall_position: 1,
               }));
-              generateGradeExcel(className, curriculumType, selectedTerm, selectedExamType, academicYear, gradeData, subjects);
+              generateGradeExcel(
+                className,
+                curriculumType,
+                selectedTerm,
+                selectedExamType,
+                academicYear,
+                gradeData,
+                subjects
+              );
             }}
             onPrint={() => {
-              const className = classes.find(c => c.id === selectedClass)?.name || "Unknown Class";
-              const academicYear = academicYears.find(y => y.id === selectedAcademicYear)?.year_name || "";
-              const gradeData = students.map(student => ({
+              const className =
+                classes.find((c) => c.id === selectedClass)?.name ||
+                "Unknown Class";
+              const academicYear =
+                academicYears.find((y) => y.id === selectedAcademicYear)
+                  ?.year_name || "";
+              const gradeData = students.map((student) => ({
                 student_id: student.id,
                 student_name: student.name,
                 admission_number: student.admission_number,
@@ -1573,13 +1675,28 @@ const RedesignedTeacherGradingModule: React.FC = () => {
                   }
                   return acc;
                 }, {} as any),
-                total_score: Object.values(grades[student.id] || {}).reduce((sum, grade) => sum + (grade.score || 0), 0),
+                total_score: Object.values(grades[student.id] || {}).reduce(
+                  (sum, grade) => sum + (grade.score || 0),
+                  0
+                ),
                 total_possible: subjects.length * 100,
-                overall_percentage: Object.values(grades[student.id] || {}).reduce((sum, grade) => sum + (grade.percentage || 0), 0) / subjects.length,
+                overall_percentage:
+                  Object.values(grades[student.id] || {}).reduce(
+                    (sum, grade) => sum + (grade.percentage || 0),
+                    0
+                  ) / subjects.length,
                 overall_grade: "A",
                 overall_position: 1,
               }));
-              printGradeReport(className, curriculumType, selectedTerm, selectedExamType, academicYear, gradeData, subjects);
+              printGradeReport(
+                className,
+                curriculumType,
+                selectedTerm,
+                selectedExamType,
+                academicYear,
+                gradeData,
+                subjects
+              );
             }}
           />
         </div>

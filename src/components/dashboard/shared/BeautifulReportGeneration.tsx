@@ -1,23 +1,45 @@
-
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileText, Download, Calendar, BarChart3, DollarSign, Users, Clock, AlertCircle } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  FileText,
+  Download,
+  Calendar,
+  BarChart3,
+  DollarSign,
+  Users,
+  Clock,
+  AlertCircle,
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 interface BeautifulReportGenerationProps {
-  userRole: 'principal' | 'school_owner' | 'finance_officer' | 'teacher' | 'parent' | 'edufam_admin';
+  userRole:
+    | "principal"
+    | "school_director"
+    | "finance_officer"
+    | "teacher"
+    | "parent"
+    | "edufam_admin";
 }
 
-const BeautifulReportGeneration = ({ userRole }: BeautifulReportGenerationProps) => {
-  const [activeCategory, setActiveCategory] = useState('academic');
-  const [reportType, setReportType] = useState('');
-  const [format, setFormat] = useState('pdf');
-  const [dateRange, setDateRange] = useState('current_term');
+const BeautifulReportGeneration = ({
+  userRole,
+}: BeautifulReportGenerationProps) => {
+  const [activeCategory, setActiveCategory] = useState("academic");
+  const [reportType, setReportType] = useState("");
+  const [format, setFormat] = useState("pdf");
+  const [dateRange, setDateRange] = useState("current_term");
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
 
@@ -25,56 +47,102 @@ const BeautifulReportGeneration = ({ userRole }: BeautifulReportGenerationProps)
     const categories = {
       academic: {
         icon: BarChart3,
-        label: 'Academic Reports',
-        color: 'blue',
+        label: "Academic Reports",
+        color: "blue",
         reports: [
-          { value: 'grade_summary', label: 'Grade Summary Report', description: 'Comprehensive academic performance overview' },
-          { value: 'attendance_summary', label: 'Attendance Summary', description: 'Student attendance tracking and analysis' },
-          { value: 'class_performance', label: 'Class Performance', description: 'Subject-wise class performance metrics' },
-        ]
+          {
+            value: "grade_summary",
+            label: "Grade Summary Report",
+            description: "Comprehensive academic performance overview",
+          },
+          {
+            value: "attendance_summary",
+            label: "Attendance Summary",
+            description: "Student attendance tracking and analysis",
+          },
+          {
+            value: "class_performance",
+            label: "Class Performance",
+            description: "Subject-wise class performance metrics",
+          },
+        ],
       },
       financial: {
         icon: DollarSign,
-        label: 'Financial Reports',
-        color: 'green',
+        label: "Financial Reports",
+        color: "green",
         reports: [
-          { value: 'fee_collection', label: 'Fee Collection Report', description: 'Fee payment status and collection analytics' },
-          { value: 'outstanding_fees', label: 'Outstanding Fees', description: 'Unpaid fees and defaulter tracking' },
-          { value: 'expense_summary', label: 'Expense Summary', description: 'School expenditure breakdown and analysis' },
-        ]
+          {
+            value: "fee_collection",
+            label: "Fee Collection Report",
+            description: "Fee payment status and collection analytics",
+          },
+          {
+            value: "outstanding_fees",
+            label: "Outstanding Fees",
+            description: "Unpaid fees and defaulter tracking",
+          },
+          {
+            value: "expense_summary",
+            label: "Expense Summary",
+            description: "School expenditure breakdown and analysis",
+          },
+        ],
       },
       administrative: {
         icon: Users,
-        label: 'Administrative Reports',
-        color: 'purple',
+        label: "Administrative Reports",
+        color: "purple",
         reports: [
-          { value: 'staff_summary', label: 'Staff Summary', description: 'Teacher and staff management overview' },
-          { value: 'student_enrollment', label: 'Student Enrollment', description: 'Student registration and demographic data' },
-          { value: 'school_analytics', label: 'School Analytics', description: 'Comprehensive school performance metrics' },
-        ]
-      }
+          {
+            value: "staff_summary",
+            label: "Staff Summary",
+            description: "Teacher and staff management overview",
+          },
+          {
+            value: "student_enrollment",
+            label: "Student Enrollment",
+            description: "Student registration and demographic data",
+          },
+          {
+            value: "school_analytics",
+            label: "School Analytics",
+            description: "Comprehensive school performance metrics",
+          },
+        ],
+      },
     };
 
     // Filter categories based on user role
     switch (userRole) {
-      case 'parent':
+      case "parent":
         return {
           academic: {
             ...categories.academic,
             reports: [
-              { value: 'child_grades', label: 'Child Grade Report', description: 'Your child\'s academic performance' },
-              { value: 'child_attendance', label: 'Child Attendance', description: 'Your child\'s attendance record' },
-            ]
-          }
+              {
+                value: "child_grades",
+                label: "Child Grade Report",
+                description: "Your child's academic performance",
+              },
+              {
+                value: "child_attendance",
+                label: "Child Attendance",
+                description: "Your child's attendance record",
+              },
+            ],
+          },
         };
-      case 'teacher':
+      case "teacher":
         return {
           academic: {
             ...categories.academic,
-            reports: categories.academic.reports.filter(r => r.value !== 'school_analytics')
-          }
+            reports: categories.academic.reports.filter(
+              (r) => r.value !== "school_analytics"
+            ),
+          },
         };
-      case 'finance_officer':
+      case "finance_officer":
         return { financial: categories.financial };
       default:
         return categories;
@@ -94,23 +162,26 @@ const BeautifulReportGeneration = ({ userRole }: BeautifulReportGenerationProps)
     }
 
     setIsGenerating(true);
-    
+
     try {
       // Simulate report generation
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       const selectedReport = Object.values(categories)
-        .flatMap(cat => cat.reports)
-        .find(r => r.value === reportType);
-      
+        .flatMap((cat) => cat.reports)
+        .find((r) => r.value === reportType);
+
       toast({
         title: "Report Generated Successfully",
-        description: `${selectedReport?.label} has been exported as ${format.toUpperCase()}`,
+        description: `${
+          selectedReport?.label
+        } has been exported as ${format.toUpperCase()}`,
       });
     } catch (error) {
       toast({
         title: "Report Generation Failed",
-        description: "An error occurred while generating the report. Please try again.",
+        description:
+          "An error occurred while generating the report. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -118,17 +189,21 @@ const BeautifulReportGeneration = ({ userRole }: BeautifulReportGenerationProps)
     }
   };
 
-  const CategoryIcon = categories[activeCategory as keyof typeof categories]?.icon || FileText;
-  const categoryColor = categories[activeCategory as keyof typeof categories]?.color || 'blue';
+  const CategoryIcon =
+    categories[activeCategory as keyof typeof categories]?.icon || FileText;
+  const categoryColor =
+    categories[activeCategory as keyof typeof categories]?.color || "blue";
 
   return (
     <Card className="bg-gradient-to-br from-white to-gray-50/50 border shadow-lg">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-3 text-2xl">
-          <div className={cn(
-            "w-10 h-10 rounded-lg flex items-center justify-center",
-            `bg-${categoryColor}-600 text-white`
-          )}>
+          <div
+            className={cn(
+              "w-10 h-10 rounded-lg flex items-center justify-center",
+              `bg-${categoryColor}-600 text-white`
+            )}
+          >
             <FileText className="w-6 h-6" />
           </div>
           Beautiful Report Generation
@@ -137,7 +212,7 @@ const BeautifulReportGeneration = ({ userRole }: BeautifulReportGenerationProps)
           Generate comprehensive reports with modern, professional formatting
         </p>
       </CardHeader>
-      
+
       <CardContent className="space-y-6">
         {/* Category Tabs */}
         <Tabs value={activeCategory} onValueChange={setActiveCategory}>
@@ -161,10 +236,12 @@ const BeautifulReportGeneration = ({ userRole }: BeautifulReportGenerationProps)
             <TabsContent key={key} value={key} className="mt-6">
               <div className="grid gap-4">
                 <div className="flex items-center gap-2 mb-4">
-                  <category.icon className={`w-5 h-5 text-${category.color}-600`} />
+                  <category.icon
+                    className={`w-5 h-5 text-${category.color}-600`}
+                  />
                   <h3 className="text-lg font-semibold">{category.label}</h3>
                 </div>
-                
+
                 <div className="grid gap-3">
                   {category.reports.map((report) => (
                     <div
@@ -185,7 +262,10 @@ const BeautifulReportGeneration = ({ userRole }: BeautifulReportGenerationProps)
                           </p>
                         </div>
                         {reportType === report.value && (
-                          <Badge variant="default" className={`bg-${category.color}-600`}>
+                          <Badge
+                            variant="default"
+                            className={`bg-${category.color}-600`}
+                          >
                             Selected
                           </Badge>
                         )}
@@ -216,7 +296,9 @@ const BeautifulReportGeneration = ({ userRole }: BeautifulReportGenerationProps)
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Export Format</label>
+            <label className="text-sm font-medium mb-2 block">
+              Export Format
+            </label>
             <Select value={format} onValueChange={setFormat}>
               <SelectTrigger>
                 <SelectValue />
@@ -234,10 +316,12 @@ const BeautifulReportGeneration = ({ userRole }: BeautifulReportGenerationProps)
         <div className="flex items-center justify-between p-4 bg-white border rounded-lg">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Calendar className="w-4 h-4" />
-            <span>Generated reports include professional formatting and branding</span>
+            <span>
+              Generated reports include professional formatting and branding
+            </span>
           </div>
-          
-          <Button 
+
+          <Button
             onClick={handleGenerateReport}
             disabled={isGenerating || !reportType}
             className="flex items-center gap-2 min-w-[140px]"
@@ -260,9 +344,12 @@ const BeautifulReportGeneration = ({ userRole }: BeautifulReportGenerationProps)
         <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
           <AlertCircle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
           <div className="text-sm">
-            <p className="text-blue-800 font-medium">Professional Report Features</p>
+            <p className="text-blue-800 font-medium">
+              Professional Report Features
+            </p>
             <p className="text-blue-700 mt-1">
-              All reports include charts, tables, school branding, and are optimized for printing and digital sharing.
+              All reports include charts, tables, school branding, and are
+              optimized for printing and digital sharing.
             </p>
           </div>
         </div>

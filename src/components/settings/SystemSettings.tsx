@@ -34,7 +34,7 @@ const SystemSettings = () => {
   // Check permissions
   const canManageSystem =
     user?.role &&
-    ["school_owner", "elimisha_admin", "edufam_admin"].includes(user.role);
+    ["school_director", "elimisha_admin", "edufam_admin"].includes(user.role);
 
   // Get system statistics
   const { data: systemStats, isLoading: loadingStats } = useQuery({
@@ -102,8 +102,8 @@ const SystemSettings = () => {
         .single();
 
       if (error && error.code !== "PGRST116") return { enabled: false };
-      
-      if (data?.setting_value && typeof data.setting_value === 'object') {
+
+      if (data?.setting_value && typeof data.setting_value === "object") {
         return (data.setting_value as any)?.enabled || false;
       }
       return false;
@@ -131,26 +131,26 @@ const SystemSettings = () => {
   // Toggle maintenance mode
   const toggleMaintenanceMode = useMutation({
     mutationFn: async (enabled: boolean) => {
-      const { error } = await supabase
-        .from("system_settings")
-        .upsert({
-          setting_key: "maintenance_mode",
-          setting_value: {
-            enabled: enabled,
-            message: enabled
-              ? "System is currently under maintenance. Please check back later."
-              : ""
-          },
-          description: "Maintenance mode configuration",
-          updated_at: new Date().toISOString()
-        });
+      const { error } = await supabase.from("system_settings").upsert({
+        setting_key: "maintenance_mode",
+        setting_value: {
+          enabled: enabled,
+          message: enabled
+            ? "System is currently under maintenance. Please check back later."
+            : "",
+        },
+        description: "Maintenance mode configuration",
+        updated_at: new Date().toISOString(),
+      });
 
       if (error) throw new Error(error.message);
     },
     onSuccess: (_, enabled) => {
       toast({
         title: "Success",
-        description: `Maintenance mode ${enabled ? "enabled" : "disabled"} successfully.`,
+        description: `Maintenance mode ${
+          enabled ? "enabled" : "disabled"
+        } successfully.`,
       });
       queryClient.invalidateQueries({ queryKey: ["maintenanceMode"] });
     },
@@ -178,9 +178,11 @@ const SystemSettings = () => {
           performed_by_user_id: user?.id,
           metadata: {
             backup_type: backupType,
-            file_name: `backup_${backupType}_${new Date().toISOString().split("T")[0]}.sql`,
-            status: "completed"
-          }
+            file_name: `backup_${backupType}_${
+              new Date().toISOString().split("T")[0]
+            }.sql`,
+            status: "completed",
+          },
         })
         .select()
         .single();
@@ -322,7 +324,9 @@ const SystemSettings = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Examinations</p>
-                  <p className="text-xl font-bold">{systemStats.examinations}</p>
+                  <p className="text-xl font-bold">
+                    {systemStats.examinations}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -371,8 +375,8 @@ const SystemSettings = () => {
             <Alert>
               <Settings className="h-4 w-4" />
               <AlertDescription>
-                General system configuration will be available in future updates.
-                Contact support for advanced configuration options.
+                General system configuration will be available in future
+                updates. Contact support for advanced configuration options.
               </AlertDescription>
             </Alert>
           </CardContent>
@@ -405,7 +409,9 @@ const SystemSettings = () => {
               </div>
               <Switch
                 checked={maintenanceMode || false}
-                onCheckedChange={(checked) => toggleMaintenanceMode.mutate(checked)}
+                onCheckedChange={(checked) =>
+                  toggleMaintenanceMode.mutate(checked)
+                }
                 disabled={toggleMaintenanceMode.isPending}
               />
             </div>
@@ -467,7 +473,9 @@ const SystemSettings = () => {
               {auditLogs?.length === 0 ? (
                 <div className="text-center py-8">
                   <Database className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">No recent events found</p>
+                  <p className="text-muted-foreground">
+                    No recent events found
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -479,7 +487,8 @@ const SystemSettings = () => {
                       <div>
                         <div className="font-medium">{log.action}</div>
                         <div className="text-sm text-muted-foreground">
-                          {new Date(log.created_at).toLocaleString()} • {log.performed_by_role}
+                          {new Date(log.created_at).toLocaleString()} •{" "}
+                          {log.performed_by_role}
                         </div>
                       </div>
                       <Badge variant="outline">

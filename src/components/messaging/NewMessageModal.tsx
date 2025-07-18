@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { Search, MessageSquare } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { Search, MessageSquare } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface User {
   id: string;
@@ -42,10 +42,10 @@ interface NewMessageModalProps {
 export const NewMessageModal: React.FC<NewMessageModalProps> = ({
   isOpen,
   onClose,
-  onConversationCreated
+  onConversationCreated,
 }) => {
   const { user } = useAuth();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState<string | null>(null);
@@ -59,33 +59,38 @@ export const NewMessageModal: React.FC<NewMessageModalProps> = ({
     setLoading(true);
     try {
       // Use edge function for strict multi-tenant user listing
-      const { data, error } = await supabase.functions.invoke('get-school-users', {
-        body: { 
-          search: term,
-          limit: 10 
+      const { data, error } = await supabase.functions.invoke(
+        "get-school-users",
+        {
+          body: {
+            search: term,
+            limit: 10,
+          },
         }
-      });
+      );
 
       if (error) {
-        console.error('Error searching users:', error);
+        console.error("Error searching users:", error);
         toast({
           title: "Error",
           description: "Failed to search users from your school",
-          variant: "destructive"
+          variant: "destructive",
         });
         return;
       }
 
       const users = data?.users || [];
       setUsers(users);
-      
-      console.log(`Found ${users.length} users in school for search: "${term}"`);
+
+      console.log(
+        `Found ${users.length} users in school for search: "${term}"`
+      );
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
       toast({
         title: "Error",
         description: "Failed to search users",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -105,46 +110,51 @@ export const NewMessageModal: React.FC<NewMessageModalProps> = ({
 
     setCreating(recipientId);
     try {
-      const { data, error } = await supabase.functions.invoke('create-conversation', {
-        body: { recipient_id: recipientId }
-      });
+      const { data, error } = await supabase.functions.invoke(
+        "create-conversation",
+        {
+          body: { recipient_id: recipientId },
+        }
+      );
 
       if (error) {
-        console.error('Error creating conversation:', error);
+        console.error("Error creating conversation:", error);
         toast({
           title: "Error",
           description: "Failed to create conversation",
-          variant: "destructive"
+          variant: "destructive",
         });
         return;
       }
 
       // If conversation already exists or was created, get the full conversation data
-      const { data: conversations, error: fetchError } = await supabase.functions.invoke('get-conversations');
-      
+      const { data: conversations, error: fetchError } =
+        await supabase.functions.invoke("get-conversations");
+
       if (fetchError) {
-        console.error('Error fetching conversations:', fetchError);
+        console.error("Error fetching conversations:", fetchError);
         return;
       }
 
-      const newConversation = conversations.conversations.find((conv: any) => 
-        conv.id === data.conversation_id
+      const newConversation = conversations.conversations.find(
+        (conv: any) => conv.id === data.conversation_id
       );
 
       if (newConversation) {
         onConversationCreated(newConversation);
         toast({
           title: "Success",
-          description: data.existing ? "Conversation opened" : "Conversation created",
+          description: data.existing
+            ? "Conversation opened"
+            : "Conversation created",
         });
       }
-
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
       toast({
         title: "Error",
         description: "Failed to create conversation",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setCreating(null);
@@ -153,27 +163,27 @@ export const NewMessageModal: React.FC<NewMessageModalProps> = ({
 
   const getInitials = (name: string) => {
     return name
-      .split(' ')
-      .map(word => word.charAt(0))
-      .join('')
+      .split(" ")
+      .map((word) => word.charAt(0))
+      .join("")
       .toUpperCase()
       .slice(0, 2);
   };
 
   const getRoleColor = (role: string) => {
     switch (role) {
-      case 'principal':
-        return 'bg-purple-100 text-purple-800';
-      case 'teacher':
-        return 'bg-blue-100 text-blue-800';
-      case 'parent':
-        return 'bg-green-100 text-green-800';
-      case 'finance_officer':
-        return 'bg-orange-100 text-orange-800';
-      case 'school_owner':
-        return 'bg-red-100 text-red-800';
+      case "principal":
+        return "bg-purple-100 text-purple-800";
+      case "teacher":
+        return "bg-blue-100 text-blue-800";
+      case "parent":
+        return "bg-green-100 text-green-800";
+      case "finance_officer":
+        return "bg-orange-100 text-orange-800";
+      case "school_director":
+        return "bg-red-100 text-red-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -227,7 +237,7 @@ export const NewMessageModal: React.FC<NewMessageModalProps> = ({
                             {getInitials(selectedUser.name)}
                           </AvatarFallback>
                         </Avatar>
-                        
+
                         <div className="flex-1 min-w-0">
                           <h3 className="font-medium text-foreground truncate">
                             {selectedUser.name}
@@ -235,14 +245,20 @@ export const NewMessageModal: React.FC<NewMessageModalProps> = ({
                           <p className="text-sm text-muted-foreground truncate">
                             {selectedUser.email}
                           </p>
-                          <span className={`inline-block text-xs px-2 py-1 rounded-full mt-1 ${getRoleColor(selectedUser.role)}`}>
-                            {selectedUser.role.replace('_', ' ')}
+                          <span
+                            className={`inline-block text-xs px-2 py-1 rounded-full mt-1 ${getRoleColor(
+                              selectedUser.role
+                            )}`}
+                          >
+                            {selectedUser.role.replace("_", " ")}
                           </span>
                         </div>
                       </div>
-                      
+
                       <Button
-                        onClick={() => handleCreateConversation(selectedUser.id)}
+                        onClick={() =>
+                          handleCreateConversation(selectedUser.id)
+                        }
                         disabled={creating === selectedUser.id}
                         size="sm"
                         className="ml-2"
@@ -250,7 +266,7 @@ export const NewMessageModal: React.FC<NewMessageModalProps> = ({
                         {creating === selectedUser.id ? (
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                         ) : (
-                          'Chat'
+                          "Chat"
                         )}
                       </Button>
                     </div>

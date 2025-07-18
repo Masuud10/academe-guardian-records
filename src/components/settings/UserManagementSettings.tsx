@@ -1,16 +1,22 @@
-
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useUserManagementStats } from '@/hooks/useSystemSettings';
-import { useToast } from '@/hooks/use-toast';
-import { 
-  Users, 
-  UserCheck, 
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useUserManagementStats } from "@/hooks/useSystemSettings";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Users,
+  UserCheck,
   UserPlus,
   Search,
   Filter,
@@ -18,23 +24,63 @@ import {
   Shield,
   Mail,
   Phone,
-  Calendar
-} from 'lucide-react';
+  Calendar,
+} from "lucide-react";
 
 const UserManagementSettings: React.FC = () => {
   const { toast } = useToast();
   const { data: userStats, isLoading, error } = useUserManagementStats();
-  
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedRole, setSelectedRole] = useState('all');
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedRole, setSelectedRole] = useState("all");
 
   // Mock user data for demonstration
   const [recentUsers] = useState([
-    { id: 1, name: 'John Smith', email: 'john@school.edu', role: 'principal', status: 'active', lastLogin: '2024-06-30', school: 'Greenfield High' },
-    { id: 2, name: 'Sarah Johnson', email: 'sarah@school.edu', role: 'teacher', status: 'active', lastLogin: '2024-06-29', school: 'Greenfield High' },
-    { id: 3, name: 'Mike Brown', email: 'mike@parent.com', role: 'parent', status: 'active', lastLogin: '2024-06-28', school: 'Various' },
-    { id: 4, name: 'Lisa Davis', email: 'lisa@finance.edu', role: 'finance_officer', status: 'active', lastLogin: '2024-06-27', school: 'Central Academy' },
-    { id: 5, name: 'Tom Wilson', email: 'tom@owner.com', role: 'school_owner', status: 'pending', lastLogin: 'Never', school: 'Wilson Academy' }
+    {
+      id: 1,
+      name: "John Smith",
+      email: "john@school.edu",
+      role: "principal",
+      status: "active",
+      lastLogin: "2024-06-30",
+      school: "Greenfield High",
+    },
+    {
+      id: 2,
+      name: "Sarah Johnson",
+      email: "sarah@school.edu",
+      role: "teacher",
+      status: "active",
+      lastLogin: "2024-06-29",
+      school: "Greenfield High",
+    },
+    {
+      id: 3,
+      name: "Mike Brown",
+      email: "mike@parent.com",
+      role: "parent",
+      status: "active",
+      lastLogin: "2024-06-28",
+      school: "Various",
+    },
+    {
+      id: 4,
+      name: "Lisa Davis",
+      email: "lisa@finance.edu",
+      role: "finance_officer",
+      status: "active",
+      lastLogin: "2024-06-27",
+      school: "Central Academy",
+    },
+    {
+      id: 5,
+      name: "Tom Wilson",
+      email: "tom@owner.com",
+      role: "school_director",
+      status: "pending",
+      lastLogin: "Never",
+      school: "Wilson Academy",
+    },
   ]);
 
   const handleUserAction = (action: string, userId: number) => {
@@ -46,22 +92,26 @@ const UserManagementSettings: React.FC = () => {
 
   const getRoleColor = (role: string) => {
     const colors = {
-      'edufam_admin': 'bg-red-100 text-red-800',
-      'school_owner': 'bg-purple-100 text-purple-800',
-      'principal': 'bg-blue-100 text-blue-800',
-      'teacher': 'bg-green-100 text-green-800',
-      'parent': 'bg-yellow-100 text-yellow-800',
-      'finance_officer': 'bg-indigo-100 text-indigo-800'
+      edufam_admin: "bg-red-100 text-red-800",
+      school_director: "bg-purple-100 text-purple-800",
+      principal: "bg-blue-100 text-blue-800",
+      teacher: "bg-green-100 text-green-800",
+      parent: "bg-yellow-100 text-yellow-800",
+      finance_officer: "bg-indigo-100 text-indigo-800",
     };
-    return colors[role as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return colors[role as keyof typeof colors] || "bg-gray-100 text-gray-800";
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'suspended': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case "active":
+        return "bg-green-100 text-green-800";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "suspended":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -128,18 +178,24 @@ const UserManagementSettings: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {Object.entries(userStats?.users_by_role || {}).map(([role, count]) => (
-              <div
-                key={role}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border"
-              >
-                <div className="flex items-center gap-3">
-                  <Shield className="h-4 w-4 text-blue-600" />
-                  <span className="font-medium capitalize">{role.replace('_', ' ')}</span>
+            {Object.entries(userStats?.users_by_role || {}).map(
+              ([role, count]) => (
+                <div
+                  key={role}
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border"
+                >
+                  <div className="flex items-center gap-3">
+                    <Shield className="h-4 w-4 text-blue-600" />
+                    <span className="font-medium capitalize">
+                      {role.replace("_", " ")}
+                    </span>
+                  </div>
+                  <Badge className={getRoleColor(role)}>
+                    {count as number}
+                  </Badge>
                 </div>
-                <Badge className={getRoleColor(role)}>{count as number}</Badge>
-              </div>
-            ))}
+              )
+            )}
           </div>
         </CardContent>
       </Card>
@@ -177,7 +233,7 @@ const UserManagementSettings: React.FC = () => {
                 <option value="teacher">Teacher</option>
                 <option value="parent">Parent</option>
                 <option value="finance_officer">Finance Officer</option>
-                <option value="school_owner">School Owner</option>
+                <option value="school_director">School Director</option>
               </select>
             </div>
             <div className="flex items-end">
@@ -222,7 +278,7 @@ const UserManagementSettings: React.FC = () => {
                     </TableCell>
                     <TableCell>
                       <Badge className={getRoleColor(user.role)}>
-                        {user.role.replace('_', ' ')}
+                        {user.role.replace("_", " ")}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-sm">{user.school}</TableCell>
@@ -239,7 +295,7 @@ const UserManagementSettings: React.FC = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleUserAction('manage', user.id)}
+                        onClick={() => handleUserAction("manage", user.id)}
                       >
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>

@@ -29,7 +29,9 @@ const FinanceModule: React.FC = () => {
 
   if (
     !user ||
-    !["finance_officer", "principal", "school_owner"].includes(user.role || "")
+    !["finance_officer", "principal", "school_director"].includes(
+      user.role || ""
+    )
   ) {
     return (
       <div className="p-8 text-center text-red-600">
