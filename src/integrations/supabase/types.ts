@@ -8666,6 +8666,17 @@ export type Database = {
         Args: { p_school_id: string }
         Returns: Json
       }
+      check_hr_user_assignments: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          user_id: string
+          email: string
+          name: string
+          school_id: string
+          status: string
+          issue: string
+        }[]
+      }
       check_rate_limit: {
         Args: {
           p_identifier: string
@@ -8993,6 +9004,19 @@ export type Database = {
       get_current_user_school_id: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      get_hr_users_by_school: {
+        Args: { school_param: string }
+        Returns: {
+          id: string
+          email: string
+          name: string
+          role: string
+          school_id: string
+          status: string
+          created_at: string
+          updated_at: string
+        }[]
       }
       get_maintenance_message: {
         Args: Record<PropertyKey, never>
