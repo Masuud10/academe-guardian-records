@@ -21,7 +21,16 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user } = useAuth();
+  // Safely get auth context - it might not be available during initial render
+  let user = null;
+  try {
+    const auth = useAuth();
+    user = auth.user;
+  } catch (error) {
+    // AuthProvider not available yet, user will be null
+    console.log('🎨 ThemeProvider: AuthProvider not ready yet, using default theme');
+  }
+  
   const [theme, setTheme] = useState<Theme>('system');
   const [actualTheme, setActualTheme] = useState<'light' | 'dark'>('light');
 
