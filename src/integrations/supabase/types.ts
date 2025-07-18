@@ -9137,6 +9137,14 @@ export type Database = {
         Args: { user_role: string }
         Returns: boolean
       }
+      reset_hr_user_password: {
+        Args: { user_email: string }
+        Returns: Json
+      }
+      setup_hr_user: {
+        Args: { user_email: string; user_name: string; school_id?: string }
+        Returns: Json
+      }
       test_hr_authentication: {
         Args: Record<PropertyKey, never>
         Returns: Json
@@ -9199,6 +9207,10 @@ export type Database = {
       }
       validate_teacher_grade_submission: {
         Args: { p_grade_data: Json }
+        Returns: Json
+      }
+      verify_all_hr_users: {
+        Args: Record<PropertyKey, never>
         Returns: Json
       }
       verify_hr_access: {
