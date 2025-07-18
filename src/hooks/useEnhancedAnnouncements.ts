@@ -183,7 +183,7 @@ export const useEnhancedAnnouncements = (filters?: AnnouncementFilters) => {
       // Convert target audience roles to database roles
       const dbRoles = (announcement.target_audience || []).map((role: string) => {
         switch (role) {
-          case 'school_owners': return 'school_director';
+          case 'school_directors': return 'school_director';
           case 'principals': return 'principal';
           case 'teachers': return 'teacher';
           case 'parents': return 'parent';

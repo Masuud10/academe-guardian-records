@@ -33,15 +33,12 @@ export const useSchoolScopedData = (): SchoolScopedDataResult => {
       };
     }
     
-    // System admins can access all schools
-    const isMultiTenantUser = user.role === 'edufam_admin' || user.role === 'elimisha_admin';
-    const isSystemAdmin = isMultiTenantUser; // Alias for backward compatibility
+    // System admins removed for school application
+    const isMultiTenantUser = false; // No multi-tenant users in school app
+    const isSystemAdmin = false; // No system admins in school app
     
-    // For multi-tenant users, use current selected school or null if none selected
-    // For regular users, use their assigned school
-    const schoolId = isMultiTenantUser 
-      ? currentSchool?.id || null 
-      : user?.school_id || null;
+    // For school application users, always use their assigned school
+    const schoolId = user?.school_id || null;
 
     const isLoading = authLoading || schoolLoading;
     const hasSchool = !!schoolId;
@@ -49,11 +46,6 @@ export const useSchoolScopedData = (): SchoolScopedDataResult => {
 
     // Validation function for school access
     const validateSchoolAccess = (requiredSchoolId?: string): boolean => {
-      // System admins can access all schools
-      if (isSystemAdmin) {
-        return true;
-      }
-
       // If no school ID required, just check if user has a school
       if (!requiredSchoolId) {
         return hasSchool;

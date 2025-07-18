@@ -171,8 +171,7 @@ const DashboardContainer: React.FC<DashboardContainerProps> = ({
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
-      case "edufam_admin":
-        return "bg-blue-100 text-blue-800 border-blue-200";
+      // Admin role removed for school application
       case "school_director":
         return "bg-green-100 text-green-800 border-green-200";
       case "principal":

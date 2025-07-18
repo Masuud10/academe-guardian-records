@@ -292,7 +292,7 @@ const GradesModule: React.FC = () => {
   );
 
   switch (user.role) {
-    case "edufam_admin":
+    // Admin case removed - school directors can access grades
     case "school_director":
       return (
         <div className="space-y-4">

@@ -127,7 +127,7 @@ export class SecurityUtils {
   }
 
   static requiresMFA(role: string): boolean {
-    return ['elimisha_admin', 'edufam_admin', 'school_owner', 'principal', 'finance_officer'].includes(role);
+    return ['school_director', 'principal', 'finance_officer', 'hr'].includes(role);
   }
 
   static getClientIP(): string {

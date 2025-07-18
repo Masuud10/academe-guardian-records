@@ -126,7 +126,7 @@ export class EduFamDashboardDebugger {
       }
 
       // Validate role
-      const validRoles = ['edufam_admin', 'elimisha_admin', 'principal', 'teacher', 'parent', 'school_owner', 'finance_officer'];
+      const validRoles = ['principal', 'teacher', 'parent', 'school_director', 'finance_officer', 'hr'];
       if (!validRoles.includes(user.role!)) {
         this.debugInfo.authentication = {
           status: 'error',

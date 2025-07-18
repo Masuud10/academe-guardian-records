@@ -32,7 +32,7 @@ export class MultiTenantUtils {
           canManageMultipleTenants: true
         };
       
-      case 'school_owner':
+      case 'school_director':
       case 'principal':
         return {
           canCreateUsers: true,
@@ -85,7 +85,7 @@ export class MultiTenantUtils {
   }
 
   static isSchoolAdmin(role: string): boolean {
-    return role === 'school_owner' || role === 'principal';
+    return role === 'school_director' || role === 'principal';
   }
 
   static canAccessSchool(userRole: string, userSchoolId: string | null, targetSchoolId: string): boolean {

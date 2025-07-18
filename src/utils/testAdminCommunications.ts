@@ -8,7 +8,7 @@ export const mockAdminCommunications: AdminCommunication[] = [
     message: 'Scheduled maintenance will occur on Saturday, January 15th from 2:00 AM to 4:00 AM. During this time, the system may be temporarily unavailable.',
     created_by: 'admin-1',
     created_at: new Date().toISOString(),
-    target_roles: ['teacher', 'principal', 'school_owner', 'finance_officer', 'parent'],
+    target_roles: ['teacher', 'principal', 'school_director', 'finance_officer', 'parent'],
     is_active: true,
     priority: 'high',
     dismissible: true
@@ -41,7 +41,7 @@ export const mockAdminCommunications: AdminCommunication[] = [
     message: 'Welcome to the new academic year! We hope you have a productive and successful year ahead.',
     created_by: 'admin-1',
     created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 1 week ago
-    target_roles: ['teacher', 'principal', 'school_owner', 'finance_officer', 'parent'],
+    target_roles: ['teacher', 'principal', 'school_director', 'finance_officer', 'parent'],
     is_active: true,
     priority: 'low',
     dismissible: true

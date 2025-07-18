@@ -203,7 +203,7 @@ export class FormValidationService {
         required: true,
         custom: (value: string) => {
           const validRoles = [
-            'elimisha_admin', 'edufam_admin', 'school_owner', 
+            'school_director', 
             'principal', 'teacher', 'parent', 'finance_officer', 'hr'
           ];
           if (!validRoles.includes(value)) {

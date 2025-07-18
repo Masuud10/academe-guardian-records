@@ -127,7 +127,7 @@ const AttendanceModule: React.FC = () => {
   }
 
   switch (user.role) {
-    case "edufam_admin":
+    // Admin case removed - school directors can access attendance summaries
     case "school_director":
       return renderForSummaryRole();
     case "principal":

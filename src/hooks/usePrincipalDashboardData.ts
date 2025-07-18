@@ -58,9 +58,9 @@ export const usePrincipalDashboardData = (schoolId: string | null) => {
       return;
     }
 
-    // CRITICAL SECURITY: Validate user is a principal for this school
-    if (user.role !== 'principal' || user.school_id !== schoolId) {
-      console.error('🔍 usePrincipalDashboardData: Access denied - user is not principal for this school');
+    // CRITICAL SECURITY: Validate user is a principal or school director for this school
+    if (!['principal', 'school_director'].includes(user.role) || user.school_id !== schoolId) {
+      console.error('🔍 usePrincipalDashboardData: Access denied - user is not principal/school_director for this school');
       setError('Access denied: You are not authorized to view this school\'s data');
       setLoading(false);
       setLoadingTimeout(false);

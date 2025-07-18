@@ -32,7 +32,7 @@ export const testMaintenanceMode = async () => {
 
     // Test 4: Check that non-admin users are blocked
     console.log('\n4. Testing user access control...');
-    const nonAdminRoles = ['teacher', 'principal', 'parent', 'finance_officer', 'school_owner', 'student'];
+    const nonAdminRoles = ['teacher', 'principal', 'parent', 'finance_officer', 'school_director', 'student'];
     
     for (const role of nonAdminRoles) {
       const access = await MaintenanceModeService.checkUserAccess(role);
@@ -83,7 +83,7 @@ export const testMaintenanceMode = async () => {
 
     // Test 8: Verify all users can access after disabling
     console.log('\n8. Verifying all users can access after disabling...');
-    const allRoles = ['teacher', 'principal', 'parent', 'finance_officer', 'school_owner', 'student', 'edufam_admin'];
+    const allRoles = ['teacher', 'principal', 'parent', 'finance_officer', 'school_director', 'student'];
     
     for (const role of allRoles) {
       const access = await MaintenanceModeService.checkUserAccess(role);

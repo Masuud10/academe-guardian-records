@@ -648,8 +648,8 @@ export class AcademicIntegrationService {
 
         case 'generate_reports':
           return {
-            canPerform: ['principal', 'edufam_admin', 'school_owner'].includes(userProfile.role),
-            error: !['principal', 'edufam_admin', 'school_owner'].includes(userProfile.role) ? 'Insufficient permissions to generate reports' : undefined
+            canPerform: ['principal', 'school_director'].includes(userProfile.role),
+            error: !['principal', 'school_director'].includes(userProfile.role) ? 'Insufficient permissions to generate reports' : undefined
           };
 
         case 'view_analytics':

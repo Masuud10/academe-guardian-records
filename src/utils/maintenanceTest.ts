@@ -213,7 +213,7 @@ export class MaintenanceTestSuite {
       }
 
       // Test other roles - should all be blocked
-      const rolesToTest = ['principal', 'parent', 'finance_officer', 'school_owner', 'teacher'];
+      const rolesToTest = ['principal', 'parent', 'finance_officer', 'school_director', 'teacher'];
       for (const role of rolesToTest) {
         const roleAccess = await MaintenanceModeService.checkUserAccess(role);
         if (roleAccess.allowed) {
@@ -382,7 +382,7 @@ export class MaintenanceTestSuite {
         { role: 'teacher', shouldAccess: false },
         { role: 'parent', shouldAccess: false },
         { role: 'finance_officer', shouldAccess: false },
-        { role: 'school_owner', shouldAccess: false },
+        { role: 'school_director', shouldAccess: false },
         { role: 'student', shouldAccess: false },
         { role: undefined, shouldAccess: false }
       ];

@@ -557,7 +557,7 @@ export class NotificationService {
         title: 'Test Notification',
         message: 'This is a test notification to verify the notification system is working properly.',
         created_by: user.id,
-        target_roles: ['teacher', 'principal', 'school_owner', 'finance_officer', 'parent', 'edufam_admin'], // Target all roles for testing
+        target_roles: ['teacher', 'principal', 'school_director', 'finance_officer', 'parent', 'hr'], // Target all roles for testing
         priority: 'medium',
         dismissible: true,
         is_active: true
@@ -607,7 +607,7 @@ export class NotificationService {
         title: 'Test System Announcement',
         message: 'This is a test system announcement to verify the notification system is working properly.',
         created_by: user.id,
-        target_roles: ['teacher', 'principal', 'school_owner', 'finance_officer', 'parent', 'edufam_admin'], // Target all roles for testing
+        target_roles: ['teacher', 'principal', 'school_director', 'finance_officer', 'parent', 'hr'], // Target all roles for testing
         priority: 'medium',
         dismissible: true,
         is_active: true

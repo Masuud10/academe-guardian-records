@@ -232,18 +232,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
       if (activeSection !== "dashboard") return null;
 
       switch (user?.role) {
-        case "edufam_admin":
-        case "elimisha_admin":
-          return (
-            <div className="text-center p-8">
-              <h2 className="text-2xl font-bold text-red-600 mb-4">
-                Access Restricted
-              </h2>
-              <p className="text-gray-600">
-                Admin features are not available in the school application.
-              </p>
-            </div>
-          );
         case "school_director":
           return <SchoolDirectorDashboard />;
         case "principal":
@@ -704,13 +692,26 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
       case "schools":
         return renderLazyComponent(SchoolsModule, "SchoolsModule");
       case "users":
+        if (user?.role === "hr") {
+          return renderLazyComponent(
+            HRUserManagementModule,
+            "HRUserManagementModule",
+            { user }
+          );
+        } else if (user?.role === "school_director") {
+          return renderLazyComponent(
+            HRUserManagementModule,
+            "HRUserManagementModule", 
+            { user }
+          );
+        }
         return (
           <div className="text-center p-8">
             <h2 className="text-2xl font-bold text-red-600 mb-4">
               Feature Unavailable
             </h2>
             <p className="text-gray-600">
-              User management is not available in the school application.
+              User management is not available for your role.
             </p>
           </div>
         );

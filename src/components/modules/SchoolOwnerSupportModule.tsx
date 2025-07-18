@@ -85,7 +85,7 @@ const SchoolOwnerSupportModule: React.FC = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["school-owner-support-tickets", user?.id, schoolId],
+    queryKey: ["school-director-support-tickets", user?.id, schoolId],
     queryFn: async () => {
       if (!user?.id || !schoolId) return [];
 
@@ -93,14 +93,16 @@ const SchoolOwnerSupportModule: React.FC = () => {
       const { data, error } = await supabase
         .from("support_tickets")
         .select("*")
-        .eq("user_id", user.id)
         .eq("school_id", schoolId)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error loading support tickets:', error);
+        throw error;
+      }
       return data || [];
     },
-    enabled: !!user?.id && !!schoolId,
+    enabled: !!user?.id && !!schoolId && ['school_director', 'principal', 'hr'].includes(user.role),
   });
 
   const createTicketMutation = useMutation({

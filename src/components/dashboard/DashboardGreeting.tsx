@@ -24,9 +24,7 @@ const DashboardGreeting = ({ user, currentSchool }: DashboardGreetingProps) => {
 
   const getRoleDescription = () => {
     switch (user?.role) {
-      case "elimisha_admin":
-      case "edufam_admin":
-        return "Monitor and manage your entire educational ecosystem";
+      // Admin roles removed for school application
       case "school_director":
         return "Monitor your school's financial and operational performance.";
       case "principal":

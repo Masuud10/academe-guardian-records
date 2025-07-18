@@ -76,7 +76,7 @@ export class UserStatusService {
       }
 
       const isSystemAdmin = ['elimisha_admin', 'edufam_admin'].includes(profile.role);
-      const canManageUsers = isSystemAdmin || ['school_owner', 'principal'].includes(profile.role);
+      const canManageUsers = ['school_director', 'principal', 'hr'].includes(profile.role);
 
       return {
         canManageUsers,

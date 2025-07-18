@@ -267,7 +267,7 @@ export class SystemAnalyticsService {
   private static getRoleColor(role: string): string {
     const roleColors: Record<string, string> = {
       'edufam_admin': '#3b82f6',
-      'school_owner': '#10b981',
+      'school_director': '#10b981',
       'principal': '#f59e0b',
       'teacher': '#06b6d4',
       'finance_officer': '#8b5cf6',
