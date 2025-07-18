@@ -204,7 +204,7 @@ export class FormValidationService {
         custom: (value: string) => {
           const validRoles = [
             'elimisha_admin', 'edufam_admin', 'school_owner', 
-            'principal', 'teacher', 'parent', 'finance_officer'
+            'principal', 'teacher', 'parent', 'finance_officer', 'hr'
           ];
           if (!validRoles.includes(value)) {
             return 'Invalid role selected';

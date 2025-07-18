@@ -13,7 +13,6 @@ import AttendanceModal from "@/components/modals/AttendanceModal";
 import GradesModal from "@/components/modals/GradesModal";
 import { useToast } from "@/hooks/use-toast";
 import MaintenanceNotification from "@/components/common/MaintenanceNotification";
-import AdminCommunicationsBanner from "@/components/common/AdminCommunicationsBanner";
 
 interface TeacherDashboardProps {
   user: AuthUser;
@@ -124,9 +123,6 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
           <div className="w-full">
             <TeacherStatsCards stats={stats} loading={isLoading} />
           </div>
-
-          {/* Admin Communications Banner */}
-          <AdminCommunicationsBanner />
 
           {/* Class Analytics Overview Section */}
           <div id="class-analytics-section">

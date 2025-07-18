@@ -34,7 +34,6 @@ import {
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import SystemMaintenanceControl from "./settings/SystemMaintenanceControl";
-import AdminCommunicationsManager from "./settings/AdminCommunicationsManager";
 
 interface SystemSettings {
   maintenance_mode: boolean;
@@ -493,24 +492,6 @@ const SettingsModule = () => {
               <p className="text-sm">Security monitoring will appear here</p>
             </div>
           )}
-        </CardContent>
-      </Card>
-
-      {/* Admin Communications Management */}
-      <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-yellow-50">
-        <CardHeader className="pb-6">
-          <CardTitle className="flex items-center gap-3 text-xl">
-            <div className="p-2 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg shadow-lg">
-              <MessageSquare className="h-6 w-6 text-white" />
-            </div>
-            Admin Communications
-          </CardTitle>
-          <CardDescription className="text-base">
-            Create and manage system-wide communications for all user roles
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-6">
-          <AdminCommunicationsManager />
         </CardContent>
       </Card>
 

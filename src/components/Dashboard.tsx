@@ -10,7 +10,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { checkDatabaseConnection } from "@/integrations/supabase/client";
 import MaintenanceNotification from "@/components/common/MaintenanceNotification";
-import AdminCommunicationsBanner from "@/components/common/AdminCommunicationsBanner";
 import SchoolDirectorDashboard from "./dashboard/SchoolDirectorDashboard";
 
 const Dashboard: React.FC = () => {
@@ -101,7 +100,7 @@ const Dashboard: React.FC = () => {
   // Validate user role (removed admin roles for school app)
   const validRoles = [
     "principal",
-    "teacher", 
+    "teacher",
     "parent",
     "school_director",
     "finance_officer",
@@ -134,7 +133,6 @@ const Dashboard: React.FC = () => {
         return (
           <div>
             <MaintenanceNotification />
-            <AdminCommunicationsBanner />
             <SchoolDirectorDashboard />
           </div>
         );
@@ -144,7 +142,6 @@ const Dashboard: React.FC = () => {
         return (
           <div>
             <MaintenanceNotification />
-            <AdminCommunicationsBanner />
             <PrincipalDashboard user={user} />
           </div>
         );
@@ -154,7 +151,6 @@ const Dashboard: React.FC = () => {
         return (
           <div>
             <MaintenanceNotification />
-            <AdminCommunicationsBanner />
             <TeacherDashboard user={user} />
           </div>
         );
@@ -164,7 +160,6 @@ const Dashboard: React.FC = () => {
         return (
           <div>
             <MaintenanceNotification />
-            <AdminCommunicationsBanner />
             <FinanceOfficerDashboard user={user} />
           </div>
         );
@@ -174,7 +169,6 @@ const Dashboard: React.FC = () => {
         return (
           <div>
             <MaintenanceNotification />
-            <AdminCommunicationsBanner />
             <HRDashboard user={user} />
           </div>
         );
@@ -184,7 +178,6 @@ const Dashboard: React.FC = () => {
         return (
           <div>
             <MaintenanceNotification />
-            <AdminCommunicationsBanner />
             <ParentDashboard user={user} />
           </div>
         );

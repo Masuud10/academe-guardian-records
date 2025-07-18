@@ -18,7 +18,6 @@ import { AlertCircle } from "lucide-react";
 import SchoolOwnerDashboard from "./SchoolOwnerDashboard";
 import PrincipalDashboard from "./PrincipalDashboard";
 import MaintenanceNotification from "@/components/common/MaintenanceNotification";
-import AdminCommunicationsBanner from "@/components/common/AdminCommunicationsBanner";
 import SchoolDirectorDashboard from "./SchoolDirectorDashboard";
 
 interface DashboardRoleBasedContentProps {
@@ -141,10 +140,13 @@ const DashboardRoleBasedContent: React.FC<DashboardRoleBasedContentProps> = ({
       return (
         <div>
           <MaintenanceNotification />
-          <AdminCommunicationsBanner />
           <div className="text-center p-8">
-            <h2 className="text-2xl font-bold text-red-600 mb-4">Access Restricted</h2>
-            <p className="text-gray-600">Admin features are not available in the school application.</p>
+            <h2 className="text-2xl font-bold text-red-600 mb-4">
+              Access Restricted
+            </h2>
+            <p className="text-gray-600">
+              Admin features are not available in the school application.
+            </p>
           </div>
         </div>
       );
@@ -156,7 +158,6 @@ const DashboardRoleBasedContent: React.FC<DashboardRoleBasedContentProps> = ({
       return (
         <div>
           <MaintenanceNotification />
-          <AdminCommunicationsBanner />
           <SchoolDirectorDashboard />
         </div>
       );
@@ -168,7 +169,6 @@ const DashboardRoleBasedContent: React.FC<DashboardRoleBasedContentProps> = ({
       return (
         <div>
           <MaintenanceNotification />
-          <AdminCommunicationsBanner />
           <PrincipalDashboard user={user} onModalOpen={onModalOpen} />
         </div>
       );
@@ -180,7 +180,6 @@ const DashboardRoleBasedContent: React.FC<DashboardRoleBasedContentProps> = ({
       return (
         <div>
           <MaintenanceNotification />
-          <AdminCommunicationsBanner />
           <TeacherDashboard user={user} onModalOpen={onModalOpen} />
         </div>
       );
@@ -192,7 +191,6 @@ const DashboardRoleBasedContent: React.FC<DashboardRoleBasedContentProps> = ({
       return (
         <div>
           <MaintenanceNotification />
-          <AdminCommunicationsBanner />
           <FinanceOfficerDashboard user={user} />
         </div>
       );
@@ -204,7 +202,6 @@ const DashboardRoleBasedContent: React.FC<DashboardRoleBasedContentProps> = ({
       return (
         <div>
           <MaintenanceNotification />
-          <AdminCommunicationsBanner />
           <ParentDashboard user={user} onModalOpen={onModalOpen} />
         </div>
       );
@@ -217,7 +214,6 @@ const DashboardRoleBasedContent: React.FC<DashboardRoleBasedContentProps> = ({
       return (
         <div>
           <MaintenanceNotification />
-          <AdminCommunicationsBanner />
           <Card className="border-red-200 bg-red-50">
             <CardHeader>
               <CardTitle className="text-red-600">Unknown Role</CardTitle>

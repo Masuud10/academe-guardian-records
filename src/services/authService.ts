@@ -346,7 +346,15 @@ export class AuthService {
    * Check if user is a school user (non-admin)
    */
   static isSchoolUser(role: string): boolean {
-    return ['school_director', 'principal', 'teacher', 'parent', 'finance_officer', 'hr'].includes(role);
+    // Only allow these roles for school login
+    return [
+      'school_director',
+      'principal',
+      'teacher',
+      'hr',
+      'finance_officer',
+      'parent'
+    ].includes(role);
   }
 
   /**

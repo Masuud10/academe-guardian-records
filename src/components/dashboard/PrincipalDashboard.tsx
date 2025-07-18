@@ -17,7 +17,6 @@ import { Button } from "@/components/ui/button";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import { useNavigation } from "@/contexts/NavigationContext";
 import MaintenanceNotification from "@/components/common/MaintenanceNotification";
-import AdminCommunicationsBanner from "@/components/common/AdminCommunicationsBanner";
 
 // Section components
 import PrincipalStatsSection from "./principal/sections/PrincipalStatsSection";
@@ -203,9 +202,6 @@ const PrincipalDashboard: React.FC<PrincipalDashboardProps> = ({
           loadingTimeout={loadingTimeout}
           onRetry={handleRetry}
         />
-
-        {/* Admin Communications Banner */}
-        <AdminCommunicationsBanner />
 
         <PrincipalAnalyticsSection />
 

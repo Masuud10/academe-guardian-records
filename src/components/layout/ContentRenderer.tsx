@@ -10,7 +10,6 @@ import { useNavigation } from "@/contexts/NavigationContext";
 import ErrorFallback from "@/components/common/ErrorFallback";
 import ErrorBoundary from "@/components/common/ErrorBoundary";
 import MaintenanceNotification from "@/components/common/MaintenanceNotification";
-import AdminCommunicationsBanner from "@/components/common/AdminCommunicationsBanner";
 
 // Lazy load all dashboard components for better performance
 const PrincipalDashboard = React.lazy(
@@ -237,8 +236,12 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         case "elimisha_admin":
           return (
             <div className="text-center p-8">
-              <h2 className="text-2xl font-bold text-red-600 mb-4">Access Restricted</h2>
-              <p className="text-gray-600">Admin features are not available in the school application.</p>
+              <h2 className="text-2xl font-bold text-red-600 mb-4">
+                Access Restricted
+              </h2>
+              <p className="text-gray-600">
+                Admin features are not available in the school application.
+              </p>
             </div>
           );
         case "school_director":
@@ -263,7 +266,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
       return (
         <div>
           <MaintenanceNotification />
-          <AdminCommunicationsBanner />
           {dashboardComponent}
         </div>
       );
@@ -278,7 +280,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
       return (
         <div>
           <MaintenanceNotification />
-          <AdminCommunicationsBanner />
           <ErrorBoundary
             onError={(error, errorInfo) => {
               console.error(
@@ -340,8 +341,12 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
       if (user?.role === "edufam_admin") {
         return (
           <div className="text-center p-8">
-            <h2 className="text-2xl font-bold text-red-600 mb-4">Feature Unavailable</h2>
-            <p className="text-gray-600">System settings are not available in the school application.</p>
+            <h2 className="text-2xl font-bold text-red-600 mb-4">
+              Feature Unavailable
+            </h2>
+            <p className="text-gray-600">
+              System settings are not available in the school application.
+            </p>
           </div>
         );
       }
@@ -360,8 +365,12 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
       if (user?.role === "edufam_admin") {
         return (
           <div className="text-center p-8">
-            <h2 className="text-2xl font-bold text-red-600 mb-4">Feature Unavailable</h2>
-            <p className="text-gray-600">System reports are not available in the school application.</p>
+            <h2 className="text-2xl font-bold text-red-600 mb-4">
+              Feature Unavailable
+            </h2>
+            <p className="text-gray-600">
+              System reports are not available in the school application.
+            </p>
           </div>
         );
       }
@@ -380,8 +389,12 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
       if (user?.role === "edufam_admin" || user?.role === "elimisha_admin") {
         return (
           <div className="text-center p-8">
-            <h2 className="text-2xl font-bold text-red-600 mb-4">Feature Unavailable</h2>
-            <p className="text-gray-600">Admin analytics are not available in the school application.</p>
+            <h2 className="text-2xl font-bold text-red-600 mb-4">
+              Feature Unavailable
+            </h2>
+            <p className="text-gray-600">
+              Admin analytics are not available in the school application.
+            </p>
           </div>
         );
       }
@@ -693,8 +706,12 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
       case "users":
         return (
           <div className="text-center p-8">
-            <h2 className="text-2xl font-bold text-red-600 mb-4">Feature Unavailable</h2>
-            <p className="text-gray-600">User management is not available in the school application.</p>
+            <h2 className="text-2xl font-bold text-red-600 mb-4">
+              Feature Unavailable
+            </h2>
+            <p className="text-gray-600">
+              User management is not available in the school application.
+            </p>
           </div>
         );
       case "billing":
@@ -730,8 +747,12 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
       case "system-analytics":
         return (
           <div className="text-center p-8">
-            <h2 className="text-2xl font-bold text-red-600 mb-4">Feature Unavailable</h2>
-            <p className="text-gray-600">System analytics are not available in the school application.</p>
+            <h2 className="text-2xl font-bold text-red-600 mb-4">
+              Feature Unavailable
+            </h2>
+            <p className="text-gray-600">
+              System analytics are not available in the school application.
+            </p>
           </div>
         );
       case "transport":

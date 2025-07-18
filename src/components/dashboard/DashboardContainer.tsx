@@ -13,7 +13,6 @@ import UserProfileDropdown from "./UserProfileDropdown";
 import NotificationsDropdown from "@/components/notifications/NotificationsDropdown";
 import MaintenanceNotification from "@/components/common/MaintenanceNotification";
 import CommunicationBanner from "@/components/ui/CommunicationBanner";
-import AdminCommunicationsBanner from "@/components/common/AdminCommunicationsBanner";
 import { useAdminCommunications } from "@/hooks/useAdminCommunications";
 import { useNotifications } from "@/hooks/useNotifications";
 import { NotificationService } from "@/services/NotificationService";
@@ -305,7 +304,7 @@ const DashboardContainer: React.FC<DashboardContainerProps> = ({
           <MaintenanceNotification />
 
           {/* Admin Communications Banner - shows across all dashboards */}
-          <AdminCommunicationsBanner />
+          {/* <AdminCommunicationsBanner /> */}
 
           {children}
         </div>

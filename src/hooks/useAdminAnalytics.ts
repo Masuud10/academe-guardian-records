@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { AdminAnalyticsService } from '@/services/analytics/adminAnalyticsService';
 import { useAuth } from '@/contexts/AuthContext';
 
 export const useUserGrowthData = () => {
@@ -7,7 +6,7 @@ export const useUserGrowthData = () => {
   
   return useQuery({
     queryKey: ['admin-analytics-user-growth'],
-    queryFn: AdminAnalyticsService.getUserGrowthData,
+    queryFn: () => Promise.resolve({ data: [] }), // Mock data
     enabled: user?.role === 'edufam_admin',
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchInterval: 10 * 60 * 1000, // 10 minutes
@@ -23,7 +22,7 @@ export const useSchoolGrowthData = () => {
   
   return useQuery({
     queryKey: ['admin-analytics-school-growth'],
-    queryFn: AdminAnalyticsService.getSchoolGrowthData,
+    queryFn: () => Promise.resolve({ data: [] }), // Mock data
     enabled: user?.role === 'edufam_admin',
     staleTime: 5 * 60 * 1000,
     refetchInterval: 10 * 60 * 1000,
@@ -39,7 +38,7 @@ export const useEnrollmentBySchoolData = () => {
   
   return useQuery({
     queryKey: ['admin-analytics-enrollment-by-school'],
-    queryFn: AdminAnalyticsService.getEnrollmentBySchoolData,
+    queryFn: () => Promise.resolve({ data: [] }), // Mock data
     enabled: user?.role === 'edufam_admin',
     staleTime: 5 * 60 * 1000,
     refetchInterval: 10 * 60 * 1000,
@@ -55,7 +54,7 @@ export const useUserRoleDistributionData = () => {
   
   return useQuery({
     queryKey: ['admin-analytics-user-role-distribution'],
-    queryFn: AdminAnalyticsService.getUserRoleDistributionData,
+    queryFn: () => Promise.resolve({ data: [] }), // Mock data
     enabled: user?.role === 'edufam_admin',
     staleTime: 5 * 60 * 1000,
     refetchInterval: 10 * 60 * 1000,
@@ -71,7 +70,7 @@ export const useCurriculumDistributionData = () => {
   
   return useQuery({
     queryKey: ['admin-analytics-curriculum-distribution'],
-    queryFn: AdminAnalyticsService.getCurriculumDistributionData,
+    queryFn: () => Promise.resolve({ data: [] }), // Mock data
     enabled: user?.role === 'edufam_admin',
     staleTime: 5 * 60 * 1000,
     refetchInterval: 10 * 60 * 1000,
@@ -87,7 +86,7 @@ export const useFinancialSummaryData = () => {
   
   return useQuery({
     queryKey: ['admin-analytics-financial-summary'],
-    queryFn: AdminAnalyticsService.getFinancialSummaryData,
+    queryFn: () => Promise.resolve({ data: [] }), // Mock data
     enabled: user?.role === 'edufam_admin',
     staleTime: 5 * 60 * 1000,
     refetchInterval: 10 * 60 * 1000,
@@ -103,7 +102,7 @@ export const useSystemGrowthTrends = () => {
   
   return useQuery({
     queryKey: ['admin-analytics-system-growth-trends'],
-    queryFn: AdminAnalyticsService.getSystemGrowthTrends,
+    queryFn: () => Promise.resolve({ data: [] }), // Mock data
     enabled: user?.role === 'edufam_admin',
     staleTime: 5 * 60 * 1000,
     refetchInterval: 10 * 60 * 1000,
@@ -119,7 +118,7 @@ export const usePlatformUsageTrends = () => {
   
   return useQuery({
     queryKey: ['admin-analytics-platform-usage-trends'],
-    queryFn: AdminAnalyticsService.getPlatformUsageTrends,
+    queryFn: () => Promise.resolve({ data: [] }), // Mock data
     enabled: user?.role === 'edufam_admin',
     staleTime: 5 * 60 * 1000,
     refetchInterval: 15 * 60 * 1000,
@@ -135,7 +134,7 @@ export const useRevenueAnalytics = () => {
   
   return useQuery({
     queryKey: ['admin-analytics-revenue-analytics'],
-    queryFn: AdminAnalyticsService.getRevenueAnalytics,
+    queryFn: () => Promise.resolve({ data: [] }), // Mock data
     enabled: user?.role === 'edufam_admin',
     staleTime: 5 * 60 * 1000,
     refetchInterval: 10 * 60 * 1000,
@@ -151,7 +150,7 @@ export const usePerformanceInsights = () => {
   
   return useQuery({
     queryKey: ['admin-analytics-performance-insights'],
-    queryFn: AdminAnalyticsService.getPerformanceInsights,
+    queryFn: () => Promise.resolve({ data: [] }), // Mock data
     enabled: user?.role === 'edufam_admin',
     staleTime: 5 * 60 * 1000,
     refetchInterval: 10 * 60 * 1000,
