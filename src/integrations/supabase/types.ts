@@ -189,6 +189,59 @@ export type Database = {
           },
         ]
       }
+      admin_audit_logs: {
+        Row: {
+          action: string
+          admin_user_id: string | null
+          error_message: string | null
+          id: string
+          ip_address: unknown | null
+          new_values: Json | null
+          old_values: Json | null
+          resource: string | null
+          resource_id: string | null
+          success: boolean | null
+          timestamp: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          admin_user_id?: string | null
+          error_message?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          resource?: string | null
+          resource_id?: string | null
+          success?: boolean | null
+          timestamp?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          admin_user_id?: string | null
+          error_message?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          resource?: string | null
+          resource_id?: string | null
+          success?: boolean | null
+          timestamp?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_audit_logs_admin_user_id_fkey"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_communications: {
         Row: {
           created_at: string | null
@@ -230,6 +283,59 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      admin_users: {
+        Row: {
+          app_type: string
+          created_at: string | null
+          created_by: string | null
+          email: string
+          id: string
+          is_active: boolean | null
+          last_login_at: string | null
+          name: string
+          permissions: Json | null
+          role: Database["public"]["Enums"]["admin_role"]
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          app_type?: string
+          created_at?: string | null
+          created_by?: string | null
+          email: string
+          id?: string
+          is_active?: boolean | null
+          last_login_at?: string | null
+          name: string
+          permissions?: Json | null
+          role: Database["public"]["Enums"]["admin_role"]
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          app_type?: string
+          created_at?: string | null
+          created_by?: string | null
+          email?: string
+          id?: string
+          is_active?: boolean | null
+          last_login_at?: string | null
+          name?: string
+          permissions?: Json | null
+          role?: Database["public"]["Enums"]["admin_role"]
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_users_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       analytics_events: {
         Row: {
@@ -8868,6 +8974,14 @@ export type Database = {
         Args: { p_class_id: string; p_academic_year: string; p_term?: string }
         Returns: Json
       }
+      get_current_admin_role: {
+        Args: Record<PropertyKey, never>
+        Returns: Database["public"]["Enums"]["admin_role"]
+      }
+      get_current_admin_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_current_user_owned_school_id: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -8931,6 +9045,10 @@ export type Database = {
         Args: { user_email: string; success?: boolean }
         Returns: Json
       }
+      has_admin_permission: {
+        Args: { permission_name: string }
+        Returns: boolean
+      }
       hash_password_simple: {
         Args: { password: string }
         Returns: string
@@ -8957,6 +9075,10 @@ export type Database = {
       }
       is_parent_authorized_for_student: {
         Args: { p_student_id: string }
+        Returns: boolean
+      }
+      is_super_admin: {
+        Args: Record<PropertyKey, never>
         Returns: boolean
       }
       is_system_in_maintenance: {
@@ -9085,7 +9207,12 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      admin_role:
+        | "super_admin"
+        | "engineer"
+        | "support_hr"
+        | "marketing_sales"
+        | "finance"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -9212,6 +9339,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      admin_role: [
+        "super_admin",
+        "engineer",
+        "support_hr",
+        "marketing_sales",
+        "finance",
+      ],
+    },
   },
 } as const

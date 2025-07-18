@@ -53,10 +53,7 @@ const HRUserManagementModule = React.lazy(
   () => import("@/components/hr/HRUserManagementModule")
 );
 
-// Analytics and Management Components
-const SystemAnalyticsPage = React.lazy(
-  () => import("@/components/analytics/SystemAnalyticsPage")
-);
+// Analytics and Management Components (Admin analytics removed)
 const TransportManagement = React.lazy(
   () => import("@/components/transport/TransportManagement")
 );
@@ -730,8 +727,13 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
           UniversalSupportModule,
           "UniversalSupportModule"
         );
-      case "analytics":
-        return renderLazyComponent(SystemAnalyticsPage, "SystemAnalyticsPage");
+      case "system-analytics":
+        return (
+          <div className="text-center p-8">
+            <h2 className="text-2xl font-bold text-red-600 mb-4">Feature Unavailable</h2>
+            <p className="text-gray-600">System analytics are not available in the school application.</p>
+          </div>
+        );
       case "transport":
         return renderLazyComponent(TransportManagement, "TransportManagement");
       case "inventory":

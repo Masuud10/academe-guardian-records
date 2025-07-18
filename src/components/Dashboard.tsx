@@ -129,19 +129,6 @@ const Dashboard: React.FC = () => {
 
   try {
     switch (normalizedRole) {
-      case "edufam_admin":
-      case "elimisha_admin":
-        console.log("🎯 Dashboard: Access denied for admin roles - school app only");
-        return (
-          <div className="min-h-screen bg-background flex items-center justify-center">
-            <div className="text-center p-8">
-              <h2 className="text-2xl font-bold text-red-600 mb-4">Access Restricted</h2>
-              <p className="text-gray-600">Administrative features are not available in the school application.</p>
-              <p className="text-sm text-gray-500 mt-2">Please use the admin portal to access these features.</p>
-            </div>
-          </div>
-        );
-
       case "school_director":
         console.log("🎯 Dashboard: Routing to School Director Dashboard");
         return (

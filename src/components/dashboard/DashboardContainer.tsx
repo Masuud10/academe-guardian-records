@@ -154,8 +154,7 @@ const DashboardContainer: React.FC<DashboardContainerProps> = ({
 
   const getRoleDisplayName = (role: string) => {
     switch (role) {
-      case "edufam_admin":
-        return "EduFam Admin";
+      // Admin case removed for school app
       case "school_director":
         return "School Director";
       case "principal":

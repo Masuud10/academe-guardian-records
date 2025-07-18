@@ -33,6 +33,7 @@ const RoleAnalyticsRenderer: React.FC<RoleAnalyticsRendererProps> = ({ role, fil
       case "finance_officer":
         return <FinanceOfficerAnalytics filters={filters} />;
       case "edufam_admin":
+      case "elimisha_admin":
         return (
           <Card>
             <CardHeader>

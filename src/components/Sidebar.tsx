@@ -15,8 +15,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }) => 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊', roles: ['school_director', 'principal', 'teacher', 'parent', 'finance_officer', 'edufam_admin'] },
-    { id: 'analytics', label: 'Analytics', icon: '📈', roles: ['school_director', 'principal', 'teacher', 'finance_officer', 'edufam_admin'] },
+    { id: 'dashboard', label: 'Dashboard', icon: '📊', roles: ['school_director', 'principal', 'teacher', 'parent', 'finance_officer'] },
+    { id: 'analytics', label: 'Analytics', icon: '📈', roles: ['school_director', 'principal', 'teacher', 'finance_officer'] },
     { id: 'grades', label: 'Grades', icon: '📝', roles: ['school_director', 'principal', 'teacher', 'parent'] },
     { id: 'attendance', label: 'Attendance', icon: '📅', roles: ['school_director', 'principal', 'teacher', 'parent'] },
     { id: 'students', label: 'Students', icon: '👥', roles: ['school_director', 'principal', 'teacher'] },
@@ -28,7 +28,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }) => 
     { id: 'messages', label: 'Messages', icon: '💬', roles: ['school_director', 'principal', 'teacher', 'parent'] },
     { id: 'reports', label: 'Reports', icon: '📋', roles: ['school_director', 'principal', 'teacher', 'finance_officer'] },
     { id: 'support', label: 'Support', icon: '🎧', roles: ['school_director', 'principal'] },
-    { id: 'settings', label: 'Settings', icon: '⚙️', roles: ['school_director', 'principal', 'edufam_admin'] },
+    { id: 'settings', label: 'Settings', icon: '⚙️', roles: ['school_director', 'principal'] },
   ];
 
   const filteredItems = menuItems.filter(item => 
@@ -47,8 +47,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }) => 
         return 'Parent';
       case 'finance_officer':
         return 'Finance Officer';
-      case 'edufam_admin':
-        return 'EduFam Admin';
+      case 'hr':
+        return 'HR Officer';
       default:
         return role;
     }

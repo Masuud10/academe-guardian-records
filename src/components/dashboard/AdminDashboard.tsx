@@ -54,6 +54,7 @@ const AdminDashboard = () => {
       {(() => {
         switch (user.role) {
           case "edufam_admin":
+          case "elimisha_admin":
             return (
               <ErrorBoundary>
                 <div className="text-center p-8">

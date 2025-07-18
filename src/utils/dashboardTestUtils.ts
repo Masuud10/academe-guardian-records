@@ -323,11 +323,11 @@ export class DashboardTestUtils {
       try {
         // Test dynamic imports of critical components
         const components = [
-          // EduFamAdminDashboard removed for school app
-          () => import('@/components/dashboard/admin/AdminDashboardOverview'),
-          () => import('@/components/dashboard/admin/SystemOverviewCards'),
+          // Admin components removed for school app
           () => import('@/components/common/ErrorBoundary'),
-          () => import('@/components/common/ErrorBoundary')
+          () => import('@/components/dashboard/PrincipalDashboard'),
+          () => import('@/components/dashboard/TeacherDashboard'),
+          () => import('@/components/dashboard/ParentDashboard')
         ];
         
         for (const componentImport of components) {
@@ -345,10 +345,11 @@ export class DashboardTestUtils {
       try {
         // Test if hooks can be imported and used
         const hooks = [
-          () => import('@/hooks/useAdminSchoolsData'),
-          () => import('@/hooks/useAdminUsersData'),
+          // Admin hooks removed for school app
           () => import('@/hooks/useSchoolScopedData'),
-          () => import('@/hooks/useAuthState')
+          () => import('@/hooks/useAuthState'),
+          () => import('@/hooks/useAnalyticsPermissions'),
+          () => import('@/hooks/useBillingData')
         ];
         
         for (const hookImport of hooks) {

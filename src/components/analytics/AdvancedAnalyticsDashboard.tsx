@@ -28,7 +28,7 @@ const AdvancedAnalyticsDashboard: React.FC<AdvancedAnalyticsDashboardProps> = ({
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
 
-  const isSystemAdmin = user?.role === 'edufam_admin';
+  const isSystemAdmin = false; // Admin roles removed for school app
   
   return (
     <div className="space-y-6">
