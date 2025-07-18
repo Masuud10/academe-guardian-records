@@ -69,8 +69,7 @@ const AnalyticsDashboard = () => {
         return "Parent Analytics";
       case "finance_officer":
         return "Finance Analytics";
-      case "edufam_admin":
-        return "EduFam Admin Analytics";
+      // Admin roles removed for school application
       default:
         return "Analytics Dashboard";
     }
@@ -78,8 +77,7 @@ const AnalyticsDashboard = () => {
 
   const getRoleDescription = () => {
     switch (user?.role) {
-      case "edufam_admin":
-        return "Network-wide performance and insights";
+      // Admin roles removed for school application
       case "school_director":
       case "principal":
         return "School performance metrics and insights";
@@ -109,7 +107,7 @@ const AnalyticsDashboard = () => {
           <Alert>
             <AlertDescription>
               Your account needs to be assigned to a school to view analytics.
-              Please contact your administrator.
+              Please contact support.
             </AlertDescription>
           </Alert>
         </CardContent>

@@ -62,7 +62,7 @@ const UnauthorizedPage: React.FC = () => {
                   You are logged in as <strong>{user.name}</strong> ({user.role}
                   ).
                   <br />
-                  Please contact your administrator if you believe this is an
+                  Please contact support if you believe this is an
                   error.
                 </>
               ) : (

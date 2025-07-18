@@ -114,7 +114,7 @@ const Dashboard: React.FC = () => {
         <Alert variant="destructive" className="max-w-md">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            Unknown user role: {user.role}. Please contact your administrator.
+            Unknown user role: {user.role}. Please contact support.
           </AlertDescription>
         </Alert>
       </div>
@@ -188,7 +188,7 @@ const Dashboard: React.FC = () => {
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              Unknown user role: {user.role}. Please contact your administrator.
+              Unknown user role: {user.role}. Please contact support.
             </AlertDescription>
           </Alert>
         );

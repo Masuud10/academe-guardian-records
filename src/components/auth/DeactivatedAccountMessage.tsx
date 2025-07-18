@@ -32,7 +32,7 @@ const DeactivatedAccountMessage: React.FC = () => {
         <CardContent className="text-center space-y-6">
           <div className="text-red-700">
             <p className="mb-2">
-              Your account has been deactivated by the system administrator.
+              Your account has been deactivated by the system.
             </p>
             <p>
               If you believe this is a mistake or require further assistance,

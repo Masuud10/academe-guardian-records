@@ -32,16 +32,7 @@ const RoleAnalyticsRenderer: React.FC<RoleAnalyticsRendererProps> = ({ role, fil
         return <ParentAnalytics filters={filters} />;
       case "finance_officer":
         return <FinanceOfficerAnalytics filters={filters} />;
-      case "edufam_admin":
-      case "elimisha_admin":
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle>Access Restricted</CardTitle>
-              <CardDescription>Admin analytics are not available in the school application.</CardDescription>
-            </CardHeader>
-          </Card>
-        );
+      // Admin roles removed for school application
       case "hr":
         // HR has separate analytics in their dedicated dashboard
         return (

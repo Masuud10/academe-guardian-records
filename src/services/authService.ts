@@ -156,7 +156,7 @@ export class AuthService {
     error?: string;
   } {
     // Define which roles can access which login types
-    const adminRoles = ['edufam_admin', 'elimisha_admin'];
+    const adminRoles: string[] = []; // No admin roles in school application
     const schoolRoles = ['school_director', 'principal', 'teacher', 'parent', 'finance_officer', 'hr'];
 
     if (accessType === 'admin') {
@@ -336,10 +336,11 @@ export class AuthService {
   }
 
   /**
-   * Check if user is EduFam Admin
+   * Check if user is EduFam Admin (blocked in school application)
    */
   static isEduFamAdmin(role: string): boolean {
-    return role === 'edufam_admin' || role === 'elimisha_admin';
+    // Admin roles are not supported in the school application
+    return false;
   }
 
   /**
@@ -387,8 +388,6 @@ export class AuthService {
    */
   static getRoleDisplayName(role: string): string {
     const roleNames: Record<string, string> = {
-      'edufam_admin': 'EduFam Admin Staff',
-      'elimisha_admin': 'Elimisha Admin Staff',
       'school_director': 'School Director',
       'principal': 'Principal',
       'teacher': 'Teacher',
@@ -401,12 +400,10 @@ export class AuthService {
   }
 
   /**
-   * Get access type for a role
+   * Get access type for a role (always school for school application)
    */
   static getAccessTypeForRole(role: string): 'school' | 'admin' {
-    if (this.isEduFamAdmin(role)) {
-      return 'admin';
-    }
+    // School application only supports school access
     return 'school';
   }
 
@@ -466,7 +463,8 @@ export class AuthService {
       }
 
       // BLOCK ADMIN USERS FROM ACCESSING SCHOOL APPLICATION
-      if (this.isEduFamAdmin(profile.role)) {
+      const adminRoles = ['edufam_admin', 'elimisha_admin'];
+      if (adminRoles.includes(profile.role)) {
         console.log('🔐 AuthService: Admin user blocked from school application:', profile.role);
         return {
           success: false,

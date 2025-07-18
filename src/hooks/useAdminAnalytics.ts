@@ -5,9 +5,9 @@ export const useUserGrowthData = () => {
   const { user } = useAuth();
   
   return useQuery({
-    queryKey: ['admin-analytics-user-growth'],
-    queryFn: () => Promise.resolve({ data: [] }), // Mock data
-    enabled: user?.role === 'edufam_admin',
+    queryKey: ['school-analytics-user-growth'],
+    queryFn: () => Promise.resolve([]), // Mock data - returns empty array for school app
+    enabled: false, // Disabled for school application
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchInterval: 10 * 60 * 1000, // 10 minutes
     retry: 2,
@@ -21,9 +21,9 @@ export const useSchoolGrowthData = () => {
   const { user } = useAuth();
   
   return useQuery({
-    queryKey: ['admin-analytics-school-growth'],
-    queryFn: () => Promise.resolve({ data: [] }), // Mock data
-    enabled: user?.role === 'edufam_admin',
+    queryKey: ['school-analytics-school-growth'],
+    queryFn: () => Promise.resolve([]), // Mock data - returns empty array for school app
+    enabled: false, // Disabled for school application
     staleTime: 5 * 60 * 1000,
     refetchInterval: 10 * 60 * 1000,
     retry: 2,
