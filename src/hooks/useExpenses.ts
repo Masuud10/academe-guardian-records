@@ -271,7 +271,7 @@ export const useExpenses = () => {
 
   // Get pending expenses (for School Director)
   const getPendingExpenses = useCallback(async () => {
-    if (!user || !['school_owner', 'school_director', 'principal'].includes(user.role)) {
+    if (!user || !['school_director', 'principal'].includes(user.role)) {
       throw new Error('Access denied: Only school directors/owners can view pending expenses');
     }
 
@@ -291,7 +291,7 @@ export const useExpenses = () => {
 
   // Approve expense (for School Director)
   const approveExpense = useCallback(async (id: string) => {
-    if (!user || !['school_owner', 'school_director', 'principal'].includes(user.role)) {
+    if (!user || !['school_director', 'principal'].includes(user.role)) {
       throw new Error('Access denied: Only school directors/owners can approve expenses');
     }
 
@@ -320,7 +320,7 @@ export const useExpenses = () => {
 
   // Reject expense (for School Director)
   const rejectExpense = useCallback(async (id: string, rejectionReason: string) => {
-    if (!user || !['school_owner', 'school_director', 'principal'].includes(user.role)) {
+    if (!user || !['school_director', 'principal'].includes(user.role)) {
       throw new Error('Access denied: Only school directors/owners can reject expenses');
     }
 

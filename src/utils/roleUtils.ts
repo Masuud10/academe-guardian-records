@@ -48,10 +48,13 @@ const normalizeRole = (role: string): string => {
   
   // Handle common role variations and map them to standard roles
   const roleMap: { [key: string]: string } = {
-    // School owner variations
-    'school_owner': 'school_owner',
-    'schoolowner': 'school_owner',
-    'owner': 'school_owner',
+    // School director variations
+    'school_director': 'school_director',
+    'schooldirector': 'school_director',
+    'director': 'school_director',
+    'school_owner': 'school_director', // Legacy support
+    'schoolowner': 'school_director',
+    'owner': 'school_director',
     
     // Finance officer variations
     'finance_officer': 'finance_officer',

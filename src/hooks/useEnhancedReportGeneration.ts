@@ -127,7 +127,7 @@ export const useEnhancedReportGeneration = () => {
           description: 'Comprehensive financial overview and analytics',
           category: 'financial',
           requiresFilters: true,
-          availableForRoles: ['principal', 'finance_officer', 'school_owner']
+          availableForRoles: ['principal', 'finance_officer', 'school_director']
         },
         {
           id: 'revenue-analysis',
@@ -135,7 +135,7 @@ export const useEnhancedReportGeneration = () => {
           description: 'Revenue trends and detailed analysis',
           category: 'financial',
           requiresFilters: true,
-          availableForRoles: ['principal', 'finance_officer', 'school_owner']
+          availableForRoles: ['principal', 'finance_officer', 'school_director']
         }
       ],
       system: [
@@ -266,7 +266,7 @@ export const useEnhancedReportGeneration = () => {
       };
 
       // Add role-specific parameters
-      if (['principal', 'finance_officer', 'school_owner'].includes(user.role)) {
+      if (['principal', 'finance_officer', 'school_director'].includes(user.role)) {
         if (!schoolId) {
           throw new Error('School ID is required for this report type');
         }

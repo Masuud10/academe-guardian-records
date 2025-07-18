@@ -19,7 +19,7 @@ export const useFinanceTrackingWithAudit = () => {
     }
 
     // Enhanced role validation
-    if (!['finance_officer', 'principal', 'school_owner', 'elimisha_admin', 'edufam_admin'].includes(user.role)) {
+    if (!['finance_officer', 'principal', 'school_director', 'hr', 'elimisha_admin', 'edufam_admin'].includes(user.role)) {
       return { success: false, error: 'Insufficient permissions to process payments' };
     }
 

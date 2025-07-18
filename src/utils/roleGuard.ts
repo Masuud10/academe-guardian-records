@@ -45,7 +45,7 @@ export const hasAccess = (userRole: UserRole | undefined, section: string): bool
   
   // User management permissions
   if (section === 'users') {
-    return ['edufam_admin', 'school_owner', 'principal', 'hr'].includes(normalizedRole);
+    return ['edufam_admin', 'school_director', 'principal', 'hr'].includes(normalizedRole);
   }
   
   // Billing management only for edufam_admin
@@ -60,7 +60,7 @@ export const hasAccess = (userRole: UserRole | undefined, section: string): bool
   
   // Settings access
   if (section === 'settings') {
-    return ['edufam_admin', 'school_owner', 'principal'].includes(normalizedRole);
+    return ['edufam_admin', 'school_director', 'principal'].includes(normalizedRole);
   }
   
   // Reports section restrictions for teachers
@@ -130,7 +130,7 @@ export const canManageSchools = (userRole: UserRole | undefined): boolean => {
 export const canManageUsers = (userRole: UserRole | undefined): boolean => {
   if (!userRole) return false;
   const normalizedRole = userRole.toLowerCase() as UserRole;
-  return ['edufam_admin', 'school_owner', 'principal', 'hr'].includes(normalizedRole);
+  return ['edufam_admin', 'school_director', 'principal', 'hr'].includes(normalizedRole);
 };
 
 export const canAccessBilling = (userRole: UserRole | undefined): boolean => {

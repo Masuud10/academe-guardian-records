@@ -51,7 +51,7 @@ export const useFinanceOfficerAnalytics = (filters: { term: string; class: strin
       }
 
       // Enhanced role validation for finance officers
-      if (!['finance_officer', 'principal', 'school_owner', 'elimisha_admin', 'edufam_admin'].includes(user.role)) {
+      if (!['finance_officer', 'principal', 'school_director', 'hr', 'elimisha_admin', 'edufam_admin'].includes(user.role)) {
         throw new Error('Insufficient permissions to view financial analytics');
       }
 
