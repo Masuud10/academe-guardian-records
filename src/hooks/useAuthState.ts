@@ -158,8 +158,21 @@ export const useAuthState = () => {
         }
       }
 
-      // Validate school assignment for non-admin roles
-      const requiresSchoolAssignment = !['edufam_admin', 'elimisha_admin'].includes(resolvedRole);
+      // BLOCK ADMIN USERS FROM SCHOOL APPLICATION
+      if (['edufam_admin', 'elimisha_admin'].includes(resolvedRole)) {
+        console.log('🔐 AuthState: Admin user blocked from school application:', resolvedRole);
+        await supabase.auth.signOut();
+        if (isMountedRef.current) {
+          setUser(null);
+          setError('Admin accounts cannot access this application. Please use the admin portal.');
+          setIsLoading(false);
+          setIsInitialized(true);
+        }
+        return;
+      }
+
+      // Validate school assignment for school-based roles
+      const requiresSchoolAssignment = true; // All school users need school assignment
       const hasSchoolAssignment = !!profile?.school_id;
       
       if (requiresSchoolAssignment && !hasSchoolAssignment) {

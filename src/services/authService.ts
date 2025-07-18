@@ -404,6 +404,7 @@ export class AuthService {
 
   /**
    * Universal authentication method that determines user role and access type automatically
+   * BLOCKED FOR ADMIN USERS - This is the school application only
    */
   static async authenticateUserUniversal(
     email: string, 
@@ -456,8 +457,26 @@ export class AuthService {
         };
       }
 
-      // Determine access type based on role
-      const accessType = this.isEduFamAdmin(profile.role) ? 'admin' : 'school';
+      // BLOCK ADMIN USERS FROM ACCESSING SCHOOL APPLICATION
+      if (this.isEduFamAdmin(profile.role)) {
+        console.log('🔐 AuthService: Admin user blocked from school application:', profile.role);
+        return {
+          success: false,
+          error: 'Admin accounts cannot access this application. Please use the admin portal.'
+        };
+      }
+
+      // Ensure only school-based roles can access this application
+      if (!this.isSchoolUser(profile.role)) {
+        console.log('🔐 AuthService: Invalid role for school application:', profile.role);
+        return {
+          success: false,
+          error: 'Your account role is not authorized for this application.'
+        };
+      }
+
+      // Set access type to school since this is the school application
+      const accessType = 'school';
 
       // Create user object
       const user: AuthUser = {
