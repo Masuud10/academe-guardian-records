@@ -78,26 +78,10 @@ const fetchAttendanceAnalytics = async (
   });
 
   try {
-    let query = supabase
+    // First, get attendance records
+    let attendanceQuery = supabase
       .from("attendance")
-      .select(
-        `
-        id,
-        student_id,
-        status,
-        date,
-        class_id,
-        students!inner(
-          id,
-          first_name,
-          last_name,
-          admission_number,
-          roll_number,
-          class_id,
-          classes!inner(name)
-        )
-      `
-      )
+      .select("id, student_id, status, date, class_id")
       .eq("school_id", schoolId)
       .gte(
         "date",
@@ -108,13 +92,14 @@ const fetchAttendanceAnalytics = async (
 
     // Role-based filtering
     if (role === "teacher" && classId) {
-      query = query.eq("class_id", classId);
+      attendanceQuery = attendanceQuery.eq("class_id", classId);
     }
 
-    const { data: attendanceRecords, error } = await query;
+    const { data: attendanceRecords, error: attendanceError } =
+      await attendanceQuery;
 
-    if (error) {
-      console.error("Error fetching attendance records:", error);
+    if (attendanceError) {
+      console.error("Error fetching attendance records:", attendanceError);
       throw new Error("Failed to fetch attendance data");
     }
 
@@ -134,31 +119,70 @@ const fetchAttendanceAnalytics = async (
       };
     }
 
+    // Get unique student IDs
+    const studentIds = [...new Set(attendanceRecords.map((r) => r.student_id))];
+
+    // Get student details
+    const { data: students, error: studentsError } = await supabase
+      .from("students")
+      .select(
+        "id, first_name, last_name, admission_number, roll_number, class_id"
+      )
+      .in("id", studentIds);
+
+    if (studentsError) {
+      console.error("Error fetching students:", studentsError);
+      throw new Error("Failed to fetch student data");
+    }
+
+    // Get class details
+    const classIds = [
+      ...new Set(students?.map((s) => s.class_id).filter(Boolean) || []),
+    ];
+    const { data: classes, error: classesError } = await supabase
+      .from("classes")
+      .select("id, name")
+      .in("id", classIds);
+
+    if (classesError) {
+      console.error("Error fetching classes:", classesError);
+      throw new Error("Failed to fetch class data");
+    }
+
+    // Create lookup maps
+    const studentsMap = new Map(students?.map((s) => [s.id, s]) || []);
+    const classesMap = new Map(classes?.map((c) => [c.id, c]) || []);
+
+    // Combine data
+    const enrichedRecords = attendanceRecords.map((record) => ({
+      ...record,
+      student: studentsMap.get(record.student_id),
+      class: classesMap.get(record.student?.class_id || ""),
+    }));
+
     // Calculate overall statistics
-    const presentCount = attendanceRecords.filter(
+    const presentCount = enrichedRecords.filter(
       (r) => r.status === "present"
     ).length;
-    const absentCount = attendanceRecords.filter(
+    const absentCount = enrichedRecords.filter(
       (r) => r.status === "absent"
     ).length;
-    const lateCount = attendanceRecords.filter(
-      (r) => r.status === "late"
-    ).length;
-    const excusedCount = attendanceRecords.filter(
+    const lateCount = enrichedRecords.filter((r) => r.status === "late").length;
+    const excusedCount = enrichedRecords.filter(
       (r) => r.status === "excused"
     ).length;
-    const totalRecords = attendanceRecords.length;
+    const totalRecords = enrichedRecords.length;
 
     // Get unique students
     const uniqueStudents = [
-      ...new Set(attendanceRecords.map((r) => r.student_id)),
+      ...new Set(enrichedRecords.map((r) => r.student_id)),
     ];
     const totalStudents = uniqueStudents.length;
 
     // Calculate class-wise statistics
     const classStatsMap = new Map();
-    attendanceRecords.forEach((record) => {
-      const className = record.students?.classes?.name || "Unknown Class";
+    enrichedRecords.forEach((record) => {
+      const className = record.class?.name || "Unknown Class";
       if (!classStatsMap.has(className)) {
         classStatsMap.set(className, {
           className,
@@ -171,8 +195,8 @@ const fetchAttendanceAnalytics = async (
       }
       const stats = classStatsMap.get(className);
       stats.totalStudents = new Set(
-        attendanceRecords
-          .filter((r) => r.students?.classes?.name === className)
+        enrichedRecords
+          .filter((r) => r.class?.name === className)
           .map((r) => r.student_id)
       ).size;
 
@@ -199,7 +223,7 @@ const fetchAttendanceAnalytics = async (
     }).reverse();
 
     last7Days.forEach((date) => {
-      const dayRecords = attendanceRecords.filter((r) => r.date === date);
+      const dayRecords = enrichedRecords.filter((r) => r.date === date);
       const dayPresent = dayRecords.filter(
         (r) => r.status === "present"
       ).length;
@@ -221,10 +245,10 @@ const fetchAttendanceAnalytics = async (
 
     // Calculate student-wise statistics
     const studentStatsMap = new Map();
-    attendanceRecords.forEach((record) => {
+    enrichedRecords.forEach((record) => {
       const studentId = record.student_id;
-      const studentName = `${record.students?.first_name || ""} ${
-        record.students?.last_name || ""
+      const studentName = `${record.student?.first_name || ""} ${
+        record.student?.last_name || ""
       }`.trim();
 
       if (!studentStatsMap.has(studentId)) {

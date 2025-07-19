@@ -40,8 +40,6 @@ import {
 } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import { useToast } from "@/hooks/use-toast";
-import NotificationCenter from "@/components/notifications/NotificationCenter";
-import AuditLogsViewer from "@/components/audit/AuditLogsViewer";
 
 interface EnhancedHeaderProps {
   onMenuToggle: () => void;
@@ -57,33 +55,6 @@ const EnhancedHeader: React.FC<EnhancedHeaderProps> = ({
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
   const navigate = useNavigate();
-
-  const [notificationCenterOpen, setNotificationCenterOpen] = useState(false);
-  const [auditLogsOpen, setAuditLogsOpen] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
-
-  // Fetch unread notifications count
-  const { data: unreadNotifications } = useQuery({
-    queryKey: ["unread-notifications", user?.id],
-    queryFn: async () => {
-      if (!user?.id) return { data: [], count: 0 };
-      return await NotificationService.getUserNotifications(
-        user.id,
-        1,
-        100,
-        true
-      );
-    },
-    enabled: !!user?.id,
-    refetchInterval: 30000, // Refetch every 30 seconds
-  });
-
-  // Update unread count when data changes
-  useEffect(() => {
-    if (unreadNotifications) {
-      setUnreadCount(unreadNotifications.count);
-    }
-  }, [unreadNotifications]);
 
   // Handle sign out
   const handleSignOut = async () => {
@@ -201,44 +172,6 @@ const EnhancedHeader: React.FC<EnhancedHeaderProps> = ({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Audit Logs Button - Only for admins and principals */}
-          {(user?.role === "edufam_admin" ||
-            user?.role === "principal" ||
-            user?.role === "school_director") && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setAuditLogsOpen(true)}
-              className="relative"
-            >
-              <Activity className="h-4 w-4" />
-              {isMobile && <span className="ml-2 text-xs">Audit</span>}
-            </Button>
-          )}
-
-          {/* Notifications */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setNotificationCenterOpen(true)}
-            className="relative"
-          >
-            {unreadCount > 0 ? (
-              <BellRing className="h-4 w-4" />
-            ) : (
-              <Bell className="h-4 w-4" />
-            )}
-            {unreadCount > 0 && (
-              <Badge
-                variant="destructive"
-                className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
-              >
-                {unreadCount > 99 ? "99+" : unreadCount}
-              </Badge>
-            )}
-            {isMobile && <span className="ml-2 text-xs">Notifications</span>}
-          </Button>
-
           {/* User menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -289,18 +222,6 @@ const EnhancedHeader: React.FC<EnhancedHeaderProps> = ({
           </DropdownMenu>
         </div>
       </div>
-
-      {/* Notification Center */}
-      <NotificationCenter
-        isOpen={notificationCenterOpen}
-        onClose={() => setNotificationCenterOpen(false)}
-      />
-
-      {/* Audit Logs Viewer */}
-      <AuditLogsViewer
-        isOpen={auditLogsOpen}
-        onClose={() => setAuditLogsOpen(false)}
-      />
     </header>
   );
 };

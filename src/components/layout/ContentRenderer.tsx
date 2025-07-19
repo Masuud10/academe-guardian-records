@@ -179,6 +179,13 @@ const StaffManagement = React.lazy(() =>
   }))
 );
 
+// Profile page
+const MyProfilePage = React.lazy(() =>
+  import("@/pages/MyProfilePage").then((module) => ({
+    default: module.MyProfilePage,
+  }))
+);
+
 interface ContentRendererProps {
   activeSection: string;
   onModalOpen?: (modalType: string) => void;
@@ -228,23 +235,17 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
 
     // Return dashboard component if it's the dashboard section
     if (dashboardComponent) {
-      return (
-        <div>
-          
-          {dashboardComponent}
-        </div>
-      );
+      return <div>{dashboardComponent}</div>;
     }
 
     // Render other sections with lazy loading and error boundaries
     const renderLazyComponent = (
-      Component: React.LazyExoticComponent<React.ComponentType<any>>,
+      Component: React.LazyExoticComponent<React.ComponentType<unknown>>,
       componentName?: string,
-      props?: any
+      props?: Record<string, unknown>
     ) => {
       return (
         <div>
-          
           <ErrorBoundary
             onError={(error, errorInfo) => {
               console.error(
@@ -276,7 +277,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
     // Render unauthorized access message
     const renderUnauthorizedAccess = () => (
       <div>
-        
         <div className="p-8 text-center text-red-600">
           Access Denied: You don't have permission to view this section.
         </div>
@@ -293,7 +293,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
       }
       return (
         <div>
-          
           <div className="p-8 text-center text-red-600">
             Access Denied: Principal access required
           </div>
@@ -331,7 +330,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
       }
       return (
         <div>
-          
           <div className="p-8 text-center text-red-600">
             Access Denied: EduFam Admin access required
           </div>
@@ -366,7 +364,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
       }
       return (
         <div>
-          
           <div className="p-8 text-center text-red-600">
             Access Denied: Analytics access restricted
           </div>
@@ -385,7 +382,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            
             <div className="p-8 text-center text-red-600">
               Access Denied: Finance access required
             </div>
@@ -397,7 +393,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            
             <div className="p-8 text-center text-red-600">
               Access Denied: Finance access required
             </div>
@@ -410,7 +405,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            
             <div className="p-8 text-center text-red-600">
               Access Denied: Expenses are restricted to Finance Officers only
             </div>
@@ -426,7 +420,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            
             <div className="p-8 text-center text-red-600">
               Access Denied: Financial Reports are restricted to Finance
               Officers only
@@ -442,7 +435,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            
             <div className="p-8 text-center text-red-600">
               Access Denied: Finance access required
             </div>
@@ -457,7 +449,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            
             <div className="p-8 text-center text-red-600">
               Access Denied: Finance access required
             </div>
@@ -474,7 +465,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            
             <div className="p-8 text-center text-red-600">
               Access Denied: Finance access required
             </div>
@@ -489,7 +479,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            
             <div className="p-8 text-center text-red-600">
               Access Denied: Finance access required
             </div>
@@ -506,7 +495,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            
             <div>
               School Analytics access restricted to EduFam administrators
             </div>
@@ -536,7 +524,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            
             <div className="p-8 text-center text-red-600">
               Access Denied: Only principals can manage examinations
             </div>
@@ -557,7 +544,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            
             <div className="p-8 text-center text-red-600">
               Access Denied: Only principals can access Academic Management
             </div>
@@ -579,7 +565,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         if (user?.role === "principal") {
           return (
             <div>
-              
               <Suspense
                 fallback={
                   <div className="flex items-center justify-center h-64">
@@ -753,6 +738,8 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
       case "debug":
         // Debug module removed - redirect to unauthorized
         return renderUnauthorizedAccess();
+      case "profile":
+        return renderLazyComponent(MyProfilePage, "MyProfilePage", { user });
       default:
         console.warn("📋 ContentRenderer: Unknown section:", activeSection);
         return (

@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card } from '@/components/ui/card';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/hooks/use-toast';
-import { Eye, EyeOff, Shield, Lock, Key } from 'lucide-react';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
+import { Eye, EyeOff, Shield, Lock, Key } from "lucide-react";
 
 export const SecurityTab: React.FC = () => {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -16,21 +16,21 @@ export const SecurityTab: React.FC = () => {
     confirm: false,
   });
   const [formData, setFormData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
   const togglePasswordVisibility = (field: keyof typeof showPasswords) => {
-    setShowPasswords(prev => ({
+    setShowPasswords((prev) => ({
       ...prev,
-      [field]: !prev[field]
+      [field]: !prev[field],
     }));
   };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (formData.newPassword !== formData.confirmPassword) {
       toast({
         title: "Error",
@@ -51,9 +51,9 @@ export const SecurityTab: React.FC = () => {
 
     try {
       setIsLoading(true);
-      
+
       const { error } = await supabase.auth.updateUser({
-        password: formData.newPassword
+        password: formData.newPassword,
       });
 
       if (error) {
@@ -66,16 +66,17 @@ export const SecurityTab: React.FC = () => {
       });
 
       setFormData({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: '',
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
       });
       setIsChangingPassword(false);
-    } catch (error: any) {
-      console.error('Error updating password:', error);
+    } catch (error: unknown) {
+      console.error("Error updating password:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to update password",
+        description:
+          error instanceof Error ? error.message : "Failed to update password",
         variant: "destructive",
       });
     } finally {
@@ -85,9 +86,9 @@ export const SecurityTab: React.FC = () => {
 
   const handleCancel = () => {
     setFormData({
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: '',
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
     });
     setIsChangingPassword(false);
   };
@@ -120,12 +121,20 @@ export const SecurityTab: React.FC = () => {
               <div className="flex items-center gap-2">
                 <div className="flex">
                   {Array.from({ length: 8 }).map((_, i) => (
-                    <div key={i} className="w-2 h-2 bg-muted-foreground rounded-full mr-1" />
+                    <div
+                      key={i}
+                      className="w-2 h-2 bg-muted-foreground rounded-full mr-1"
+                    />
                   ))}
                 </div>
-                <span className="text-sm text-muted-foreground">Last changed recently</span>
+                <span className="text-sm text-muted-foreground">
+                  Last changed recently
+                </span>
               </div>
-              <Button onClick={() => setIsChangingPassword(true)} variant="outline">
+              <Button
+                onClick={() => setIsChangingPassword(true)}
+                variant="outline"
+              >
                 <Key className="h-4 w-4 mr-2" />
                 Change Password
               </Button>
@@ -137,9 +146,11 @@ export const SecurityTab: React.FC = () => {
                 <div className="relative">
                   <Input
                     id="newPassword"
-                    type={showPasswords.new ? 'text' : 'password'}
+                    type={showPasswords.new ? "text" : "password"}
                     value={formData.newPassword}
-                    onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, newPassword: e.target.value })
+                    }
                     placeholder="Enter new password"
                     required
                     minLength={8}
@@ -149,7 +160,7 @@ export const SecurityTab: React.FC = () => {
                     variant="ghost"
                     size="sm"
                     className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                    onClick={() => togglePasswordVisibility('new')}
+                    onClick={() => togglePasswordVisibility("new")}
                   >
                     {showPasswords.new ? (
                       <EyeOff className="h-4 w-4" />
@@ -168,9 +179,14 @@ export const SecurityTab: React.FC = () => {
                 <div className="relative">
                   <Input
                     id="confirmPassword"
-                    type={showPasswords.confirm ? 'text' : 'password'}
+                    type={showPasswords.confirm ? "text" : "password"}
                     value={formData.confirmPassword}
-                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        confirmPassword: e.target.value,
+                      })
+                    }
                     placeholder="Confirm new password"
                     required
                   />
@@ -179,7 +195,7 @@ export const SecurityTab: React.FC = () => {
                     variant="ghost"
                     size="sm"
                     className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                    onClick={() => togglePasswordVisibility('confirm')}
+                    onClick={() => togglePasswordVisibility("confirm")}
                   >
                     {showPasswords.confirm ? (
                       <EyeOff className="h-4 w-4" />
@@ -192,7 +208,7 @@ export const SecurityTab: React.FC = () => {
 
               <div className="flex gap-2 pt-4">
                 <Button type="submit" disabled={isLoading}>
-                  {isLoading ? 'Updating...' : 'Update Password'}
+                  {isLoading ? "Updating..." : "Update Password"}
                 </Button>
                 <Button type="button" variant="outline" onClick={handleCancel}>
                   Cancel
@@ -220,23 +236,29 @@ export const SecurityTab: React.FC = () => {
               <span className="text-sm">Email Verification</span>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-sm text-green-600 dark:text-green-400">Verified</span>
+                <span className="text-sm text-green-600 dark:text-green-400">
+                  Verified
+                </span>
               </div>
             </div>
-            
+
             <div className="flex items-center justify-between py-2 border-b">
               <span className="text-sm">Password Strength</span>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-sm text-green-600 dark:text-green-400">Strong</span>
+                <span className="text-sm text-green-600 dark:text-green-400">
+                  Strong
+                </span>
               </div>
             </div>
-            
+
             <div className="flex items-center justify-between py-2">
               <span className="text-sm">Account Status</span>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-sm text-green-600 dark:text-green-400">Active</span>
+                <span className="text-sm text-green-600 dark:text-green-400">
+                  Active
+                </span>
               </div>
             </div>
           </div>

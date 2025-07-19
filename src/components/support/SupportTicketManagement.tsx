@@ -24,7 +24,7 @@ import {
   Eye,
 } from "lucide-react";
 import { useSupportTickets } from "@/hooks/useSupportTickets";
-import CreateSupportTicketForm from "../CreateSupportTicketForm";
+import CreateSupportTicketForm from "./CreateSupportTicketForm";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import {
   Select,

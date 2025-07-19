@@ -30,7 +30,8 @@ import {
   UserPlus,
   ArrowUpDown,
   Archive,
-  MessageSquare
+  MessageSquare,
+  User
 } from 'lucide-react';
 
 import { LucideIcon } from 'lucide-react';
@@ -63,6 +64,7 @@ export const getMenuItems = (userRole?: string): MenuItem[] => {
       { id: 'reports', label: 'School Reports', icon: FileText, roles: ['school_director'] },
       { id: 'support', label: 'Support Tickets', icon: Headphones, roles: ['school_director'] },
       { id: 'messages', label: 'Messages', icon: MessageSquare, roles: ['school_director'] },
+      { id: 'profile', label: 'My Profile', icon: User, roles: ['school_director'] },
     ];
   }
 
@@ -84,6 +86,7 @@ export const getMenuItems = (userRole?: string): MenuItem[] => {
       { id: 'reports', label: 'School Reports', icon: FileText, roles: ['principal'] },
       { id: 'support', label: 'Support', icon: Headphones, roles: ['principal'] },
       { id: 'messages', label: 'Messages', icon: MessageSquare, roles: ['principal'] },
+      { id: 'profile', label: 'My Profile', icon: User, roles: ['principal'] },
     ];
   }
 
@@ -100,6 +103,7 @@ export const getMenuItems = (userRole?: string): MenuItem[] => {
       { id: 'reports', label: 'Class Reports', icon: FileText, roles: ['teacher'] },
       { id: 'support', label: 'Support', icon: Headphones, roles: ['teacher'] },
       { id: 'messages', label: 'Messages', icon: MessageSquare, roles: ['teacher'] },
+      { id: 'profile', label: 'My Profile', icon: User, roles: ['teacher'] },
     ];
   }
 
@@ -120,6 +124,7 @@ export const getMenuItems = (userRole?: string): MenuItem[] => {
       { id: 'finance-settings', label: 'Finance Settings', icon: Settings, roles: ['finance_officer'] },
       { id: 'support', label: 'Support', icon: Headphones, roles: ['finance_officer'] },
       { id: 'messages', label: 'Messages', icon: MessageSquare, roles: ['finance_officer'] },
+      { id: 'profile', label: 'My Profile', icon: User, roles: ['finance_officer'] },
     ];
   }
 
@@ -135,6 +140,7 @@ export const getMenuItems = (userRole?: string): MenuItem[] => {
       { id: 'reports', label: 'Progress Reports', icon: FileText, roles: ['parent'] },
       { id: 'support', label: 'Support', icon: Headphones, roles: ['parent'] },
       { id: 'messages', label: 'Messages', icon: MessageSquare, roles: ['parent'] },
+      { id: 'profile', label: 'My Profile', icon: User, roles: ['parent'] },
     ];
   }
 
@@ -151,6 +157,7 @@ export const getMenuItems = (userRole?: string): MenuItem[] => {
       { id: 'announcements', label: 'HR Announcements', icon: Megaphone, roles: ['hr'] },
       { id: 'support', label: 'Support', icon: Headphones, roles: ['hr'] },
       { id: 'messages', label: 'Messages', icon: MessageSquare, roles: ['hr'] },
+      { id: 'profile', label: 'My Profile', icon: User, roles: ['hr'] },
     ];
   }
 

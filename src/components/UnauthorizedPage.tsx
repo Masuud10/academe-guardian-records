@@ -18,9 +18,7 @@ const UnauthorizedPage: React.FC = () => {
   const handleGoHome = () => {
     if (user) {
       const sections = RouteGuard.getUserAccessibleSections(user);
-      if (sections.primarySection === "admin") {
-        navigate("/admin/dashboard");
-      } else if (sections.primarySection === "school") {
+      if (sections.primarySection === "school") {
         navigate("/dashboard");
       } else {
         navigate("/");
@@ -62,8 +60,7 @@ const UnauthorizedPage: React.FC = () => {
                   You are logged in as <strong>{user.name}</strong> ({user.role}
                   ).
                   <br />
-                  Please contact support if you believe this is an
-                  error.
+                  Please contact support if you believe this is an error.
                 </>
               ) : (
                 "Please log in with appropriate credentials to access this area."
