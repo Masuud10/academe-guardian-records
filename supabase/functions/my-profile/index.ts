@@ -78,126 +78,58 @@ serve(async (req) => {
     const url = new URL(req.url);
     const path = url.pathname;
 
-    // GET /my-profile - Get complete profile data with employment details
+    // GET /my-profile - Get complete profile data using secure RPC function
     if (req.method === 'GET' && path.endsWith('/my-profile')) {
       console.log('Fetching profile data for user:', user.id);
 
-      // Get profile data with school information
-      let { data: profileData, error: profileError } = await supabaseClient
-        .from('profiles')
-        .select(`
-          *,
-          schools!profiles_school_id_fkey(name)
-        `)
-        .eq('id', user.id)
-        .single();
-
-      // If profile doesn't exist, create one automatically
-      if (profileError && profileError.code === 'PGRST116') {
-        console.log('Profile not found, creating new profile for user:', user.id);
-        
-        // Determine role based on email patterns
-        let userRole = 'parent'; // Default role
-        const userSchoolId = null;
-        
-        if (user.email?.includes('@elimisha.com') || user.email === 'masuud@gmail.com') {
-          userRole = 'elimisha_admin';
-        } else if (user.email?.includes('admin')) {
-          userRole = 'edufam_admin';
-        } else if (user.email?.includes('principal')) {
-          userRole = 'principal';
-        } else if (user.email?.includes('teacher')) {
-          userRole = 'teacher';
-        } else if (user.email?.includes('owner')) {
-          userRole = 'school_owner';
-        } else if (user.email?.includes('finance')) {
-          userRole = 'finance_officer';
-        }
-
-        // Create the profile
-        const { data: newProfile, error: createError } = await supabaseClient
-          .from('profiles')
-          .insert({
-            id: user.id,
-            email: user.email,
-            name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
-            role: userRole,
-            school_id: userSchoolId,
-            status: 'active',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
-          .select(`
-            *,
-            schools!profiles_school_id_fkey(name)
-          `)
-          .single();
-
-        if (createError) {
-          console.error('Profile creation error:', createError);
-          return new Response(
-            JSON.stringify({ error: 'Failed to create profile' }),
-            {
-              status: 500,
-              headers: { 'Content-Type': 'application/json', ...corsHeaders },
-            }
-          );
-        }
-
-        profileData = newProfile;
-      } else if (profileError) {
-        console.error('Profile fetch error:', profileError);
+      // Call the secure RPC function
+      const { data, error } = await supabaseClient.rpc('get_my_complete_profile');
+      
+      if (error) {
+        console.error('Error calling RPC function:', error);
         return new Response(
-          JSON.stringify({ error: 'Failed to fetch profile' }),
-          {
-            status: 500,
-            headers: { 'Content-Type': 'application/json', ...corsHeaders },
+          JSON.stringify({ error: 'Failed to fetch profile data' }),
+          { 
+            status: 500, 
+            headers: { 'Content-Type': 'application/json', ...corsHeaders } 
           }
         );
       }
 
-      // Get employment details if user is not a parent
-      let employmentDetails = null;
-      if (profileData.role !== 'parent') {
-        const { data: empData, error: empError } = await supabaseClient
-          .from('staff_employment_details')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
-
-        if (empError && empError.code === 'PGRST116') {
-          // Employment details don't exist, create default ones
-          console.log('Employment details not found, creating default for user:', user.id);
-          
-          const { data: newEmpData, error: createEmpError } = await supabaseClient
-            .from('staff_employment_details')
-            .insert({
-              user_id: user.id,
-              salary: null,
-              total_leave_days_per_year: 21, // Default annual leave
-              leave_days_taken: 0,
-              updated_at: new Date().toISOString()
-            })
-            .select('*')
-            .single();
-
-          if (createEmpError) {
-            console.error('Employment details creation error:', createEmpError);
-          } else {
-            employmentDetails = newEmpData;
+      // The RPC function returns an array, get the first element
+      const profileData = data?.[0];
+      
+      if (!profileData) {
+        console.error('No profile data returned');
+        return new Response(
+          JSON.stringify({ error: 'Profile not found' }),
+          { 
+            status: 404, 
+            headers: { 'Content-Type': 'application/json', ...corsHeaders } 
           }
-        } else if (empError) {
-          console.error('Employment details fetch error:', empError);
-        } else {
-          employmentDetails = empData;
-        }
+        );
       }
 
+      // Format response to match frontend expectations
       const response = {
-        ...profileData,
-        employment_details: employmentDetails,
+        id: profileData.id,
+        email: profileData.email,
+        name: profileData.full_name,
+        role: profileData.role,
+        school_id: profileData.school_id,
+        phone: profileData.phone,
+        bio: null, // Field doesn't exist in schema
+        avatar_url: profileData.avatar_url,
+        status: profileData.status,
+        schools: profileData.school_name ? { name: profileData.school_name } : null,
+        employment_details: profileData.salary !== null ? {
+          salary: profileData.salary,
+          total_leave_days_per_year: profileData.total_leave_days_per_year || 21,
+          leave_days_taken: profileData.leave_days_taken || 0
+        } : null
       };
 
+      console.log('Profile data fetched successfully');
       return new Response(JSON.stringify(response), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });

@@ -35,26 +35,51 @@ export const MyProfilePage: React.FC = () => {
   const { user } = useAuth();
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
 
   const fetchProfileData = async () => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase.functions.invoke('my-profile');
-      
-      if (error) {
-        console.error('Error fetching profile:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load profile data",
-          variant: "destructive",
-        });
-        return;
+      setError(null);
+
+      // Call the new RPC function directly for better reliability
+      const { data, error: rpcError } = await supabase.rpc('get_my_complete_profile');
+
+      if (rpcError) {
+        throw rpcError;
       }
 
-      setProfileData(data);
+      // The RPC function returns an array, so we take the first element
+      const profile = data?.[0];
+      
+      if (!profile) {
+        throw new Error('No profile data found');
+      }
+
+      // Transform the RPC result to match the expected interface
+      const transformedProfile: ProfileData = {
+        id: profile.id,
+        email: profile.email,
+        name: profile.full_name,
+        role: profile.role,
+        school_id: profile.school_id,
+        phone: profile.phone,
+        bio: null, // Field doesn't exist in current schema
+        avatar_url: profile.avatar_url,
+        status: profile.status,
+        schools: profile.school_name ? { name: profile.school_name } : null,
+        employment_details: profile.salary !== null ? {
+          salary: profile.salary,
+          total_leave_days_per_year: profile.total_leave_days_per_year || 21,
+          leave_days_taken: profile.leave_days_taken || 0
+        } : null
+      };
+
+      setProfileData(transformedProfile);
     } catch (error) {
       console.error('Error fetching profile:', error);
+      setError('Failed to load profile data. Please try again later.');
       toast({
         title: "Error", 
         description: "Failed to load profile data",
@@ -124,10 +149,32 @@ export const MyProfilePage: React.FC = () => {
     fetchProfileData();
   }, []);
 
-  if (isLoading || !profileData) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center space-y-4">
+          <p className="text-red-600">{error}</p>
+          <Button onClick={() => fetchProfileData()}>Try Again</Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profileData) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center space-y-4">
+          <p className="text-muted-foreground">Could not find your profile information.</p>
+          <Button onClick={() => fetchProfileData()}>Reload</Button>
+        </div>
       </div>
     );
   }

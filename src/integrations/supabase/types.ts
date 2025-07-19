@@ -9424,6 +9424,23 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_my_complete_profile: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          full_name: string
+          email: string
+          role: string
+          school_id: string
+          school_name: string
+          phone: string
+          avatar_url: string
+          status: string
+          salary: number
+          total_leave_days_per_year: number
+          leave_days_taken: number
+        }[]
+      }
       get_outstanding_fees: {
         Args: { p_school_id: string }
         Returns: number
