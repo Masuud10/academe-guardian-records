@@ -125,9 +125,8 @@ const fetchAttendanceAnalytics = async (
     // Get student details
     const { data: students, error: studentsError } = await supabase
       .from("students")
-      .select(
-        "id, first_name, last_name, admission_number, roll_number, class_id"
-      )
+      .select("id, name, class_id")
+      .eq("school_id", schoolId)
       .in("id", studentIds);
 
     if (studentsError) {
@@ -154,11 +153,15 @@ const fetchAttendanceAnalytics = async (
     const classesMap = new Map(classes?.map((c) => [c.id, c]) || []);
 
     // Combine data
-    const enrichedRecords = attendanceRecords.map((record) => ({
-      ...record,
-      student: studentsMap.get(record.student_id),
-      class: classesMap.get(record.student?.class_id || ""),
-    }));
+    const enrichedRecords = attendanceRecords.map((record) => {
+      const student = studentsMap.get(record.student_id);
+      const classData = classesMap.get(student?.class_id || "");
+      return {
+        ...record,
+        student,
+        class: classData,
+      };
+    });
 
     // Calculate overall statistics
     const presentCount = enrichedRecords.filter(
@@ -247,9 +250,7 @@ const fetchAttendanceAnalytics = async (
     const studentStatsMap = new Map();
     enrichedRecords.forEach((record) => {
       const studentId = record.student_id;
-      const studentName = `${record.student?.first_name || ""} ${
-        record.student?.last_name || ""
-      }`.trim();
+      const studentName = `${record.student?.name || ""}`.trim();
 
       if (!studentStatsMap.has(studentId)) {
         studentStatsMap.set(studentId, {

@@ -380,6 +380,8 @@ const SupportTicketManagement: React.FC<SupportTicketManagementProps> = ({
             </DialogHeader>
             <div className="py-4">
               <CreateSupportTicketForm
+                isOpen={isCreateDialogOpen}
+                onClose={() => setIsCreateDialogOpen(false)}
                 onSuccess={() => {
                   setIsCreateDialogOpen(false);
                   refetch();
