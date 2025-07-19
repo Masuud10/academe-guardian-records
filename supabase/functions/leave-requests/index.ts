@@ -73,10 +73,12 @@ serve(async (req) => {
     }
 
     const url = new URL(req.url);
-    const path = url.pathname;
+    const pathSegments = url.pathname.split('/').filter(Boolean);
+    
+    console.log('Request path segments:', pathSegments);
 
-    // POST /leave-requests - Create new leave request
-    if (req.method === 'POST' && path.endsWith('/leave-requests')) {
+    // POST /leave-requests - Create new leave request (For Staff)
+    if (req.method === 'POST' && pathSegments[pathSegments.length - 1] === 'leave-requests') {
       const body = await req.json();
       console.log('Creating leave request for user:', user.id);
 
@@ -147,8 +149,8 @@ serve(async (req) => {
       });
     }
 
-    // GET /leave-requests/my-history - Get user's leave request history
-    if (req.method === 'GET' && path.endsWith('/leave-requests/my-history')) {
+    // GET /leave-requests/my-history - Get user's own leave requests (For Staff)
+    if (req.method === 'GET' && pathSegments.includes('my-history')) {
       console.log('Fetching leave request history for user:', user.id);
 
       const { data, error } = await supabaseClient
@@ -177,6 +179,119 @@ serve(async (req) => {
         );
       }
 
+      return new Response(JSON.stringify(data), {
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
+    }
+
+    // GET /leave-requests/pending-approval - Get pending requests for HR
+    if (req.method === 'GET' && pathSegments.includes('pending-approval')) {
+      console.log('Fetching pending requests for HR user:', user.id);
+
+      // Get user profile to verify HR role and school
+      const { data: profile, error: profileError } = await supabaseClient
+        .from('profiles')
+        .select('role, school_id')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError || profile?.role !== 'hr') {
+        return new Response(
+          JSON.stringify({ error: 'Access denied. HR role required.' }),
+          {
+            status: 403,
+            headers: { 'Content-Type': 'application/json', ...corsHeaders },
+          }
+        );
+      }
+
+      const { data, error } = await supabaseClient
+        .from('leave_requests')
+        .select(`
+          id,
+          start_date,
+          end_date,
+          reason,
+          status,
+          created_at,
+          profiles!leave_requests_requester_id_fkey(name, email)
+        `)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching pending requests:', error);
+        return new Response(
+          JSON.stringify({ error: 'Failed to fetch pending requests' }),
+          {
+            status: 500,
+            headers: { 'Content-Type': 'application/json', ...corsHeaders },
+          }
+        );
+      }
+
+      return new Response(JSON.stringify(data), {
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
+    }
+
+    // PATCH /leave-requests/:id/review - Review leave request (For HR)
+    if (req.method === 'PATCH' && pathSegments.includes('review')) {
+      const requestId = pathSegments[pathSegments.indexOf('leave-requests') + 1]; // Get ID after 'leave-requests'
+      console.log('Reviewing leave request:', requestId, 'by HR user:', user.id);
+
+      // Get user profile to verify HR role
+      const { data: profile, error: profileError } = await supabaseClient
+        .from('profiles')
+        .select('role, school_id')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError || profile?.role !== 'hr') {
+        return new Response(
+          JSON.stringify({ error: 'Access denied. HR role required.' }),
+          {
+            status: 403,
+            headers: { 'Content-Type': 'application/json', ...corsHeaders },
+          }
+        );
+      }
+
+      const { status: newStatus } = await req.json();
+      
+      if (!newStatus || !['approved', 'rejected'].includes(newStatus)) {
+        return new Response(
+          JSON.stringify({ error: 'Valid status required (approved or rejected)' }),
+          {
+            status: 400,
+            headers: { 'Content-Type': 'application/json', ...corsHeaders },
+          }
+        );
+      }
+
+      const { data, error } = await supabaseClient
+        .from('leave_requests')
+        .update({
+          status: newStatus,
+          reviewed_by: user.id,
+          reviewed_at: new Date().toISOString()
+        })
+        .eq('id', requestId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error reviewing leave request:', error);
+        return new Response(
+          JSON.stringify({ error: 'Failed to review leave request' }),
+          {
+            status: 500,
+            headers: { 'Content-Type': 'application/json', ...corsHeaders },
+          }
+        );
+      }
+
+      console.log('Leave request reviewed successfully:', data.id, 'Status:', newStatus);
       return new Response(JSON.stringify(data), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });
