@@ -79,10 +79,6 @@ export const useRoleBasedRouting = () => {
     return redirectPath;
   };
 
-  static isAdminRole(normalizedRole: string): boolean {
-    return false; // No admin roles in school application
-  }
-
   const isSchoolAdmin = (): boolean => {
     if (!user?.role) return false;
     const normalizedRole = user.role.toLowerCase();

@@ -111,6 +111,146 @@ export type Database = {
           },
         ]
       }
+      academic_trips: {
+        Row: {
+          accommodation_details: string | null
+          contact_person: string | null
+          contact_phone: string | null
+          cost_per_student: number | null
+          created_at: string | null
+          created_by: string | null
+          current_participants: number | null
+          description: string | null
+          destination: string
+          emergency_contact: string | null
+          emergency_phone: string | null
+          end_date: string
+          id: string
+          itinerary: Json | null
+          max_participants: number | null
+          medical_requirements: string | null
+          organizer_id: string | null
+          required_documents: Json | null
+          requirements: string | null
+          safety_guidelines: string | null
+          school_id: string
+          start_date: string
+          status: string | null
+          transportation_details: string | null
+          trip_name: string
+          trip_type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          accommodation_details?: string | null
+          contact_person?: string | null
+          contact_phone?: string | null
+          cost_per_student?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          current_participants?: number | null
+          description?: string | null
+          destination: string
+          emergency_contact?: string | null
+          emergency_phone?: string | null
+          end_date: string
+          id?: string
+          itinerary?: Json | null
+          max_participants?: number | null
+          medical_requirements?: string | null
+          organizer_id?: string | null
+          required_documents?: Json | null
+          requirements?: string | null
+          safety_guidelines?: string | null
+          school_id: string
+          start_date: string
+          status?: string | null
+          transportation_details?: string | null
+          trip_name: string
+          trip_type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          accommodation_details?: string | null
+          contact_person?: string | null
+          contact_phone?: string | null
+          cost_per_student?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          current_participants?: number | null
+          description?: string | null
+          destination?: string
+          emergency_contact?: string | null
+          emergency_phone?: string | null
+          end_date?: string
+          id?: string
+          itinerary?: Json | null
+          max_participants?: number | null
+          medical_requirements?: string | null
+          organizer_id?: string | null
+          required_documents?: Json | null
+          requirements?: string | null
+          safety_guidelines?: string | null
+          school_id?: string
+          start_date?: string
+          status?: string | null
+          transportation_details?: string | null
+          trip_name?: string
+          trip_type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academic_trips_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "academic_trips_organizer_id_fkey"
+            columns: ["organizer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "academic_trips_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "comprehensive_report_data"
+            referencedColumns: ["school_id"]
+          },
+          {
+            foreignKeyName: "academic_trips_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "school_attendance_summary"
+            referencedColumns: ["school_id"]
+          },
+          {
+            foreignKeyName: "academic_trips_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "school_finance_summary"
+            referencedColumns: ["school_id"]
+          },
+          {
+            foreignKeyName: "academic_trips_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "school_grades_summary"
+            referencedColumns: ["school_id"]
+          },
+          {
+            foreignKeyName: "academic_trips_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       academic_years: {
         Row: {
           created_at: string | null
@@ -4487,6 +4627,57 @@ export type Database = {
           },
         ]
       }
+      leave_requests: {
+        Row: {
+          created_at: string
+          end_date: string
+          id: number
+          reason: string | null
+          requester_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          start_date: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          end_date: string
+          id?: never
+          reason?: string | null
+          requester_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          start_date: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string
+          id?: never
+          reason?: string | null
+          requester_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          start_date?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leave_requests_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leave_requests_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           content: string
@@ -6254,6 +6445,38 @@ export type Database = {
             foreignKeyName: "fk_staff_documents_verified_by"
             columns: ["verified_by"]
             isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff_employment_details: {
+        Row: {
+          leave_days_taken: number
+          salary: number | null
+          total_leave_days_per_year: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          leave_days_taken?: number
+          salary?: number | null
+          total_leave_days_per_year?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          leave_days_taken?: number
+          salary?: number | null
+          total_leave_days_per_year?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_employment_details_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -8364,6 +8587,207 @@ export type Database = {
           },
         ]
       }
+      trip_activities: {
+        Row: {
+          activity_name: string
+          activity_type: string | null
+          cost: number | null
+          created_at: string | null
+          description: string | null
+          end_time: string | null
+          id: string
+          location: string | null
+          requirements: string | null
+          responsible_person: string | null
+          safety_notes: string | null
+          start_time: string | null
+          trip_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          activity_name: string
+          activity_type?: string | null
+          cost?: number | null
+          created_at?: string | null
+          description?: string | null
+          end_time?: string | null
+          id?: string
+          location?: string | null
+          requirements?: string | null
+          responsible_person?: string | null
+          safety_notes?: string | null
+          start_time?: string | null
+          trip_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          activity_name?: string
+          activity_type?: string | null
+          cost?: number | null
+          created_at?: string | null
+          description?: string | null
+          end_time?: string | null
+          id?: string
+          location?: string | null
+          requirements?: string | null
+          responsible_person?: string | null
+          safety_notes?: string | null
+          start_time?: string | null
+          trip_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_activities_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "academic_trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trip_expenses: {
+        Row: {
+          amount: number
+          approved_by: string | null
+          created_at: string | null
+          description: string
+          expense_category: string
+          expense_date: string
+          id: string
+          notes: string | null
+          paid_by: string | null
+          receipt_url: string | null
+          status: string | null
+          trip_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          approved_by?: string | null
+          created_at?: string | null
+          description: string
+          expense_category: string
+          expense_date: string
+          id?: string
+          notes?: string | null
+          paid_by?: string | null
+          receipt_url?: string | null
+          status?: string | null
+          trip_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          approved_by?: string | null
+          created_at?: string | null
+          description?: string
+          expense_category?: string
+          expense_date?: string
+          id?: string
+          notes?: string | null
+          paid_by?: string | null
+          receipt_url?: string | null
+          status?: string | null
+          trip_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_expenses_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trip_expenses_paid_by_fkey"
+            columns: ["paid_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trip_expenses_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "academic_trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trip_participants: {
+        Row: {
+          amount_paid: number | null
+          created_at: string | null
+          documents_submitted: Json | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          id: string
+          medical_clearance: boolean | null
+          notes: string | null
+          parent_consent: boolean | null
+          payment_status: string | null
+          registration_date: string | null
+          special_requirements: string | null
+          status: string | null
+          student_id: string
+          trip_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          amount_paid?: number | null
+          created_at?: string | null
+          documents_submitted?: Json | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          id?: string
+          medical_clearance?: boolean | null
+          notes?: string | null
+          parent_consent?: boolean | null
+          payment_status?: string | null
+          registration_date?: string | null
+          special_requirements?: string | null
+          status?: string | null
+          student_id: string
+          trip_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          amount_paid?: number | null
+          created_at?: string | null
+          documents_submitted?: Json | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          id?: string
+          medical_clearance?: boolean | null
+          notes?: string | null
+          parent_consent?: boolean | null
+          payment_status?: string | null
+          registration_date?: string | null
+          special_requirements?: string | null
+          status?: string | null
+          student_id?: string
+          trip_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_participants_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trip_participants_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "academic_trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_dismissed_communications: {
         Row: {
           communication_id: string
@@ -8951,45 +9375,23 @@ export type Database = {
           email: string
           phone: string
           address: string
-          location: string
-          created_at: string
-          updated_at: string
-          owner_id: string
-          logo_url: string
-          website_url: string
-          motto: string
-          slogan: string
-          registration_number: string
-          year_established: number
-          owner_information: string
-          school_type: string
           status: string
-          term_structure: string
+          subscription_plan: string
+          total_students: number
+          total_teachers: number
+          created_at: string
+          last_activity: string
         }[]
       }
       get_admin_users_data: {
         Args: Record<PropertyKey, never>
-        Returns: {
-          id: string
-          name: string
-          email: string
-          role: string
-          created_at: string
-          updated_at: string
-          status: string
-          school_id: string
-          school_name: string
-        }[]
+        Returns: Json
       }
       get_class_report_data: {
         Args: { p_class_id: string; p_academic_year: string; p_term?: string }
         Returns: Json
       }
       get_current_admin_role: {
-        Args: Record<PropertyKey, never>
-        Returns: Database["public"]["Enums"]["admin_role"]
-      }
-      get_current_admin_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
@@ -9026,6 +9428,38 @@ export type Database = {
         Args: { p_school_id: string }
         Returns: number
       }
+      get_school_users_data: {
+        Args: Record<PropertyKey, never> | { target_school_id?: string }
+        Returns: {
+          id: string
+          email: string
+          name: string
+          role: string
+          school_id: string
+          school_name: string
+          status: string
+          created_at: string
+          updated_at: string
+          last_login_at: string
+        }[]
+      }
+      get_schools_data: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          name: string
+          email: string
+          phone: string
+          address: string
+          school_type: string
+          status: string
+          subscription_plan: string
+          created_at: string
+          updated_at: string
+          user_count: number
+          student_count: number
+        }[]
+      }
       get_student_certificate_data: {
         Args: {
           p_student_id: string
@@ -9036,6 +9470,10 @@ export type Database = {
       }
       get_student_report_data: {
         Args: { p_student_id: string; p_academic_year: string; p_term?: string }
+        Returns: Json
+      }
+      get_super_admin_analytics: {
+        Args: Record<PropertyKey, never>
         Returns: Json
       }
       get_system_analytics: {
@@ -9085,8 +9523,16 @@ export type Database = {
         }
         Returns: Json
       }
+      is_admin_user: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_any_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       is_edufam_admin: {
-        Args: { user_id?: string }
+        Args: Record<PropertyKey, never> | { user_id?: string }
         Returns: boolean
       }
       is_finance_officer_authorized_for_school: {
@@ -9245,10 +9691,11 @@ export type Database = {
     Enums: {
       admin_role:
         | "super_admin"
-        | "engineer"
+        | "software_engineer"
         | "support_hr"
-        | "marketing_sales"
+        | "sales_marketing"
         | "finance"
+        | "edufam_admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -9378,10 +9825,11 @@ export const Constants = {
     Enums: {
       admin_role: [
         "super_admin",
-        "engineer",
+        "software_engineer",
         "support_hr",
-        "marketing_sales",
+        "sales_marketing",
         "finance",
+        "edufam_admin",
       ],
     },
   },
