@@ -9,7 +9,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigation } from "@/contexts/NavigationContext";
 import ErrorFallback from "@/components/common/ErrorFallback";
 import ErrorBoundary from "@/components/common/ErrorBoundary";
-import MaintenanceNotification from "@/components/common/MaintenanceNotification";
 
 // Lazy load all dashboard components for better performance
 const PrincipalDashboard = React.lazy(
@@ -52,7 +51,13 @@ const HRUserManagementModule = React.lazy(
   () => import("@/components/hr/HRUserManagementModule")
 );
 
-// Analytics and Management Components (Admin analytics removed)
+// Analytics and Management Components
+const AnalyticsDashboard = React.lazy(
+  () => import("@/components/analytics/PrincipalAnalytics")
+);
+const TeacherClassAnalytics = React.lazy(
+  () => import("@/components/analytics/TeacherClassAnalytics")
+);
 const TransportManagement = React.lazy(
   () => import("@/components/transport/TransportManagement")
 );
@@ -94,30 +99,9 @@ const MessagesModule = React.lazy(
 const ReportsModule = React.lazy(
   () => import("@/components/modules/ReportsModule")
 );
-const SchoolsModule = React.lazy(
-  () => import("@/components/modules/SchoolsModule")
-);
 
-const BillingModule = React.lazy(
-  () => import("@/components/modules/BillingModule")
-);
-const SystemHealthModule = React.lazy(
-  () => import("@/components/modules/SystemHealthModule")
-);
-const SecurityModule = React.lazy(
-  () => import("@/components/modules/SecurityModule")
-);
-const SupportModule = React.lazy(
-  () => import("@/components/modules/SupportModule")
-);
 const CertificatesModule = React.lazy(
   () => import("@/components/modules/CertificatesModule")
-);
-const ProjectHubModule = React.lazy(
-  () => import("@/components/modules/ProjectHubModule")
-);
-const CompanyManagementModule = React.lazy(
-  () => import("@/components/modules/CompanyManagementModule")
 );
 const SchoolAnalyticsList = React.lazy(
   () => import("@/components/analytics/SchoolAnalyticsList")
@@ -143,9 +127,7 @@ const ExpensesPanel = React.lazy(
 const SchoolManagementDashboard = React.lazy(
   () => import("@/components/dashboard/principal/SchoolManagementDashboard")
 );
-const AnalyticsDashboard = React.lazy(
-  () => import("@/components/analytics/AnalyticsDashboard")
-);
+
 const FinancialOverview = React.lazy(
   () => import("@/components/finance/FinancialOverview")
 );
@@ -218,12 +200,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
 
     // Memoize role-based access checks to prevent unnecessary recalculations
     const hasFinanceAccess = useMemo(() => {
-      const financeRoles = [
-        "finance_officer",
-        "principal",
-        "school_director",
-        "edufam_admin",
-      ];
+      const financeRoles = ["finance_officer", "principal", "school_director"];
       return financeRoles.includes(user?.role || "");
     }, [user?.role]);
 
@@ -253,7 +230,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
     if (dashboardComponent) {
       return (
         <div>
-          <MaintenanceNotification />
+          
           {dashboardComponent}
         </div>
       );
@@ -267,7 +244,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
     ) => {
       return (
         <div>
-          <MaintenanceNotification />
+          
           <ErrorBoundary
             onError={(error, errorInfo) => {
               console.error(
@@ -299,7 +276,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
     // Render unauthorized access message
     const renderUnauthorizedAccess = () => (
       <div>
-        <MaintenanceNotification />
+        
         <div className="p-8 text-center text-red-600">
           Access Denied: You don't have permission to view this section.
         </div>
@@ -316,7 +293,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
       }
       return (
         <div>
-          <MaintenanceNotification />
+          
           <div className="p-8 text-center text-red-600">
             Access Denied: Principal access required
           </div>
@@ -324,26 +301,16 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
       );
     }
 
-    // System Settings - Only for EduFam Admins
+    // System Settings - Not available in school application
     if (activeSection === "settings") {
-      if (user?.role === "edufam_admin") {
-        return (
-          <div className="text-center p-8">
-            <h2 className="text-2xl font-bold text-red-600 mb-4">
-              Feature Unavailable
-            </h2>
-            <p className="text-gray-600">
-              System settings are not available in the school application.
-            </p>
-          </div>
-        );
-      }
       return (
-        <div>
-          <MaintenanceNotification />
-          <div className="p-8 text-center text-red-600">
-            Access Denied: EduFam Admin access required
-          </div>
+        <div className="text-center p-8">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">
+            Feature Unavailable
+          </h2>
+          <p className="text-gray-600">
+            System settings are not available in the school application.
+          </p>
         </div>
       );
     }
@@ -364,7 +331,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
       }
       return (
         <div>
-          <MaintenanceNotification />
+          
           <div className="p-8 text-center text-red-600">
             Access Denied: EduFam Admin access required
           </div>
@@ -374,7 +341,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
 
     // Analytics sections - Fix access for teachers, principals, and school directors
     if (activeSection === "analytics") {
-      if (user?.role === "edufam_admin" || user?.role === "elimisha_admin") {
+      if (user?.role === "edufam_admin") {
         return (
           <div className="text-center p-8">
             <h2 className="text-2xl font-bold text-red-600 mb-4">
@@ -393,13 +360,13 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
       // Allow teachers to access their class analytics
       if (user?.role === "teacher") {
         return renderLazyComponent(
-          AnalyticsDashboard,
-          "TeacherAnalyticsDashboard"
+          TeacherClassAnalytics,
+          "TeacherClassAnalytics"
         );
       }
       return (
         <div>
-          <MaintenanceNotification />
+          
           <div className="p-8 text-center text-red-600">
             Access Denied: Analytics access restricted
           </div>
@@ -418,7 +385,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            <MaintenanceNotification />
+            
             <div className="p-8 text-center text-red-600">
               Access Denied: Finance access required
             </div>
@@ -430,7 +397,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            <MaintenanceNotification />
+            
             <div className="p-8 text-center text-red-600">
               Access Denied: Finance access required
             </div>
@@ -443,7 +410,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            <MaintenanceNotification />
+            
             <div className="p-8 text-center text-red-600">
               Access Denied: Expenses are restricted to Finance Officers only
             </div>
@@ -459,7 +426,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            <MaintenanceNotification />
+            
             <div className="p-8 text-center text-red-600">
               Access Denied: Financial Reports are restricted to Finance
               Officers only
@@ -475,7 +442,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            <MaintenanceNotification />
+            
             <div className="p-8 text-center text-red-600">
               Access Denied: Finance access required
             </div>
@@ -490,7 +457,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            <MaintenanceNotification />
+            
             <div className="p-8 text-center text-red-600">
               Access Denied: Finance access required
             </div>
@@ -507,7 +474,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            <MaintenanceNotification />
+            
             <div className="p-8 text-center text-red-600">
               Access Denied: Finance access required
             </div>
@@ -522,7 +489,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            <MaintenanceNotification />
+            
             <div className="p-8 text-center text-red-600">
               Access Denied: Finance access required
             </div>
@@ -530,16 +497,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         );
 
       // Other sections with role-based access
-      case "project-hub":
-        if (user?.role === "edufam_admin") {
-          return renderLazyComponent(ProjectHubModule, "ProjectHubModule");
-        }
-        return (
-          <div>
-            <MaintenanceNotification />
-            <div>Project Hub access restricted to EduFam administrators</div>
-          </div>
-        );
       case "school-analytics":
         if (user?.role === "edufam_admin") {
           return renderLazyComponent(
@@ -549,27 +506,13 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            <MaintenanceNotification />
+            
             <div>
               School Analytics access restricted to EduFam administrators
             </div>
           </div>
         );
-      case "company-management":
-        if (user?.role === "edufam_admin") {
-          return renderLazyComponent(
-            CompanyManagementModule,
-            "CompanyManagementModule"
-          );
-        }
-        return (
-          <div>
-            <MaintenanceNotification />
-            <div>
-              Company Management access restricted to EduFam administrators
-            </div>
-          </div>
-        );
+
       case "grades":
         // Teachers get their own specialized grade management module
         if (user?.role === "teacher") {
@@ -593,7 +536,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            <MaintenanceNotification />
+            
             <div className="p-8 text-center text-red-600">
               Access Denied: Only principals can manage examinations
             </div>
@@ -614,7 +557,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         }
         return (
           <div>
-            <MaintenanceNotification />
+            
             <div className="p-8 text-center text-red-600">
               Access Denied: Only principals can access Academic Management
             </div>
@@ -636,7 +579,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         if (user?.role === "principal") {
           return (
             <div>
-              <MaintenanceNotification />
+              
               <Suspense
                 fallback={
                   <div className="flex items-center justify-center h-64">
@@ -689,8 +632,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
           );
         }
         return renderLazyComponent(ReportsModule, "ReportsModule");
-      case "schools":
-        return renderLazyComponent(SchoolsModule, "SchoolsModule");
+
       case "users":
         if (user?.role === "hr") {
           return renderLazyComponent(
@@ -701,7 +643,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
         } else if (user?.role === "school_director") {
           return renderLazyComponent(
             HRUserManagementModule,
-            "HRUserManagementModule", 
+            "HRUserManagementModule",
             { user }
           );
         }
@@ -715,16 +657,14 @@ const ContentRenderer: React.FC<ContentRendererProps> = memo(
             </p>
           </div>
         );
-      case "billing":
-        return renderLazyComponent(BillingModule, "BillingModule");
-      case "system-health":
-        return renderLazyComponent(SystemHealthModule, "SystemHealthModule");
-      case "security":
-        return renderLazyComponent(SecurityModule, "SecurityModule");
+
       case "support":
         // EduFam admin gets full admin support module
         if (user?.role === "edufam_admin") {
-          return renderLazyComponent(SupportModule, "SupportModule");
+          return renderLazyComponent(
+            UniversalSupportModule,
+            "UniversalSupportModule"
+          );
         }
         // Teachers get their own simplified support module
         if (user?.role === "teacher") {

@@ -5,7 +5,7 @@ interface UserScope {
   userId: string | null;
   userRole: string | null;
   schoolId: string | null;
-  isSystemAdmin: boolean;
+  isSchoolAdmin: boolean;
 }
 
 interface RoleCapabilities {
@@ -21,17 +21,6 @@ interface RoleCapabilities {
 export class MultiTenantUtils {
   static getRoleCapabilities(role: string): RoleCapabilities {
     switch (role) {
-      case 'edufam_admin':
-        return {
-          canCreateUsers: true,
-          canCreateSchools: true,
-          canViewAllSchools: true,
-          canManageFinance: true,
-          canViewAnalytics: true,
-          canAccessSystemSettings: true,
-          canManageMultipleTenants: true
-        };
-      
       case 'school_director':
       case 'principal':
         return {
@@ -80,20 +69,11 @@ export class MultiTenantUtils {
     }
   }
 
-  static isSystemAdmin(role: string): boolean {
-    return role === 'edufam_admin';
-  }
-
   static isSchoolAdmin(role: string): boolean {
     return role === 'school_director' || role === 'principal';
   }
 
   static canAccessSchool(userRole: string, userSchoolId: string | null, targetSchoolId: string): boolean {
-    // System admins can access any school
-    if (this.isSystemAdmin(userRole)) {
-      return true;
-    }
-
     // School-level users can only access their own school
     return userSchoolId === targetSchoolId;
   }
@@ -103,11 +83,6 @@ export class MultiTenantUtils {
     userRole: string, 
     userSchoolId: string | null
   ): T[] {
-    // System admins see all data
-    if (this.isSystemAdmin(userRole)) {
-      return data;
-    }
-
     // School-level users only see their school's data
     return data.filter(item => item.school_id === userSchoolId);
   }
@@ -129,14 +104,6 @@ export class MultiTenantUtils {
     userRole: string,
     userSchoolId: string | null
   ): T & { school_id: string } {
-    // System admins must explicitly specify school_id
-    if (this.isSystemAdmin(userRole)) {
-      if (!data.school_id) {
-        throw new Error('System admin must specify school_id for this operation');
-      }
-      return data as T & { school_id: string };
-    }
-
     // Non-admin users automatically get their school_id assigned
     if (!userSchoolId) {
       throw new Error('User has no school assignment');
@@ -159,7 +126,7 @@ export class MultiTenantUtils {
         userId: null,
         userRole: null,
         schoolId: null,
-        isSystemAdmin: false
+        isSchoolAdmin: false
       };
     }
 
@@ -176,7 +143,7 @@ export class MultiTenantUtils {
       userId: user.id,
       userRole,
       schoolId,
-      isSystemAdmin: this.isSystemAdmin(userRole || '')
+      isSchoolAdmin: this.isSchoolAdmin(userRole || '')
     };
   }
 
@@ -196,11 +163,6 @@ export class MultiTenantUtils {
 
     // Skip validation for non-tenant aware tables
     if (!tenantAwareTables.includes(tableName)) {
-      return;
-    }
-
-    // System admins can access all tenants
-    if (userScope.isSystemAdmin) {
       return;
     }
 

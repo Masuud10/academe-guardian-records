@@ -28,7 +28,8 @@ const fetchTeacherAnalyticsSummary = async (userId: string | undefined, schoolId
       .select("class_id")
       .eq("teacher_id", userId)
       .eq("school_id", schoolId)
-      .eq("is_active", true);
+      .eq("is_active", true)
+      .not("class_id", "is", null);
       
     if (tcErr) {
       console.error("Teacher assignments fetch error:", tcErr);

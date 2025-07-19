@@ -47,6 +47,10 @@ interface GradeValue {
   teacher_remarks?: string;
   status?: string;
   marks?: number;
+  // IGCSE specific fields
+  coursework_score?: number | null;
+  exam_score?: number | null;
+  total_score?: number | null;
 }
 
 interface CleanGradingSheetProps {
@@ -83,6 +87,32 @@ const CBC_PERFORMANCE_LEVELS = [
   { level: "EX", name: "Exemplary", color: "bg-green-100 text-green-800" },
 ];
 
+// IGCSE Grade Boundaries
+const IGCSE_GRADE_BOUNDARIES = {
+  "A*": 90,
+  A: 80,
+  B: 70,
+  C: 60,
+  D: 50,
+  E: 40,
+  F: 30,
+  G: 20,
+  U: 0,
+};
+
+// IGCSE Grade Colors
+const IGCSE_GRADE_COLORS = {
+  "A*": "bg-purple-100 text-purple-800 border-purple-200",
+  A: "bg-green-100 text-green-800 border-green-200",
+  B: "bg-blue-100 text-blue-800 border-blue-200",
+  C: "bg-yellow-100 text-yellow-800 border-yellow-200",
+  D: "bg-orange-100 text-orange-800 border-orange-200",
+  E: "bg-red-100 text-red-800 border-red-200",
+  F: "bg-red-100 text-red-800 border-red-200",
+  G: "bg-red-100 text-red-800 border-red-200",
+  U: "bg-gray-100 text-gray-800 border-gray-200",
+};
+
 export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
   students,
   subjects,
@@ -109,13 +139,40 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
   const [saving, setSaving] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
-  const [existingGradeData, setExistingGradeData] = useState<{status?: string; submitted_by?: string}>({});
+  const [existingGradeData, setExistingGradeData] = useState<{
+    status?: string;
+    submitted_by?: string;
+  }>({});
+
+  // Debug logging for curriculum type
+  useEffect(() => {
+    console.log("🎓 CleanGradingSheet Debug:", {
+      curriculumType,
+      selectedClass,
+      selectedTerm,
+      selectedExamType,
+      isPrincipal,
+      isViewOnly,
+      studentsCount: students.length,
+      subjectsCount: subjects.length,
+    });
+  }, [
+    curriculumType,
+    selectedClass,
+    selectedTerm,
+    selectedExamType,
+    isPrincipal,
+    isViewOnly,
+    students.length,
+    subjects.length,
+  ]);
 
   // Load existing grade metadata for permission checking
   useEffect(() => {
     const loadGradeMetadata = async () => {
-      if (!schoolId || !selectedClass || !selectedTerm || !selectedExamType) return;
-      
+      if (!schoolId || !selectedClass || !selectedTerm || !selectedExamType)
+        return;
+
       try {
         const { data: existingGrades } = await supabase
           .from("grades")
@@ -126,18 +183,18 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
           .eq("school_id", schoolId)
           .limit(1)
           .maybeSingle();
-          
+
         if (existingGrades) {
           setExistingGradeData({
             status: existingGrades.status,
-            submitted_by: existingGrades.submitted_by
+            submitted_by: existingGrades.submitted_by,
           });
         }
       } catch (error) {
         console.error("Error loading grade metadata:", error);
       }
     };
-    
+
     loadGradeMetadata();
   }, [schoolId, selectedClass, selectedTerm, selectedExamType]);
 
@@ -145,19 +202,22 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
   const canEditGrades = () => {
     // If no existing grades, teachers can create new ones
     if (!existingGradeData.status && !existingGradeData.submitted_by) {
-      return user?.role === 'teacher' || isPrincipal;
+      return user?.role === "teacher" || isPrincipal;
     }
-    
+
     // For teachers: can only edit if they own the grade and it's in draft status
-    if (user?.role === 'teacher') {
-      return existingGradeData.status === 'draft' && existingGradeData.submitted_by === user.id;
+    if (user?.role === "teacher") {
+      return (
+        existingGradeData.status === "draft" &&
+        existingGradeData.submitted_by === user.id
+      );
     }
-    
+
     // Principals can edit any grade except released ones
     if (isPrincipal) {
-      return existingGradeData.status !== 'released';
+      return existingGradeData.status !== "released";
     }
-    
+
     return false;
   };
 
@@ -173,6 +233,27 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
   const getPerformanceLevelColor = (level: string): string => {
     const levelInfo = CBC_PERFORMANCE_LEVELS.find((l) => l.level === level);
     return levelInfo?.color || "bg-gray-100 text-gray-800";
+  };
+
+  // Calculate IGCSE letter grade
+  const calculateIGCSEGrade = (percentage: number): string => {
+    if (percentage >= IGCSE_GRADE_BOUNDARIES["A*"]) return "A*";
+    if (percentage >= IGCSE_GRADE_BOUNDARIES.A) return "A";
+    if (percentage >= IGCSE_GRADE_BOUNDARIES.B) return "B";
+    if (percentage >= IGCSE_GRADE_BOUNDARIES.C) return "C";
+    if (percentage >= IGCSE_GRADE_BOUNDARIES.D) return "D";
+    if (percentage >= IGCSE_GRADE_BOUNDARIES.E) return "E";
+    if (percentage >= IGCSE_GRADE_BOUNDARIES.F) return "F";
+    if (percentage >= IGCSE_GRADE_BOUNDARIES.G) return "G";
+    return "U";
+  };
+
+  // Get IGCSE grade color
+  const getIGCSEGradeColor = (grade: string): string => {
+    return (
+      IGCSE_GRADE_COLORS[grade as keyof typeof IGCSE_GRADE_COLORS] ||
+      "bg-gray-100 text-gray-800"
+    );
   };
 
   // Handle grade change
@@ -192,6 +273,9 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
       teacher_remarks: "",
       status: "draft",
       marks: 0,
+      coursework_score: null,
+      exam_score: null,
+      total_score: null,
     };
 
     const updatedGrade = {
@@ -217,11 +301,41 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
       updatedGrade.percentage = value ? Math.round((value / 100) * 100) : null;
     }
 
+    // Auto-calculate IGCSE total score and letter grade
+    if (
+      (field === "coursework_score" || field === "exam_score") &&
+      curriculumType === "igcse"
+    ) {
+      const courseworkScore =
+        field === "coursework_score" ? value : currentGrade.coursework_score;
+      const examScore =
+        field === "exam_score" ? value : currentGrade.exam_score;
+
+      if (
+        typeof courseworkScore === "number" &&
+        typeof examScore === "number"
+      ) {
+        // Default weighting: 30% coursework, 70% exam
+        const totalScore = Math.round(courseworkScore * 0.3 + examScore * 0.7);
+        const percentage = totalScore;
+        const letterGrade = calculateIGCSEGrade(percentage);
+
+        updatedGrade.total_score = totalScore;
+        updatedGrade.percentage = percentage;
+        updatedGrade.letter_grade = letterGrade;
+      }
+    }
+
     onGradeChange(studentId, subjectId, updatedGrade);
   };
 
   // Save grades
   const handleSave = async () => {
+    if (onSaveDraft) {
+      onSaveDraft();
+      return;
+    }
+
     if (!schoolId || !selectedClass || !selectedTerm || !selectedExamType) {
       toast({
         title: "Missing Information",
@@ -240,7 +354,9 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
           const grade = grades[studentId][subjectId];
           if (
             grade.score !== null ||
-            grade.cbc_performance_level
+            grade.cbc_performance_level ||
+            grade.coursework_score !== null ||
+            grade.exam_score !== null
           ) {
             gradesToSave.push({
               school_id: schoolId,
@@ -250,13 +366,17 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
               term: selectedTerm,
               exam_type: selectedExamType,
               academic_year: new Date().getFullYear().toString().slice(0, 4),
-               score: grade.score,
-               letter_grade: grade.letter_grade,
+              score: grade.score || grade.total_score,
+              letter_grade: grade.letter_grade,
               cbc_performance_level: grade.cbc_performance_level,
               percentage: grade.percentage,
               teacher_remarks: grade.teacher_remarks,
               teacher_id: user?.id,
               status: "draft",
+              curriculum_type: curriculumType,
+              // IGCSE specific fields
+              coursework_score: grade.coursework_score,
+              exam_score: grade.exam_score,
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),
             });
@@ -277,7 +397,7 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
           description: `${gradesToSave.length} grades have been saved as draft. You can continue editing or submit for approval when ready.`,
         });
       }
-    } catch (error: unknown) {
+    } catch (error) {
       console.error("Error saving grades:", error);
       toast({
         title: "Error",
@@ -292,6 +412,11 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
 
   // Submit grades
   const handleSubmit = async () => {
+    if (onSubmitForApproval) {
+      onSubmitForApproval();
+      return;
+    }
+
     if (!schoolId || !selectedClass || !selectedTerm || !selectedExamType) {
       toast({
         title: "Missing Information",
@@ -306,7 +431,9 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
       Object.values(studentGrades).some(
         (grade) =>
           grade.score !== null ||
-          grade.cbc_performance_level !== null
+          grade.cbc_performance_level !== null ||
+          grade.coursework_score !== null ||
+          grade.exam_score !== null
       )
     );
 
@@ -329,7 +456,9 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
           const grade = grades[studentId][subjectId];
           if (
             grade.score !== null ||
-            grade.cbc_performance_level !== null
+            grade.cbc_performance_level !== null ||
+            grade.coursework_score !== null ||
+            grade.exam_score !== null
           ) {
             gradesToSubmit.push({
               school_id: schoolId,
@@ -339,7 +468,7 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
               term: selectedTerm,
               exam_type: selectedExamType,
               academic_year: new Date().getFullYear().toString().slice(0, 4),
-              score: grade.score,
+              score: grade.score || grade.total_score,
               letter_grade: grade.letter_grade,
               cbc_performance_level: grade.cbc_performance_level,
               percentage: grade.percentage,
@@ -348,6 +477,10 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
               submitted_by: user?.id,
               submitted_at: new Date().toISOString(),
               status: "submitted",
+              curriculum_type: curriculumType,
+              // IGCSE specific fields
+              coursework_score: grade.coursework_score,
+              exam_score: grade.exam_score,
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),
             });
@@ -364,21 +497,11 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
         if (error) throw error;
 
         toast({
-          title: "Grades Submitted for Approval",
-          description: `${gradesToSubmit.length} grades have been submitted to the principal for approval. You will be notified once they are reviewed.`,
-        });
-
-        // Log the submission for audit purposes
-        console.log("Grades submitted for approval:", {
-          count: gradesToSubmit.length,
-          classId: selectedClass,
-          term: selectedTerm,
-          examType: selectedExamType,
-          teacherId: user?.id,
-          timestamp: new Date().toISOString(),
+          title: "Grades Submitted",
+          description: `${gradesToSubmit.length} grades have been submitted for principal approval.`,
         });
       }
-    } catch (error: unknown) {
+    } catch (error) {
       console.error("Error submitting grades:", error);
       toast({
         title: "Error",
@@ -659,7 +782,9 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        console.log("Save Draft clicked", { onSaveDraft: !!onSaveDraft });
+                        console.log("Save Draft clicked", {
+                          onSaveDraft: !!onSaveDraft,
+                        });
                         if (onSaveDraft) {
                           onSaveDraft();
                         } else {
@@ -669,7 +794,7 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
                       disabled={savingProp || saving || !canEditGrades()}
                       className="bg-white hover:bg-blue-50"
                     >
-                      {(savingProp || saving) ? (
+                      {savingProp || saving ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       ) : (
                         <Save className="h-4 w-4 mr-2" />
@@ -679,17 +804,21 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
                     <Button
                       size="sm"
                       onClick={() => {
-                        console.log("Submit for Approval clicked", { onSubmitForApproval: !!onSubmitForApproval });
+                        console.log("Submit for Approval clicked", {
+                          onSubmitForApproval: !!onSubmitForApproval,
+                        });
                         if (onSubmitForApproval) {
                           onSubmitForApproval();
                         } else {
                           handleSubmit();
                         }
                       }}
-                      disabled={submittingProp || submitting || !canEditGrades()}
+                      disabled={
+                        submittingProp || submitting || !canEditGrades()
+                      }
                       className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
-                      {(submittingProp || submitting) ? (
+                      {submittingProp || submitting ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       ) : (
                         <Send className="h-4 w-4 mr-2" />
@@ -700,26 +829,27 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
                 )}
                 {!canEditGrades() && existingGradeData.status && (
                   <div className="text-sm text-muted-foreground">
-                    {existingGradeData.status === 'submitted' && (
+                    {existingGradeData.status === "submitted" && (
                       <span className="text-amber-600">
                         ⚠️ Grades already submitted - only principals can edit
                       </span>
                     )}
-                    {existingGradeData.status === 'approved' && (
+                    {existingGradeData.status === "approved" && (
                       <span className="text-green-600">
                         ✅ Grades approved - only principals can edit
                       </span>
                     )}
-                    {existingGradeData.status === 'released' && (
+                    {existingGradeData.status === "released" && (
                       <span className="text-purple-600">
                         🔒 Grades released - cannot be edited
                       </span>
                     )}
-                    {existingGradeData.submitted_by && existingGradeData.submitted_by !== user?.id && (
-                      <span className="text-red-600">
-                        🔒 These grades were created by another teacher
-                      </span>
-                    )}
+                    {existingGradeData.submitted_by &&
+                      existingGradeData.submitted_by !== user?.id && (
+                        <span className="text-red-600">
+                          🔒 These grades were created by another teacher
+                        </span>
+                      )}
                   </div>
                 )}
               </div>
@@ -771,6 +901,9 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
                         cbc_performance_level: "EM",
                         teacher_remarks: "",
                         status: "draft",
+                        coursework_score: null,
+                        exam_score: null,
+                        total_score: null,
                       };
 
                       return (
@@ -793,8 +926,10 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
                                       marks
                                     );
                                   }}
-                                disabled={isReadOnly || isViewOnly || !canEditGrades()}
-                                className="w-16 text-center"
+                                  disabled={
+                                    isReadOnly || isViewOnly || !canEditGrades()
+                                  }
+                                  className="w-16 text-center"
                                   placeholder="0-100"
                                 />
                                 <Badge
@@ -803,6 +938,68 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
                                   )}
                                 >
                                   {grade.cbc_performance_level || "EM"}
+                                </Badge>
+                              </div>
+                            ) : curriculumType === "igcse" ? (
+                              <div className="space-y-2">
+                                <div className="text-xs text-gray-500">
+                                  Coursework
+                                </div>
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  max="100"
+                                  value={grade.coursework_score || ""}
+                                  onChange={(e) => {
+                                    const courseworkScore =
+                                      parseInt(e.target.value) || null;
+                                    handleGradeChange(
+                                      student.id,
+                                      subject.id,
+                                      "coursework_score",
+                                      courseworkScore
+                                    );
+                                  }}
+                                  disabled={
+                                    isReadOnly || isViewOnly || !canEditGrades()
+                                  }
+                                  className="w-16 text-center"
+                                  placeholder="0-100"
+                                />
+                                <div className="text-xs text-gray-500">
+                                  Exam
+                                </div>
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  max="100"
+                                  value={grade.exam_score || ""}
+                                  onChange={(e) => {
+                                    const examScore =
+                                      parseInt(e.target.value) || null;
+                                    handleGradeChange(
+                                      student.id,
+                                      subject.id,
+                                      "exam_score",
+                                      examScore
+                                    );
+                                  }}
+                                  disabled={
+                                    isReadOnly || isViewOnly || !canEditGrades()
+                                  }
+                                  className="w-16 text-center"
+                                  placeholder="0-100"
+                                />
+                                <div className="text-xs text-gray-500">
+                                  Total
+                                </div>
+                                <Badge
+                                  className={getIGCSEGradeColor(
+                                    grade.letter_grade || "U"
+                                  )}
+                                >
+                                  {grade.total_score || 0} (
+                                  {grade.letter_grade || "U"})
                                 </Badge>
                               </div>
                             ) : (
@@ -821,7 +1018,9 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
                                     score
                                   );
                                 }}
-                                disabled={isReadOnly || isViewOnly || !canEditGrades()}
+                                disabled={
+                                  isReadOnly || isViewOnly || !canEditGrades()
+                                }
                                 className="w-16 text-center"
                                 placeholder="0-100"
                               />
@@ -839,7 +1038,9 @@ export const CleanGradingSheet: React.FC<CleanGradingSheetProps> = ({
                                 )
                               }
                               placeholder="Remarks..."
-                              disabled={isReadOnly || isViewOnly || !canEditGrades()}
+                              disabled={
+                                isReadOnly || isViewOnly || !canEditGrades()
+                              }
                               className="w-full text-xs min-h-[40px] resize-none"
                             />
                           </div>

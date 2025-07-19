@@ -10,10 +10,9 @@ import { Badge } from "@/components/ui/badge";
 import { AuthUser } from "@/types/auth";
 import { School } from "@/types/school";
 import UserProfileDropdown from "./UserProfileDropdown";
-import NotificationsDropdown from "@/components/notifications/NotificationsDropdown";
-import MaintenanceNotification from "@/components/common/MaintenanceNotification";
+
 import CommunicationBanner from "@/components/ui/CommunicationBanner";
-import { useAdminCommunications } from "@/hooks/useAdminCommunications";
+
 import { useNotifications } from "@/hooks/useNotifications";
 import { NotificationService } from "@/services/NotificationService";
 import { Button } from "@/components/ui/button";
@@ -40,7 +39,7 @@ const DashboardContainer: React.FC<DashboardContainerProps> = ({
   // PHASE 2: Use the new notifications system instead of admin communications
   const { notifications, unreadCount, isLoading, markAsRead, refetch } =
     useNotifications();
-  const { communications: adminCommunications } = useAdminCommunications();
+
   const { toast } = useToast();
 
   console.log(
@@ -261,9 +260,6 @@ const DashboardContainer: React.FC<DashboardContainerProps> = ({
 
               {/* Right side - User Actions */}
               <div className="flex items-center space-x-2 flex-shrink-0">
-                {/* Notifications */}
-                <NotificationsDropdown />
-
                 {/* User Profile Dropdown */}
                 <UserProfileDropdown
                   user={user}
@@ -299,9 +295,6 @@ const DashboardContainer: React.FC<DashboardContainerProps> = ({
       {/* Main content */}
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          {/* Maintenance Notification - shows across all dashboards */}
-          <MaintenanceNotification />
-
           {/* Admin Communications Banner - shows across all dashboards */}
           {/* <AdminCommunicationsBanner /> */}
 

@@ -58,7 +58,9 @@ const TeacherAnalytics = ({ filters }: TeacherAnalyticsProps) => {
           )
           .eq("teacher_id", user.id)
           .eq("school_id", schoolId)
-          .eq("is_active", true);
+          .eq("is_active", true)
+          .not("class_id", "is", null)
+          .not("classes", "is", null);
 
       if (assignmentsError) {
         console.error("Error fetching teacher assignments:", assignmentsError);
@@ -78,12 +80,20 @@ const TeacherAnalytics = ({ filters }: TeacherAnalyticsProps) => {
       const gradingStatus = [];
       for (const classItem of uniqueClasses) {
         // Get total students in class
-        const { count: totalStudents } = await supabase
-          .from("students")
-          .select("*", { count: "exact", head: true })
-          .eq("class_id", classItem.id)
-          .eq("school_id", schoolId)
-          .eq("is_active", true);
+        const { count: totalStudents, error: totalStudentsError } =
+          await supabase
+            .from("students")
+            .select("*", { count: "exact", head: true })
+            .eq("class_id", classItem.id)
+            .eq("school_id", schoolId)
+            .eq("is_active", true);
+
+        if (totalStudentsError) {
+          console.error(
+            `Error fetching total students for class ${classItem.name}:`,
+            totalStudentsError
+          );
+        }
 
         // Get submitted grades for this class with term filter
         let gradesQuery = supabase
@@ -107,7 +117,15 @@ const TeacherAnalytics = ({ filters }: TeacherAnalyticsProps) => {
           }
         }
 
-        const { count: submittedGrades } = await gradesQuery;
+        const { count: submittedGrades, error: submittedGradesError } =
+          await gradesQuery;
+
+        if (submittedGradesError) {
+          console.error(
+            `Error fetching submitted grades for class ${classItem.name}:`,
+            submittedGradesError
+          );
+        }
 
         const total = totalStudents || 0;
         const submitted = submittedGrades || 0;
@@ -186,7 +204,15 @@ const TeacherAnalytics = ({ filters }: TeacherAnalyticsProps) => {
           );
         }
 
-        const { data: termGrades } = await termGradesQuery;
+        const { data: termGrades, error: termGradesError } =
+          await termGradesQuery;
+
+        if (termGradesError) {
+          console.error(
+            `Error fetching term grades for ${term}:`,
+            termGradesError
+          );
+        }
 
         const termAverage =
           termGrades && termGrades.length > 0

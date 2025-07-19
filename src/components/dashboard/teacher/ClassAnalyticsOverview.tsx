@@ -1,39 +1,27 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
 import {
   BarChart,
+  LineChart,
+  PieChart,
+  Loader2,
+  AlertCircle,
+} from "lucide-react";
+import {
+  BarChart as RechartsBarChart,
   Bar,
   XAxis,
   YAxis,
-  LineChart,
+  LineChart as RechartsLineChart,
   Line,
-  PieChart,
+  PieChart as RechartsPieChart,
   Pie,
   Cell,
   ResponsiveContainer,
+  Tooltip,
 } from "recharts";
-import {
-  TrendingUp,
-  TrendingDown,
-  Users,
-  BookOpen,
-  Calendar,
-  Loader2,
-  AlertCircle,
-  CheckCircle,
-  Clock,
-} from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { useSchoolScopedData } from "@/hooks/useSchoolScopedData";
+import { useTeacherClassAnalytics } from "@/hooks/useTeacherClassAnalytics";
 
 interface ClassAnalyticsData {
   classPerformance: Array<{
@@ -65,297 +53,7 @@ interface ClassAnalyticsData {
 }
 
 const ClassAnalyticsOverview: React.FC = () => {
-  const { user } = useAuth();
-  const { schoolId } = useSchoolScopedData();
-
-  const {
-    data: analyticsData,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["teacher-class-analytics", user?.id, schoolId],
-    queryFn: async (): Promise<ClassAnalyticsData> => {
-      if (!user?.id || !schoolId) {
-        throw new Error("User ID and School ID are required");
-      }
-
-      console.log("Fetching class analytics for teacher:", user.id);
-
-      let attempts = 0;
-      const maxAttempts = 3;
-
-      while (attempts < maxAttempts) {
-        try {
-          // Get teacher's assigned classes with proper filtering
-          const { data: teacherAssignments, error: assignmentsError } =
-            await supabase
-              .from("subject_teacher_assignments")
-              .select(
-                `
-              class_id,
-              classes!inner(id, name, level, stream)
-            `
-              )
-              .eq("teacher_id", user.id)
-              .eq("school_id", schoolId)
-              .eq("is_active", true)
-              .not("class_id", "is", null);
-
-          if (assignmentsError) {
-            console.error(
-              "Error fetching teacher assignments:",
-              assignmentsError
-            );
-            throw assignmentsError;
-          }
-
-          const uniqueClasses =
-            teacherAssignments
-              ?.filter((ta) => ta.classes)
-              .map((ta) => ta.classes)
-              .filter(
-                (cls, index, self) =>
-                  index === self.findIndex((c) => c.id === cls.id)
-              ) || [];
-
-          const classIds = uniqueClasses.map((c) => c.id);
-
-          if (classIds.length === 0) {
-            console.log("No classes assigned to teacher");
-            return {
-              classPerformance: [],
-              attendanceTrend: [],
-              gradeDistribution: [],
-              gradingStatus: [],
-              termPerformance: [],
-            };
-          }
-
-          // Get class performance data
-          const classPerformance = [];
-          for (const classItem of uniqueClasses) {
-            // Get average grades for this class (only approved grades)
-            const { data: grades } = await supabase
-              .from("grades")
-              .select("percentage, score, max_score")
-              .eq("class_id", classItem.id)
-              .eq("school_id", schoolId)
-              .in("status", ["approved", "released"])
-              .not("percentage", "is", null);
-
-            // Get student count
-            const { count: studentCount } = await supabase
-              .from("students")
-              .select("*", { count: "exact", head: true })
-              .eq("class_id", classItem.id)
-              .eq("school_id", schoolId)
-              .eq("is_active", true);
-
-            // Get attendance rate for last 30 days
-            const thirtyDaysAgo = new Date();
-            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-            const { data: attendance } = await supabase
-              .from("attendance")
-              .select("status")
-              .eq("class_id", classItem.id)
-              .eq("school_id", schoolId)
-              .gte("date", thirtyDaysAgo.toISOString().split("T")[0])
-              .limit(1000);
-
-            // Add warning if attendance data might be truncated
-            if (attendance && attendance.length === 1000) {
-              console.warn(
-                `⚠️ Attendance data for class ${classItem.name} may be truncated (1000 records fetched)`
-              );
-            }
-
-            const attendanceRate =
-              attendance && attendance.length > 0
-                ? Math.round(
-                    (attendance.filter((a) => a.status === "present").length /
-                      attendance.length) *
-                      100
-                  )
-                : 0;
-
-            const averageGrade =
-              grades && grades.length > 0
-                ? Math.round(
-                    grades.reduce((sum, g) => sum + (g.percentage || 0), 0) /
-                      grades.length
-                  )
-                : 0;
-
-            classPerformance.push({
-              className: classItem.name || "Unknown Class",
-              averageGrade,
-              studentCount: studentCount || 0,
-              attendanceRate,
-            });
-          }
-
-          // Get attendance trend for last 7 days
-          const attendanceTrend = [];
-          for (let i = 6; i >= 0; i--) {
-            const date = new Date();
-            date.setDate(date.getDate() - i);
-            const dateStr = date.toISOString().split("T")[0];
-
-            const { data: dayAttendance } = await supabase
-              .from("attendance")
-              .select("status")
-              .in("class_id", classIds)
-              .eq("date", dateStr)
-              .eq("school_id", schoolId);
-
-            const rate =
-              dayAttendance && dayAttendance.length > 0
-                ? Math.round(
-                    (dayAttendance.filter((a) => a.status === "present")
-                      .length /
-                      dayAttendance.length) *
-                      100
-                  )
-                : 0;
-
-            attendanceTrend.push({
-              date: date.toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-              }),
-              rate,
-            });
-          }
-
-          // Get grade distribution (only for approved/released grades)
-          const { data: allGrades } = await supabase
-            .from("grades")
-            .select("letter_grade, cbc_performance_level, curriculum_type")
-            .in("class_id", classIds)
-            .eq("school_id", schoolId)
-            .in("status", ["approved", "released"])
-            .or("letter_grade.not.is.null,cbc_performance_level.not.is.null");
-
-          const gradeCounts: { [key: string]: number } = {};
-          allGrades?.forEach((g) => {
-            const grade =
-              g.curriculum_type === "cbc"
-                ? g.cbc_performance_level
-                : g.letter_grade;
-            if (grade) {
-              gradeCounts[grade] = (gradeCounts[grade] || 0) + 1;
-            }
-          });
-
-          const totalGrades = Object.values(gradeCounts).reduce(
-            (sum, count) => sum + count,
-            0
-          );
-          const gradeDistribution = Object.entries(gradeCounts).map(
-            ([grade, count]) => ({
-              grade,
-              count,
-              percentage:
-                totalGrades > 0 ? Math.round((count / totalGrades) * 100) : 0,
-            })
-          );
-
-          // Get grading status data
-          const gradingStatus = [];
-          for (const classItem of uniqueClasses) {
-            // Get total students in class
-            const { count: totalStudents } = await supabase
-              .from("students")
-              .select("*", { count: "exact", head: true })
-              .eq("class_id", classItem.id)
-              .eq("school_id", schoolId)
-              .eq("is_active", true);
-
-            // Get submitted grades for this class
-            const { count: submittedGrades } = await supabase
-              .from("grades")
-              .select("*", { count: "exact", head: true })
-              .eq("class_id", classItem.id)
-              .eq("school_id", schoolId)
-              .eq("submitted_by", user.id)
-              .in("status", ["submitted", "approved", "released"]);
-
-            const total = totalStudents || 0;
-            const submitted = submittedGrades || 0;
-
-            let status: "complete" | "pending" | "not-started";
-            if (submitted === 0) {
-              status = "not-started";
-            } else if (submitted === total) {
-              status = "complete";
-            } else {
-              status = "pending";
-            }
-
-            gradingStatus.push({
-              exam: `${classItem.name} - All Subjects`,
-              submitted,
-              total,
-              status,
-            });
-          }
-
-          // Get term performance data (mock data for now, would be enhanced with actual term data)
-          const termPerformance = [
-            { term: "Term 1", average: 75, improvement: 5 },
-            { term: "Term 2", average: 78, improvement: 3 },
-            { term: "Term 3", average: 82, improvement: 4 },
-          ];
-
-          const result = {
-            classPerformance,
-            attendanceTrend,
-            gradeDistribution,
-            gradingStatus,
-            termPerformance,
-          };
-
-          // Add warning if all analytics data is empty
-          if (
-            classPerformance.length === 0 &&
-            gradeDistribution.length === 0 &&
-            gradingStatus.length === 0
-          ) {
-            console.warn(
-              "⚠️ All analytics data is empty - possible data or assignment issue"
-            );
-          }
-
-          return result;
-        } catch (error) {
-          attempts++;
-          console.error(
-            `Error in ClassAnalyticsOverview (attempt ${attempts}/${maxAttempts}):`,
-            error
-          );
-
-          // If this is the last attempt, throw the error
-          if (attempts >= maxAttempts) {
-            throw error;
-          }
-
-          // Wait before retrying (exponential backoff)
-          await new Promise((resolve) =>
-            setTimeout(resolve, Math.pow(2, attempts) * 1000)
-          );
-        }
-      }
-
-      // This should never be reached, but TypeScript requires it
-      throw new Error(
-        "Failed to fetch class analytics after all retry attempts"
-      );
-    },
-    enabled: !!user?.id && !!schoolId,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    retry: 1, // Let our custom retry logic handle it
-  });
+  const { data: analyticsData, isLoading, error } = useTeacherClassAnalytics();
 
   const chartConfig = {
     averageGrade: { label: "Average Grade", color: "#3b82f6" },
@@ -431,13 +129,14 @@ const ClassAnalyticsOverview: React.FC = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center text-muted-foreground py-8">
-            <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>No class data available</p>
-            <p className="text-sm mt-1">
-              Analytics will appear once you have assigned classes with students
-              and grades
-            </p>
+          <div className="flex items-center justify-center h-48 text-gray-500">
+            <div className="text-center">
+              <BarChart className="h-8 w-8 mx-auto mb-2 opacity-50" />
+              <p>No analytics data available</p>
+              <p className="text-xs mt-1">
+                You may not have any classes assigned yet.
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -446,156 +145,201 @@ const ClassAnalyticsOverview: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Class Performance Summary */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5" />
-            Class Analytics Overview
+            <BarChart className="h-5 w-5" />
+            Class Performance Summary
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Class Performance Chart */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <BookOpen className="h-4 w-4" />
-                Class Performance
-              </h3>
-              <ChartContainer config={chartConfig} className="h-64">
-                <BarChart data={analyticsData.classPerformance}>
-                  <XAxis
-                    dataKey="className"
-                    tick={{ fontSize: 12 }}
-                    interval={0}
-                    angle={-45}
-                    textAnchor="end"
-                    height={60}
-                  />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar
-                    dataKey="averageGrade"
-                    fill="var(--color-averageGrade)"
-                    name="Average Grade %"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ChartContainer>
-            </div>
-
-            {/* Attendance Trend Chart */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                Attendance Trends (7 Days)
-              </h3>
-              <ChartContainer config={chartConfig} className="h-64">
-                <LineChart data={analyticsData.attendanceTrend}>
-                  <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Line
-                    type="monotone"
-                    dataKey="rate"
-                    stroke="var(--color-rate)"
-                    strokeWidth={3}
-                    name="Attendance Rate %"
-                    dot={{ fill: "var(--color-rate)", strokeWidth: 2, r: 4 }}
-                  />
-                </LineChart>
-              </ChartContainer>
-            </div>
-          </div>
-
-          {/* Grade Distribution and Summary */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-            {/* Grade Distribution Pie Chart */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" />
-                Grade Distribution
-              </h3>
-              {analyticsData.gradeDistribution.length > 0 ? (
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={analyticsData.gradeDistribution}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ grade, percentage }) =>
-                          `${grade}: ${percentage}%`
-                        }
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="count"
-                      >
-                        {analyticsData.gradeDistribution.map((entry, index) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={COLORS[index % COLORS.length]}
-                          />
-                        ))}
-                      </Pie>
-                      <ChartTooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              ) : (
-                <div className="h-64 flex items-center justify-center text-muted-foreground">
-                  <div className="text-center">
-                    <TrendingUp className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p>No grade data available</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {analyticsData.classPerformance.map((classData, index) => (
+              <div
+                key={classData.className}
+                className="p-4 border rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50"
+              >
+                <h3 className="font-semibold text-gray-900 mb-2">
+                  {classData.className}
+                </h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">
+                      Average Grade:
+                    </span>
+                    <Badge variant="secondary">{classData.averageGrade}%</Badge>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Students:</span>
+                    <span className="text-sm font-medium">
+                      {classData.studentCount}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Attendance:</span>
+                    <Badge
+                      variant={
+                        classData.attendanceRate >= 90
+                          ? "default"
+                          : classData.attendanceRate >= 75
+                          ? "secondary"
+                          : "destructive"
+                      }
+                    >
+                      {classData.attendanceRate}%
+                    </Badge>
                   </div>
                 </div>
-              )}
-            </div>
-
-            {/* Performance Summary */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                Performance Summary
-              </h3>
-              <div className="space-y-4 max-h-64 overflow-y-auto">
-                {analyticsData.classPerformance.map((classData, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">
-                        {classData.className}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {classData.studentCount} students
-                      </p>
-                    </div>
-                    <div className="text-right flex flex-col gap-1">
-                      <Badge variant="outline" className="text-xs">
-                        {classData.averageGrade}% avg
-                      </Badge>
-                      <Badge
-                        variant={
-                          classData.attendanceRate >= 90
-                            ? "default"
-                            : classData.attendanceRate >= 80
-                            ? "secondary"
-                            : "destructive"
-                        }
-                        className="text-xs"
-                      >
-                        {classData.attendanceRate}% attendance
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
               </div>
-            </div>
+            ))}
           </div>
         </CardContent>
       </Card>
+
+      {/* Attendance Trend */}
+      {analyticsData.attendanceTrend.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <LineChart className="h-5 w-5" />
+              Attendance Trend (Last 7 Days)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <RechartsLineChart data={analyticsData.attendanceTrend}>
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="rate"
+                    stroke={chartConfig.rate.color}
+                    strokeWidth={2}
+                  />
+                </RechartsLineChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Grade Distribution */}
+      {analyticsData.gradeDistribution.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <PieChart className="h-5 w-5" />
+              Grade Distribution
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <RechartsPieChart>
+                  <Pie
+                    data={analyticsData.gradeDistribution}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ grade, percentage }) =>
+                      `${grade}: ${percentage}%`
+                    }
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="count"
+                  >
+                    {analyticsData.gradeDistribution.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </RechartsPieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Grading Status */}
+      {analyticsData.gradingStatus.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Grading Status</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {analyticsData.gradingStatus.map((status) => (
+                <div
+                  key={status.exam}
+                  className="flex items-center justify-between p-3 border rounded-lg"
+                >
+                  <div>
+                    <h4 className="font-medium text-gray-900">{status.exam}</h4>
+                    <p className="text-sm text-gray-600">
+                      {status.submitted} of {status.total} grades submitted
+                    </p>
+                  </div>
+                  <Badge
+                    variant={
+                      status.status === "complete"
+                        ? "default"
+                        : status.status === "pending"
+                        ? "secondary"
+                        : "destructive"
+                    }
+                  >
+                    {status.status === "complete"
+                      ? "Complete"
+                      : status.status === "pending"
+                      ? "Pending"
+                      : "Not Started"}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Term Performance */}
+      {analyticsData.termPerformance.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Term Performance</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {analyticsData.termPerformance.map((term) => (
+                <div
+                  key={term.term}
+                  className="flex items-center justify-between p-3 border rounded-lg"
+                >
+                  <div>
+                    <h4 className="font-medium text-gray-900">{term.term}</h4>
+                    <p className="text-sm text-gray-600">
+                      Average: {term.average}%
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <Badge
+                      variant={term.improvement > 0 ? "default" : "secondary"}
+                    >
+                      {term.improvement > 0 ? "+" : ""}
+                      {term.improvement}% improvement
+                    </Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

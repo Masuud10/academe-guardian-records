@@ -79,11 +79,9 @@ export const useRoleBasedRouting = () => {
     return redirectPath;
   };
 
-  const isSystemAdmin = (): boolean => {
-    if (!user?.role) return false;
-    const normalizedRole = user.role.toLowerCase();
-    return ['edufam_admin', 'elimisha_admin'].includes(normalizedRole);
-  };
+  static isAdminRole(normalizedRole: string): boolean {
+    return false; // No admin roles in school application
+  }
 
   const isSchoolAdmin = (): boolean => {
     if (!user?.role) return false;
@@ -111,7 +109,7 @@ export const useRoleBasedRouting = () => {
     hasSchoolAssignment,
     canAccessRoute,
     getRedirectPath,
-    isSystemAdmin,
+    isSystemAdmin: false, // Removed isSystemAdmin
     isSchoolAdmin,
     isSchoolStaff,
     isHRStaff

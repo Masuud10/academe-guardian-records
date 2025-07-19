@@ -101,22 +101,6 @@ const CertificatesModule = () => {
           </div>
         );
 
-      case "edufam_admin":
-        return (
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                System-wide Certificates
-              </h1>
-              <p className="text-muted-foreground">
-                View all certificates generated across the EduFam system.
-              </p>
-            </div>
-
-            <CertificatesList />
-          </div>
-        );
-
       default:
         return (
           <div className="text-center py-12">
@@ -134,7 +118,7 @@ const CertificatesModule = () => {
 
   return (
     <RoleGuard
-      allowedRoles={["principal", "school_director", "edufam_admin"]}
+      allowedRoles={["principal", "school_director"]}
       requireSchoolAssignment
     >
       {renderContent()}

@@ -5,6 +5,7 @@ import { useSchoolScopedData } from "@/hooks/useSchoolScopedData";
 import { useTeacherStats } from "@/hooks/useTeacherStats";
 import TeacherStatsCards from "./teacher/TeacherStatsCards";
 import ClassAnalyticsOverview from "./teacher/ClassAnalyticsOverview";
+import DashboardAttendanceAnalytics from "@/components/attendance/DashboardAttendanceAnalytics";
 import MyClasses from "./teacher/MyClasses";
 import CompactTeacherTimetable from "./teacher/CompactTeacherTimetable";
 
@@ -12,7 +13,6 @@ import BulkGradingModal from "@/components/grading/BulkGradingModal";
 import AttendanceModal from "@/components/modals/AttendanceModal";
 import GradesModal from "@/components/modals/GradesModal";
 import { useToast } from "@/hooks/use-toast";
-import MaintenanceNotification from "@/components/common/MaintenanceNotification";
 
 interface TeacherDashboardProps {
   user: AuthUser;
@@ -117,7 +117,6 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
   return (
     <RoleGuard allowedRoles={["teacher"]} requireSchoolAssignment={true}>
       <div className="min-h-screen bg-background">
-        <MaintenanceNotification />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
           {/* Stats Overview */}
           <div className="w-full">
@@ -127,6 +126,11 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
           {/* Class Analytics Overview Section */}
           <div id="class-analytics-section">
             <ClassAnalyticsOverview />
+          </div>
+
+          {/* Attendance Analytics Section */}
+          <div className="bg-card rounded-lg border shadow-sm p-6">
+            <DashboardAttendanceAnalytics role="teacher" />
           </div>
 
           {/* My Assignments Section */}

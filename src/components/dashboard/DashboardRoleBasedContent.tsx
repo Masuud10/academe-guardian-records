@@ -17,7 +17,7 @@ import {
 import { AlertCircle } from "lucide-react";
 import SchoolOwnerDashboard from "./SchoolOwnerDashboard";
 import PrincipalDashboard from "./PrincipalDashboard";
-import MaintenanceNotification from "@/components/common/MaintenanceNotification";
+
 import SchoolDirectorDashboard from "./SchoolDirectorDashboard";
 import HRDashboard from "./HRDashboard";
 
@@ -134,31 +134,13 @@ const DashboardRoleBasedContent: React.FC<DashboardRoleBasedContentProps> = ({
 
   // Route to appropriate dashboard based on role
   switch (user.role) {
-    case "edufam_admin":
-      console.log(
-        "📊 DashboardRoleBasedContent: Rendering SystemAdminDashboard for edufam_admin"
-      );
-      return (
-        <div>
-          <MaintenanceNotification />
-          <div className="text-center p-8">
-            <h2 className="text-2xl font-bold text-red-600 mb-4">
-              Access Restricted
-            </h2>
-            <p className="text-gray-600">
-              Admin features are not available in the school application.
-            </p>
-          </div>
-        </div>
-      );
-
     case "school_director":
       console.log(
         "📊 DashboardRoleBasedContent: Rendering SchoolDirectorDashboard for school_director"
       );
       return (
         <div>
-          <MaintenanceNotification />
+          
           <SchoolDirectorDashboard />
         </div>
       );
@@ -169,7 +151,7 @@ const DashboardRoleBasedContent: React.FC<DashboardRoleBasedContentProps> = ({
       );
       return (
         <div>
-          <MaintenanceNotification />
+          
           <PrincipalDashboard user={user} onModalOpen={onModalOpen} />
         </div>
       );
@@ -180,7 +162,7 @@ const DashboardRoleBasedContent: React.FC<DashboardRoleBasedContentProps> = ({
       );
       return (
         <div>
-          <MaintenanceNotification />
+          
           <TeacherDashboard user={user} onModalOpen={onModalOpen} />
         </div>
       );
@@ -191,7 +173,7 @@ const DashboardRoleBasedContent: React.FC<DashboardRoleBasedContentProps> = ({
       );
       return (
         <div>
-          <MaintenanceNotification />
+          
           <FinanceOfficerDashboard user={user} />
         </div>
       );
@@ -200,7 +182,7 @@ const DashboardRoleBasedContent: React.FC<DashboardRoleBasedContentProps> = ({
       console.log("📊 DashboardRoleBasedContent: Rendering HRDashboard for hr");
       return (
         <div>
-          <MaintenanceNotification />
+          
           <HRDashboard user={user} />
         </div>
       );
@@ -211,7 +193,7 @@ const DashboardRoleBasedContent: React.FC<DashboardRoleBasedContentProps> = ({
       );
       return (
         <div>
-          <MaintenanceNotification />
+          
           <ParentDashboard user={user} onModalOpen={onModalOpen} />
         </div>
       );
@@ -223,7 +205,7 @@ const DashboardRoleBasedContent: React.FC<DashboardRoleBasedContentProps> = ({
       );
       return (
         <div>
-          <MaintenanceNotification />
+          
           <Card className="border-red-200 bg-red-50">
             <CardHeader>
               <CardTitle className="text-red-600">Unknown Role</CardTitle>

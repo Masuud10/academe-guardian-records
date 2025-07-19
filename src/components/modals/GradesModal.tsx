@@ -1,24 +1,19 @@
-
-import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/contexts/AuthContext';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle } from 'lucide-react';
-import { useSchoolCurriculum } from '@/hooks/useSchoolCurriculum';
-import { getGradingPermissions } from '@/utils/grading-permissions';
-import { UserRole } from '@/types/user';
-import GradeActionButtons from './GradeActionButtons';
-import { useGradeSubmissionMutation } from '@/hooks/useOptimizedGradeQuery';
-import GradeModalHeader from './grades/GradeModalHeader';
-import GradeFormFields from './grades/GradeFormFields';
-import PrincipalStatusSelector from './grades/PrincipalStatusSelector';
-import CurriculumModalSwitcher from './grades/CurriculumModalSwitcher';
-import GradeDataLoader from './grades/GradeDataLoader';
+import React, { useState } from "react";
+import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertTriangle } from "lucide-react";
+import { useSchoolCurriculum } from "@/hooks/useSchoolCurriculum";
+import { getGradingPermissions } from "@/utils/grading-permissions";
+import { UserRole } from "@/types/user";
+import GradeActionButtons from "./GradeActionButtons";
+import { useGradeSubmissionMutation } from "@/hooks/useOptimizedGradeQuery";
+import GradeModalHeader from "./grades/GradeModalHeader";
+import GradeFormFields from "./grades/GradeFormFields";
+import PrincipalStatusSelector from "./grades/PrincipalStatusSelector";
+import CurriculumModalSwitcher from "./grades/CurriculumModalSwitcher";
+import GradeDataLoader from "./grades/GradeDataLoader";
 
 interface GradesModalProps {
   onClose: () => void;
@@ -26,30 +21,38 @@ interface GradesModalProps {
 }
 
 const GRADING_ROLES: UserRole[] = [
-  'school_director',
-  'principal',
-  'teacher',
-  'parent',
-  'finance_officer',
-  'edufam_admin'
+  "school_director",
+  "principal",
+  "teacher",
+  "parent",
+  "finance_officer",
 ];
 
 const getValidUserRole = (role: string | undefined): UserRole => {
-  return (GRADING_ROLES.includes(role as UserRole) ? (role as UserRole) : 'teacher');
+  return GRADING_ROLES.includes(role as UserRole)
+    ? (role as UserRole)
+    : "teacher";
 };
 
 const GradesModal = ({ onClose, userRole }: GradesModalProps) => {
   const { user } = useAuth();
   const { curriculumType, loading: curriculumLoading } = useSchoolCurriculum();
-  const [selectedClass, setSelectedClass] = useState('');
-  const [selectedSubject, setSelectedSubject] = useState('');
-  const [selectedTerm, setSelectedTerm] = useState('');
-  const [selectedExamType, setSelectedExamType] = useState('');
-  const [score, setScore] = useState('');
-  const [maxScore, setMaxScore] = useState('100');
-  const [selectedStudent, setSelectedStudent] = useState('');
-  const [status, setStatus] = useState<'draft' | 'submitted' | 'under_review' | 'approved' | 'rejected' | 'released'>('draft');
-  const [cbcLevel, setCbcLevel] = useState('');
+  const [selectedClass, setSelectedClass] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState("");
+  const [selectedTerm, setSelectedTerm] = useState("");
+  const [selectedExamType, setSelectedExamType] = useState("");
+  const [score, setScore] = useState("");
+  const [maxScore, setMaxScore] = useState("100");
+  const [selectedStudent, setSelectedStudent] = useState("");
+  const [status, setStatus] = useState<
+    | "draft"
+    | "submitted"
+    | "under_review"
+    | "approved"
+    | "rejected"
+    | "released"
+  >("draft");
+  const [cbcLevel, setCbcLevel] = useState("");
 
   const [classes, setClasses] = useState<any[]>([]);
   const [subjects, setSubjects] = useState<any[]>([]);
@@ -79,8 +82,8 @@ const GradesModal = ({ onClose, userRole }: GradesModalProps) => {
   }
 
   // Handle curriculum-specific modals - FIXED: Use correct curriculum routing
-  if (curriculumType && curriculumType !== 'standard') {
-    console.log('🎓 Routing to curriculum-specific modal:', curriculumType);
+  if (curriculumType && curriculumType !== "standard") {
+    console.log("🎓 Routing to curriculum-specific modal:", curriculumType);
     return (
       <CurriculumModalSwitcher
         curriculumType={curriculumType}
@@ -91,21 +94,21 @@ const GradesModal = ({ onClose, userRole }: GradesModalProps) => {
   }
 
   const resetForm = () => {
-    setSelectedClass('');
-    setSelectedSubject('');
-    setSelectedTerm('');
-    setSelectedExamType('');
-    setScore('');
-    setMaxScore('100');
-    setSelectedStudent('');
-    setStatus('draft');
-    setCbcLevel('');
+    setSelectedClass("");
+    setSelectedSubject("");
+    setSelectedTerm("");
+    setSelectedExamType("");
+    setScore("");
+    setMaxScore("100");
+    setSelectedStudent("");
+    setStatus("draft");
+    setCbcLevel("");
     setFormError(null);
   };
 
   const validateForm = () => {
-    const isCBC = curriculumType === 'cbc';
-    
+    const isCBC = curriculumType === "cbc";
+
     if (!selectedClass) {
       setFormError("Please select a class");
       return false;
@@ -148,7 +151,7 @@ const GradesModal = ({ onClose, userRole }: GradesModalProps) => {
 
   const handleSubmit = async () => {
     setFormError(null);
-    
+
     if (!validateForm()) {
       return;
     }
@@ -162,47 +165,51 @@ const GradesModal = ({ onClose, userRole }: GradesModalProps) => {
     setLoading(true);
 
     try {
-      const isCBC = curriculumType === 'cbc';
-      
+      const isCBC = curriculumType === "cbc";
+
       const gradeData = {
         student_id: selectedStudent,
         subject_id: selectedSubject,
         class_id: selectedClass,
         term: selectedTerm,
         exam_type: selectedExamType,
-        status: resolvedUserRole === "teacher" ? 'submitted' : status,
-        curriculum_type: curriculumType || 'standard',
+        status: resolvedUserRole === "teacher" ? "submitted" : status,
+        curriculum_type: curriculumType || "standard",
         ...(isCBC
-          ? { 
-              cbc_performance_level: cbcLevel, 
-              score: null, 
-              max_score: null, 
-              percentage: null 
+          ? {
+              cbc_performance_level: cbcLevel,
+              score: null,
+              max_score: null,
+              percentage: null,
             }
-          : { 
-              score: parseFloat(score), 
-              max_score: parseFloat(maxScore), 
-              percentage: (parseFloat(score) / parseFloat(maxScore)) * 100 
-            }
-        )
+          : {
+              score: parseFloat(score),
+              max_score: parseFloat(maxScore),
+              percentage: (parseFloat(score) / parseFloat(maxScore)) * 100,
+            }),
       };
 
       await gradeSubmissionMutation.mutateAsync(gradeData);
 
       toast({
         title: "Success",
-        description: `Grade submitted successfully using ${curriculumType?.toUpperCase() || 'STANDARD'} curriculum.`,
+        description: `Grade submitted successfully using ${
+          curriculumType?.toUpperCase() || "STANDARD"
+        } curriculum.`,
       });
 
       resetForm();
       onClose();
     } catch (error: any) {
       console.error("Error submitting grade:", error);
-      setFormError(error.message || "Failed to submit grade. Please try again.");
-      
+      setFormError(
+        error.message || "Failed to submit grade. Please try again."
+      );
+
       toast({
         title: "Error",
-        description: error.message || "Failed to submit grade. Please try again.",
+        description:
+          error.message || "Failed to submit grade. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -228,18 +235,18 @@ const GradesModal = ({ onClose, userRole }: GradesModalProps) => {
   return (
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <GradeModalHeader 
-          curriculumType={curriculumType || 'standard'}
+        <GradeModalHeader
+          curriculumType={curriculumType || "standard"}
           isTeacher={isTeacher}
           isPrincipal={isPrincipal}
           permissions={{
             canSubmitGrades: permissions.canSubmitGrades,
             canApproveGrades: permissions.canApproveGrades,
             canOverrideGrades: permissions.canOverrideGrades,
-            canReleaseResults: permissions.canReleaseResults
+            canReleaseResults: permissions.canReleaseResults,
           }}
         />
-        
+
         <div className="space-y-6">
           {formError && (
             <Alert variant="destructive">
@@ -302,9 +309,9 @@ const GradesModal = ({ onClose, userRole }: GradesModalProps) => {
               canSubmit: permissions.canSubmitGrades,
               canApprove: canApprove,
               canRelease: canRelease,
-              canOverride: canOverride
+              canOverride: canOverride,
             }}
-            role={isTeacher ? 'teacher' : 'principal'}
+            role={isTeacher ? "teacher" : "principal"}
             isPrincipal={isPrincipal}
             isTeacher={isTeacher}
             canRelease={canRelease}

@@ -61,13 +61,7 @@ export class RouteGuard {
       };
     }
 
-    if (!AuthService.isEduFamAdmin(user.role)) {
-      return {
-        hasAccess: false,
-        redirectTo: '/unauthorized',
-        error: 'Access denied. This area is restricted to EduFam Admin Staff only.'
-      };
-    }
+
 
     return { hasAccess: true };
   }
@@ -103,12 +97,12 @@ export class RouteGuard {
    * Get route configuration based on path
    */
   static getRouteConfig(pathname: string): RouteGuardConfig {
-    // Admin-only routes
+    // Admin-only routes - redirect to unauthorized
     if (pathname.startsWith('/admin') || 
         pathname.startsWith('/edufam') || 
         pathname.startsWith('/system')) {
       return {
-        allowedRoles: ['edufam_admin', 'elimisha_admin'],
+        allowedRoles: [],
         redirectTo: '/unauthorized',
         requireAuth: true
       };
@@ -124,7 +118,7 @@ export class RouteGuard {
         pathname.startsWith('/finance') ||
         pathname.startsWith('/reports')) {
       return {
-        allowedRoles: ['school_director', 'principal', 'teacher', 'parent', 'finance_officer', 'hr', 'edufam_admin', 'elimisha_admin'],
+        allowedRoles: ['school_director', 'principal', 'teacher', 'parent', 'finance_officer', 'hr'],
         redirectTo: '/unauthorized',
         requireAuth: true
       };
@@ -149,12 +143,7 @@ export class RouteGuard {
     };
   }
 
-  /**
-   * Check if user can access admin section
-   */
-  static canAccessAdmin(user: AuthUser | null): boolean {
-    return user ? AuthService.isEduFamAdmin(user.role) : false;
-  }
+
 
   /**
    * Check if user can access school section
@@ -167,25 +156,21 @@ export class RouteGuard {
    * Get user's accessible sections
    */
   static getUserAccessibleSections(user: AuthUser | null): {
-    canAccessAdmin: boolean;
     canAccessSchool: boolean;
-    primarySection: 'admin' | 'school' | null;
+    primarySection: 'school' | null;
   } {
     if (!user) {
       return {
-        canAccessAdmin: false,
         canAccessSchool: false,
         primarySection: null
       };
     }
 
-    const canAccessAdmin = AuthService.isEduFamAdmin(user.role);
     const canAccessSchool = AuthService.isSchoolUser(user.role);
 
     return {
-      canAccessAdmin,
       canAccessSchool,
-      primarySection: canAccessAdmin ? 'admin' : canAccessSchool ? 'school' : null
+      primarySection: canAccessSchool ? 'school' : null
     };
   }
 } 

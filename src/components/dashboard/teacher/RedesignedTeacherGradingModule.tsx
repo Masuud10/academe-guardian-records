@@ -226,7 +226,7 @@ const RedesignedTeacherGradingModule: React.FC = () => {
         userProfile.role !== "principal" &&
         userProfile.role !== "school_director" &&
         userProfile.role !== "edufam_admin" &&
-        userProfile.role !== "elimisha_admin"
+        userProfile.role !== "school_director"
       ) {
         throw new Error(
           "Access denied: Insufficient permissions for grade management"
@@ -235,7 +235,7 @@ const RedesignedTeacherGradingModule: React.FC = () => {
 
       if (
         userProfile.school_id !== schoolId &&
-        !["edufam_admin", "elimisha_admin"].includes(userProfile.role)
+        !["edufam_admin"].includes(userProfile.role)
       ) {
         throw new Error("Access denied: School assignment mismatch");
       }

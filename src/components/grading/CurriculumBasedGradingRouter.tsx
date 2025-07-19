@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -109,6 +109,24 @@ export const CurriculumBasedGradingRouter: React.FC<
   const curriculumValidation = useMemo(() => {
     return validateCurriculumType(curriculumType);
   }, [curriculumType]);
+
+  // Debug logging
+  useEffect(() => {
+    console.log("🎓 CurriculumBasedGradingRouter Debug:", {
+      selectedClass,
+      curriculumType,
+      curriculumLoading,
+      curriculumError,
+      validation: curriculumValidation,
+      isValid: curriculumValidation.isValid,
+    });
+  }, [
+    selectedClass,
+    curriculumType,
+    curriculumLoading,
+    curriculumError,
+    curriculumValidation,
+  ]);
 
   // Show loading while detecting curriculum
   if (curriculumLoading) {

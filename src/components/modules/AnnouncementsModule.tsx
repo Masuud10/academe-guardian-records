@@ -22,7 +22,6 @@ import { Plus, Megaphone, Calendar, User } from "lucide-react";
 import { useAnnouncements } from "@/hooks/useAnnouncements";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/components/ui/use-toast";
-import CommunicationCenterModule from "./CommunicationCenterModule";
 
 const AnnouncementsModule = () => {
   const { announcements, loading, createAnnouncement } = useAnnouncements();
@@ -40,11 +39,6 @@ const AnnouncementsModule = () => {
     user?.role &&
     ["principal", "school_director", "edufam_admin"].includes(user.role);
   const isEduFamAdmin = user?.role === "edufam_admin";
-
-  // If user is EduFam admin, show the Communication Center instead
-  if (isEduFamAdmin) {
-    return <CommunicationCenterModule />;
-  }
 
   const getAudienceOptions = () => {
     if (user?.role === "edufam_admin") {

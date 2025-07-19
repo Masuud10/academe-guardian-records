@@ -16,7 +16,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import { useNavigation } from "@/contexts/NavigationContext";
-import MaintenanceNotification from "@/components/common/MaintenanceNotification";
+
 
 // Section components
 import PrincipalStatsSection from "./principal/sections/PrincipalStatsSection";
@@ -193,7 +193,7 @@ const PrincipalDashboard: React.FC<PrincipalDashboardProps> = ({
 
   return (
     <div className="min-h-screen bg-background">
-      <MaintenanceNotification />
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
         <PrincipalStatsSection
           stats={stats}

@@ -43,8 +43,6 @@ export class RoleResolver {
       'teacher',
       'parent',
       'finance_officer',
-      'edufam_admin',
-      'elimisha_admin',
       'hr'
     ];
     return validRoles.includes(role.toLowerCase() as UserRole);
@@ -55,11 +53,6 @@ export class RoleResolver {
    */
   static determineFallbackRole(email?: string): UserRole {
     if (!email) return 'parent';
-
-    // Check for admin email patterns
-    if (email.includes('admin') || email.includes('edufam')) {
-      return 'edufam_admin';
-    }
 
     // Check for school staff patterns
     if (email.includes('teacher') || email.includes('staff')) {
@@ -106,9 +99,6 @@ export class RoleResolver {
     
     const normalizedRole = role.toLowerCase() as UserRole;
     switch (normalizedRole) {
-      case 'edufam_admin':
-      case 'elimisha_admin':
-        return '/dashboard';
       case 'hr':
         return hasSchoolAssignment ? '/dashboard' : '/setup';
       case 'school_director':

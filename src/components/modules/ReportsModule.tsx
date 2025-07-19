@@ -10,27 +10,6 @@ import RoleGuard from "@/components/common/RoleGuard";
 const ReportsModule = () => {
   const { user } = useAuth();
 
-  // EduFam Admin gets system-wide reports
-  if (user?.role === "edufam_admin") {
-    return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
-            System Reports
-          </h1>
-          <p className="text-muted-foreground">
-            Generate comprehensive system-wide reports and analytics.
-          </p>
-        </div>
-
-        <div className="text-center p-8">
-          <h2 className="text-2xl font-bold text-red-600 mb-4">Feature Unavailable</h2>
-          <p className="text-gray-600">System reports are not available in the school application.</p>
-        </div>
-      </div>
-    );
-  }
-
   // Teachers get limited reports
   if (user?.role === "teacher") {
     return (

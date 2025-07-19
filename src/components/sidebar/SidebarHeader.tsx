@@ -18,10 +18,7 @@ const SidebarHeader = () => {
         return "Parent";
       case "finance_officer":
         return "Finance Officer";
-      case "edufam_admin":
-        return "EduFam Admin";
-      case "elimisha_admin":
-        return "Elimisha Admin";
+
       default:
         return role;
     }
@@ -34,7 +31,7 @@ const SidebarHeader = () => {
           <BookOpen className="w-6 h-6 text-white" />
         </div>
         <div>
-          <h2 className="font-bold text-xl text-foreground">Elimisha</h2>
+          <h2 className="font-bold text-xl text-foreground">Edufam</h2>
           <p className="text-sm text-muted-foreground">
             {getRoleDisplay(user?.role || "")}
           </p>

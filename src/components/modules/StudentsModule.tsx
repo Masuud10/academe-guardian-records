@@ -87,9 +87,9 @@ const StudentsModule = () => {
   const loading = studentsLoading || classesLoading || !isReady;
   const hasError = studentsError || classesError;
 
-  const canAddStudents =
-    user?.role &&
-    ["principal", "school_director", "edufam_admin"].includes(user.role);
+  const canManageStudents = ["principal", "school_director"].includes(
+    user.role
+  );
 
   // Refetch data when ready state changes
   useEffect(() => {
@@ -209,7 +209,7 @@ const StudentsModule = () => {
             Manage student records, information, and ID cards
           </p>
         </div>
-        {canAddStudents && activeTab === "management" && (
+        {canManageStudents && activeTab === "management" && (
           <Button onClick={() => setAdmitStudentOpen(true)}>
             <Plus className="w-4 h-4 mr-2" />
             Add Student

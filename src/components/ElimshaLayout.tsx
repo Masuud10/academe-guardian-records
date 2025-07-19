@@ -7,16 +7,11 @@ import { useSchool } from "@/contexts/SchoolContext";
 import ContentRenderer from "./layout/ContentRenderer";
 import AuthErrorCard from "./layout/AuthErrorCard";
 import { useNavigation } from "@/contexts/NavigationContext";
-import { useInactivityTimeout } from "@/hooks/useInactivityTimeout";
-import InactivityWarningModal from "@/components/ui/InactivityWarningModal";
 
 const ElimshaLayout = () => {
   const { user, signOut } = useAuth();
   const { currentSchool } = useSchool();
   const { activeSection } = useNavigation();
-
-  // Activate inactivity timeout for all authenticated pages
-  const { showWarning, stayLoggedIn, logoutUser } = useInactivityTimeout();
 
   console.log(
     "🏗️ ElimshaLayout: Rendering for user role:",
@@ -99,14 +94,6 @@ const ElimshaLayout = () => {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
-        {/* Conditionally render the warning modal */}
-        {showWarning && (
-          <InactivityWarningModal
-            onStayLoggedIn={stayLoggedIn}
-            onLogout={logoutUser}
-          />
-        )}
-
         <AppSidebar />
         <SidebarInset className="flex-1">
           <DashboardContainer

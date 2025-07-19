@@ -65,7 +65,8 @@ export const useClassCurriculum = (classId: string | null) => {
         classId,
         className: data?.name,
         curriculum_type: data?.curriculum_type,
-        resolvedValue: curriculumValue
+        resolvedValue: curriculumValue,
+        dataType: typeof curriculumValue
       });
       
       if (!curriculumValue) {
@@ -78,6 +79,8 @@ export const useClassCurriculum = (classId: string | null) => {
       // Validate curriculum type
       const validation = validateCurriculumType(curriculumValue);
       
+      console.log('🎓 useClassCurriculum: Validation result:', validation);
+      
       if (!validation.isValid) {
         console.warn('⚠️ Invalid curriculum type:', validation.error);
         setError(validation.error || 'Invalid curriculum type');
@@ -86,7 +89,7 @@ export const useClassCurriculum = (classId: string | null) => {
       }
 
       const detectedType = detectCurriculumType(curriculumValue);
-      console.log('🎓 useClassCurriculum: Detected curriculum type:', {
+      console.log('🎓 useClassCurriculum: Final curriculum type:', {
         original: curriculumValue,
         detected: detectedType,
         validation: validation

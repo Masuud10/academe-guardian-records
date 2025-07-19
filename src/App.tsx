@@ -11,12 +11,11 @@ import AppContent from "@/components/AppContent";
 import ResetPasswordPage from "@/components/ResetPasswordPage";
 import UnauthorizedPage from "@/components/UnauthorizedPage";
 import CertificateVerification from "@/pages/CertificateVerification";
-import MaintenanceModeTest from "@/components/debug/MaintenanceModeTest";
+
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import UniversalLoginPage from "@/components/UniversalLoginPage";
 import LandingPage from "@/components/LandingPage";
 import "./App.css";
-import "./utils/maintenanceDebugConsole";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -64,7 +63,6 @@ const AppRouter: React.FC = () => {
         path="/verify-certificate/:certificateId"
         element={<CertificateVerification />}
       />
-      <Route path="/debug/maintenance-test" element={<MaintenanceModeTest />} />
 
       {/* ====================================================== */}
       {/* PROTECTED ROUTES - School users only                  */}

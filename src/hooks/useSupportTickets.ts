@@ -67,8 +67,8 @@ export const useSupportTickets = () => {
         `)
         .order('created_at', { ascending: false });
 
-      // Only edufam_admin can see all tickets, others see only their own
-      if (user.role !== 'edufam_admin') {
+      // Only school staff can see all tickets, others see only their own
+      if (user.role !== 'principal' && user.role !== 'school_director') {
         query = query.eq('created_by', user.id);
       }
 
@@ -148,8 +148,8 @@ export const useSupportTickets = () => {
   const updateTicketStatus = async (ticketId: string, newStatus: string) => {
     if (!user) return { data: null, error: new Error("User not authenticated") };
     
-    if (user.role !== 'edufam_admin') {
-      return { data: null, error: new Error("Only EduFam Admin can update ticket status") };
+    if (user.role !== 'principal' && user.role !== 'school_director') {
+      return { data: null, error: new Error("Only school administrators can update ticket status") };
     }
 
     try {

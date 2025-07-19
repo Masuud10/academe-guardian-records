@@ -147,7 +147,7 @@ const SchoolOwnerMetricsFetcher: React.FC = () => {
         const attendanceRate =
           totalAttendance > 0 ? (presentCount / totalAttendance) * 100 : 0;
 
-        // @ts-ignore - Deep type instantiation issue with Supabase
+        // @ts-expect-error - Supabase types are not fully typed
         const { data: financialData, error: financialError } = await supabase
           .from("financial_transactions")
           .select("amount")

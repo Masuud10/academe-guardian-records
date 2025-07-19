@@ -16,8 +16,7 @@ const AttendanceModule: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const isSummaryRole =
-    user?.role &&
-    ["edufam_admin", "principal", "school_director"].includes(user.role);
+    user?.role && ["principal", "school_director"].includes(user.role);
 
   useEffect(() => {
     if (!isSummaryRole) {
@@ -25,18 +24,7 @@ const AttendanceModule: React.FC = () => {
       return;
     }
 
-    if (user.role === "edufam_admin") {
-      supabase
-        .from("schools")
-        .select("id, name")
-        .then(({ data, error }) => {
-          if (error) setError("Could not fetch schools list.");
-          else setSchools(data || []);
-        });
-    }
-
-    const effectiveSchoolId =
-      user.role === "edufam_admin" ? schoolFilter : user.school_id;
+    const effectiveSchoolId = user.school_id;
 
     if (!effectiveSchoolId) {
       setAttendanceSummary(null);

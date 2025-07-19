@@ -9,7 +9,7 @@ import HRDashboard from "./dashboard/HRDashboard";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { checkDatabaseConnection } from "@/integrations/supabase/client";
-import MaintenanceNotification from "@/components/common/MaintenanceNotification";
+
 import SchoolDirectorDashboard from "./dashboard/SchoolDirectorDashboard";
 
 const Dashboard: React.FC = () => {
@@ -132,7 +132,7 @@ const Dashboard: React.FC = () => {
         console.log("🎯 Dashboard: Routing to School Director Dashboard");
         return (
           <div>
-            <MaintenanceNotification />
+            
             <SchoolDirectorDashboard />
           </div>
         );
@@ -141,7 +141,7 @@ const Dashboard: React.FC = () => {
         console.log("🎯 Dashboard: Routing to Principal Dashboard");
         return (
           <div>
-            <MaintenanceNotification />
+            
             <PrincipalDashboard user={user} />
           </div>
         );
@@ -150,7 +150,7 @@ const Dashboard: React.FC = () => {
         console.log("🎯 Dashboard: Routing to Teacher Dashboard");
         return (
           <div>
-            <MaintenanceNotification />
+            
             <TeacherDashboard user={user} />
           </div>
         );
@@ -159,7 +159,7 @@ const Dashboard: React.FC = () => {
         console.log("🎯 Dashboard: Routing to Finance Officer Dashboard");
         return (
           <div>
-            <MaintenanceNotification />
+            
             <FinanceOfficerDashboard user={user} />
           </div>
         );
@@ -168,7 +168,7 @@ const Dashboard: React.FC = () => {
         console.log("🎯 Dashboard: Routing to HR Dashboard");
         return (
           <div>
-            <MaintenanceNotification />
+            
             <HRDashboard user={user} />
           </div>
         );
@@ -177,7 +177,7 @@ const Dashboard: React.FC = () => {
         console.log("🎯 Dashboard: Routing to Parent Dashboard");
         return (
           <div>
-            <MaintenanceNotification />
+            
             <ParentDashboard user={user} />
           </div>
         );

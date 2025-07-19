@@ -61,12 +61,7 @@ const normalizeRole = (role: string): string => {
     'financeofficer': 'finance_officer',
     'finance': 'finance_officer',
     
-    // Admin variations - all map to edufam_admin
-    'edufam_admin': 'edufam_admin',
-    'edufamadmin': 'edufam_admin',
-    'admin': 'edufam_admin',
-    'systemadmin': 'edufam_admin',
-    'superadmin': 'edufam_admin',
+    
     
     // Standard roles
     'principal': 'principal',
@@ -86,7 +81,7 @@ const isValidRole = (role: string): boolean => {
   }
 
   const normalizedRole = normalizeRole(role);
-  const validRoles: UserRole[] = ['school_director', 'principal', 'teacher', 'parent', 'finance_officer', 'edufam_admin', 'elimisha_admin', 'hr'];
+  const validRoles: UserRole[] = ['school_director', 'principal', 'teacher', 'parent', 'finance_officer', 'hr'];
   const isValid = validRoles.includes(normalizedRole as UserRole);
   
   console.log('🔍 RoleUtils: Role validation for', role, '(normalized:', normalizedRole, ') =', isValid);
@@ -105,8 +100,7 @@ export const getRoleDisplayName = (role: UserRole): string => {
   
   const normalizedRole = role.toLowerCase() as UserRole;
   switch (normalizedRole) {
-    case 'edufam_admin':
-      return 'EduFam Admin';
+
     case 'elimisha_admin':
       return 'Elimisha Admin';
     case 'school_director':
@@ -131,8 +125,7 @@ export const getRoleBadgeColor = (role: UserRole): string => {
   
   const normalizedRole = role.toLowerCase() as UserRole;
   switch (normalizedRole) {
-    case 'edufam_admin':
-      return 'bg-blue-100 text-blue-800';
+
     case 'elimisha_admin':
       return 'bg-purple-100 text-purple-800';
     case 'school_director':

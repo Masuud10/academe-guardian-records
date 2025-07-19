@@ -64,9 +64,7 @@ export const SchoolProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const getCacheKey = (userRole: string, schoolId?: string) => {
-    return userRole === "elimisha_admin" || userRole === "edufam_admin"
-      ? "all_schools"
-      : `school_${schoolId}`;
+    return `school_${schoolId}`;
   };
 
   const fetchSchools = useCallback(async () => {

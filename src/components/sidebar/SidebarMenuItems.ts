@@ -46,29 +46,8 @@ export interface MenuItem {
 
 export const getMenuItems = (userRole?: string): MenuItem[] => {
   const baseItems: MenuItem[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['school_director', 'principal', 'teacher', 'parent', 'finance_officer', 'edufam_admin', 'hr'] },
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['school_director', 'principal', 'teacher', 'parent', 'finance_officer', 'hr'] },
   ];
-
-  // System admin specific items - ensure Project Hub is prominently placed
-  if (userRole === 'edufam_admin') {
-    return [
-      ...baseItems,
-      { id: 'project-hub', label: 'Project Hub', icon: FolderKanban, roles: ['edufam_admin'] },
-      { id: 'analytics', label: 'System Analytics', icon: BarChart3, roles: ['edufam_admin'] },
-      { id: 'school-analytics', label: 'Schools Analytics', icon: TrendingUp, roles: ['edufam_admin'] },
-      { id: 'schools', label: 'Schools Management', icon: Building2, roles: ['edufam_admin'] },
-      { id: 'company-management', label: 'Company Management', icon: Globe, roles: ['edufam_admin'] },
-      { id: 'users', label: 'User Management', icon: UserCheck, roles: ['edufam_admin'] },
-      { id: 'certificates', label: 'Certificate Management', icon: Award, roles: ['edufam_admin'] },
-      { id: 'announcements', label: 'Communication Center', icon: Megaphone, roles: ['edufam_admin'] },
-      { id: 'reports', label: 'System Reports', icon: FileText, roles: ['edufam_admin'] },
-      { id: 'billing', label: 'Billing Management', icon: CreditCard, roles: ['edufam_admin'] },
-      { id: 'system-health', label: 'System Health', icon: Activity, roles: ['edufam_admin'] },
-      { id: 'support', label: 'Support Center', icon: Headphones, roles: ['edufam_admin'] },
-      { id: 'security', label: 'Security', icon: Shield, roles: ['edufam_admin'] },
-      { id: 'settings', label: 'System Settings', icon: Settings, roles: ['edufam_admin'] },
-    ];
-  }
 
   // School Director - school-wide access, excluding grades and attendance
   if (userRole === 'school_director') {

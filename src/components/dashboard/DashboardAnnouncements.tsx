@@ -16,8 +16,8 @@ const DashboardAnnouncements = () => {
       is_archived: false,
     });
 
-  // Only show for non-admin users
-  if (!user || ["edufam_admin", "elimisha_admin"].includes(user.role)) {
+  // Only show for school users
+  if (!user) {
     return null;
   }
 
@@ -141,7 +141,7 @@ const DashboardAnnouncements = () => {
                       {announcement.title || "Untitled"}
                     </h3>
                     <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded-full">
-                      EduFam Admin
+                      System
                     </span>
                     {announcement.priority === "urgent" && (
                       <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-700 rounded-full">

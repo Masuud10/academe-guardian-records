@@ -32,13 +32,7 @@ const FinanceOfficerDashboard: React.FC<FinanceOfficerDashboardProps> = ({
   // CRITICAL SECURITY FIX: Enhanced role validation
   useEffect(() => {
     if (
-      ![
-        "finance_officer",
-        "principal",
-        "school_director",
-        "elimisha_admin",
-        "edufam_admin",
-      ].includes(user.role)
+      !["finance_officer", "principal", "school_director"].includes(user.role)
     ) {
       console.error(
         "🚫 FinanceOfficerDashboard: Unauthorized role attempting access:",

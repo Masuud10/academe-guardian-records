@@ -31,19 +31,19 @@ export const useAccessControl = () => {
       }
       case 'analytics': {
         // Teachers can access analytics for their classes, principals and school directors can access analytics for their school
-        const hasAnalyticsAccess = user.role === 'teacher' || user.role === 'principal' || user.role === 'school_director' || user.role === 'edufam_admin';
+        const hasAnalyticsAccess = user.role === 'teacher' || user.role === 'principal' || user.role === 'school_director';
         console.log('🔒 useAccessControl: Analytics access:', hasAnalyticsAccess);
         return hasAnalyticsAccess;
       }
       case 'certificates':
-        // Principals can generate certificates, school directors and EduFam admins can view
-        return user.role === 'principal' || user.role === 'school_director' || user.role === 'edufam_admin';
+        // Principals can generate certificates, school directors can view
+        return user.role === 'principal' || user.role === 'school_director';
       case 'certificate-generation':
-        // Only principals and EduFam admins can generate certificates
-        return user.role === 'principal' || user.role === 'edufam_admin';
+        // Only principals can generate certificates
+        return user.role === 'principal';
       case 'certificate-viewing':
-        // Principals, school directors, and EduFam admins can view certificates
-        return user.role === 'principal' || user.role === 'school_director' || user.role === 'edufam_admin';
+        // Principals and school directors can view certificates
+        return user.role === 'principal' || user.role === 'school_director';
       case 'grades':
         // Principals can access grades for approval/oversight, teachers for entry, parents for viewing
         return user.role === 'principal' || user.role === 'teacher' || user.role === 'parent';
@@ -70,14 +70,7 @@ export const useAccessControl = () => {
       case 'users':
         return hasPermission(PERMISSIONS.MANAGE_USERS);
       case 'billing':
-        return hasPermission(PERMISSIONS.VIEW_FEE_BALANCE) || user.role === 'edufam_admin';
-      case 'system-health':
-        return user.role === 'edufam_admin';
-      case 'settings':
-        return user.role === 'edufam_admin';
-      case 'security':
-        // ONLY EduFam Admins can access security settings
-        return user.role === 'edufam_admin';
+        return hasPermission(PERMISSIONS.VIEW_FEE_BALANCE);
       case 'support':
         return hasPermission(PERMISSIONS.ACCESS_SUPPORT);
       default:
@@ -88,9 +81,6 @@ export const useAccessControl = () => {
 
   const checkReportAccess = useCallback((reportType: string): boolean => {
     if (!user?.role) return false;
-    
-    // Admin roles have full access
-    if (user.role === 'edufam_admin') return true;
     
     // Teachers can only access grade and attendance reports
     if (user.role === 'teacher') {

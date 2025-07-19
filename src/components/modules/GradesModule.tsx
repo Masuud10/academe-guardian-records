@@ -54,10 +54,7 @@ const GradesModule: React.FC = () => {
 
   // Memoize role check to avoid recalculation
   const isSummaryRole = useMemo(() => {
-    return (
-      user?.role &&
-      ["edufam_admin", "principal", "school_director"].includes(user.role)
-    );
+    return user?.role && ["principal", "school_director"].includes(user.role);
   }, [user?.role]);
 
   // Optimized data fetching with proper async/await
@@ -68,8 +65,7 @@ const GradesModule: React.FC = () => {
     }
 
     const now = Date.now();
-    const effectiveSchoolId =
-      user.role === "edufam_admin" ? schoolFilter : user.school_id;
+    const effectiveSchoolId = user.school_id;
     const cacheKey = `${user.role}_${effectiveSchoolId || "all"}`;
 
     // Check cache first

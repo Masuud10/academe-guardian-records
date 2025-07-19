@@ -9,7 +9,7 @@ import DeactivatedAccountMessage from "@/components/auth/DeactivatedAccountMessa
 import { ErrorState } from "@/components/common/LoadingStates";
 import { NavigationProvider } from "@/contexts/NavigationContext";
 import { SchoolProvider } from "@/contexts/SchoolContext";
-import MaintenancePage from "@/components/maintenance/MaintenancePage";
+
 import { checkDatabaseConnection } from "@/integrations/supabase/client";
 import { RouteGuard } from "@/utils/routeGuard";
 import { AuthService } from "@/services/authService";

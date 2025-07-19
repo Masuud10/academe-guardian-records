@@ -158,35 +158,19 @@ export const useAuthState = () => {
         }
       }
 
-      // BLOCK ADMIN USERS FROM SCHOOL APPLICATION (check inactive status instead)
-      if (['edufam_admin', 'elimisha_admin'].includes(resolvedRole)) {
-        console.log('🔐 AuthState: Admin user detected, checking status:', resolvedRole);
-        // Instead of blocking all admin users, check if they're marked as inactive
-        if (profile?.status === 'inactive') {
-          console.log('🔐 AuthState: Admin user is inactive, blocking from school application');
-          await supabase.auth.signOut();
+      // Check if user requires school assignment
+      if (['school_director', 'principal', 'teacher', 'finance_officer', 'hr'].includes(resolvedRole)) {
+        console.log('🔐 AuthState: Role requires school assignment, checking profile:', resolvedRole);
+        const hasSchoolAssignment = !!profile?.school_id;
+        if (!hasSchoolAssignment) {
+          console.error('🔐 AuthState: Role requires school assignment but none found:', resolvedRole);
           if (isMountedRef.current) {
-            setUser(null);
-            setError('Admin accounts cannot access this application. Please use the admin portal.');
+            setError('Your account is not properly configured. Please contact your administrator.');
             setIsLoading(false);
             setIsInitialized(true);
           }
           return;
         }
-      }
-
-      // Validate school assignment for school-based roles
-      const requiresSchoolAssignment = true; // All school users need school assignment
-      const hasSchoolAssignment = !!profile?.school_id;
-      
-      if (requiresSchoolAssignment && !hasSchoolAssignment) {
-        console.error('🔐 AuthState: Role requires school assignment but none found:', resolvedRole);
-        if (isMountedRef.current) {
-          setError('Your account is not properly configured. Please contact your administrator.');
-          setIsLoading(false);
-          setIsInitialized(true);
-        }
-        return;
       }
 
       console.log('🔐 AuthState: Using database role:', resolvedRole);

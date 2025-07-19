@@ -55,7 +55,7 @@ const TeacherDashboard = () => {
             "principal",
             "school_director",
             "edufam_admin",
-            "elimisha_admin",
+            "school_director",
           ].includes(userProfile.role)
         ) {
           throw new Error(
@@ -65,7 +65,7 @@ const TeacherDashboard = () => {
 
         if (
           userProfile.school_id !== schoolId &&
-          !["edufam_admin", "elimisha_admin"].includes(userProfile.role)
+          !["edufam_admin"].includes(userProfile.role)
         ) {
           throw new Error("Access denied: School assignment mismatch");
         }

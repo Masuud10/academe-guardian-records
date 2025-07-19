@@ -462,16 +462,6 @@ export class AuthService {
         };
       }
 
-      // BLOCK ADMIN USERS FROM ACCESSING SCHOOL APPLICATION
-      const adminRoles = ['edufam_admin', 'elimisha_admin'];
-      if (adminRoles.includes(profile.role)) {
-        console.log('🔐 AuthService: Admin user blocked from school application:', profile.role);
-        return {
-          success: false,
-          error: 'Admin accounts cannot access this application. Please use the admin portal.'
-        };
-      }
-
       // Ensure only school-based roles can access this application
       if (!this.isSchoolUser(profile.role)) {
         console.log('🔐 AuthService: Invalid role for school application:', profile.role);
